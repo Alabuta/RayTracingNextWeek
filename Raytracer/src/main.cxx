@@ -1,6 +1,7 @@
 #include "main.hxx"
 #include "gfx/context.hxx"
 #include "platform/window.hxx"
+#include "gfx/shader.hxx"
 
 
 namespace app {
@@ -63,6 +64,8 @@ int main()
     gfx::context context{window};
 
     gfx::framebuffer framebuffer{width, height};
+
+    auto shader_stage = gfx::create_shader_stage<gfx::shader::compute>("compute.spv"sv, "main"sv);
 
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
