@@ -45,11 +45,10 @@ int main()
 
     platform::window window{"Raytracer"sv, width, height};
 
-    gfx::init_context(window);
-
     auto app_window_event_handler = std::make_shared<app::window_event_handler>(app_properties);
     window.connect_handler(app_window_event_handler);
 
+    gfx::context context{window};
 
     gfx::framebuffer framebuffer{width, height};
 

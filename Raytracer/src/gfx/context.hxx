@@ -26,16 +26,22 @@
 
 
 namespace gfx {
-void init_context(platform::window const &window)
-{
-    glfwMakeContextCurrent(window.handle());
-    glfwSwapInterval(-1);
+struct context final {
+    GLFWwindow *handle{nullptr};
 
-    glewExperimental = true;
+    context(platform::window const &window) : handle{window.handle()}
+    {
+        glfwMakeContextCurrent(handle);
+        glfwSwapInterval(-1);
 
-    if (auto result = glewInit(); result != GLEW_OK)
-        throw std::runtime_error("failed to init GLEW"s);
-}
+        glewExperimental = true;
+
+        if (auto result = glewInit(); result != GLEW_OK)
+            throw std::runtime_error("failed to init GLEW"s);
+    }
+};
+
+
 struct framebuffer final {
     std::array<std::int32_t, 2> size{0, 0};
 
