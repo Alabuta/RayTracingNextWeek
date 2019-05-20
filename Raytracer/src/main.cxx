@@ -68,10 +68,17 @@ int main()
     gfx::context context{window};
 
     auto image = gfx::create_image2D(width, height, GL_RGBA32F);
-    auto framebuffer = gfx::create_framebuffer(width, height, image);
 
-    auto shader_stage = gfx::create_shader_stage<gfx::shader::compute>("shader.comp.spv"sv, "main"sv);
-    auto shader_program = gfx::create_program(std::vector{shader_stage});
+    auto attachment = gfx::create_image2D(width, height, GL_SRGB8_ALPHA8);
+    auto framebuffer = gfx::create_framebuffer(width, height, attachment);
+
+    gfx::program compute_program;
+
+    {
+        auto compute_shader_stage = gfx::create_shader_stage<gfx::shader::compute>("shader.comp.spv"sv, "main"sv);
+        compute_program = gfx::create_program(std::vector{compute_shader_stage});
+    }
+
 
     {
         std::int32_t max_compute_work_group_invocations = -1;

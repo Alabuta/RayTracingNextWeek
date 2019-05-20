@@ -34,6 +34,8 @@ struct context final {
 
         glewExperimental = true;
 
+        glDisable(GL_CULL_FACE);
+
         if (auto result = glewInit(); result != GLEW_OK)
             throw std::runtime_error("failed to init GLEW"s);
     }

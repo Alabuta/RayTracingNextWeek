@@ -6,17 +6,17 @@
 
 #include "math.glsl"
 
-layout (local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 16, local_size_y = 16) in;
 
-layout (std430, binding = 0) readonly buffer world {
+layout(std430, binding = 0) readonly buffer world {
 	sphere spheres[];
 };
 
-layout (std430, binding = 1) writeonly buffer framebuffer {
+layout(std430, binding = 1) writeonly buffer framebuffer {
 	vec4 color[];
 };
 
-layout (binding = 0, rgba32f) uniform image2D image;
+layout(binding = 0, rgba32f) uniform image2D image;
 
 
 void main()
