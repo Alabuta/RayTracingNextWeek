@@ -12,4 +12,4 @@ out_path = "{}compute.spv".format(shaders_dir)
 if not os.path.exists(out_path):
     open(out_path, 'x').close()
 
-call([validator_path, "-V", in_path, "-o", out_path])
+call([validator_path, "-V", "-I./", in_path, "-o", out_path])
