@@ -92,7 +92,7 @@ gfx::shader_stage create_shader_stage(std::string_view module_name, std::string_
         auto length = -1;
         glGetShaderiv(shader_stage.handle, GL_INFO_LOG_LENGTH, &length);
 
-        std::vector<char> log(length, '\0');
+        std::vector<char> log(static_cast<std::size_t>(length), '\0');
         glGetShaderInfoLog(shader_stage.handle, static_cast<std::int32_t>(log.size()), &length, std::data(log));
 
         if (length > 0) {

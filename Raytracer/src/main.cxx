@@ -42,11 +42,13 @@ void render_scene(gfx::framebuffer const &framebuffer)
 
 int main()
 {
-#if defined(_MSC_VER)
-    _CrtSetDbgFlag(_CRTDBG_DELAY_FREE_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#else
-    std::signal(SIGSEGV, posix_signal_handler);
-    std::signal(SIGTRAP, posix_signal_handler);
+#ifdef _DEBUG
+    #ifdef _MSC_VER
+        _CrtSetDbgFlag(_CRTDBG_DELAY_FREE_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    #else
+        std::signal(SIGSEGV, posix_signal_handler);
+        std::signal(SIGTRAP, posix_signal_handler);
+    #endif
 #endif
 
     if (auto result = glfwInit(); result != GLFW_TRUE)

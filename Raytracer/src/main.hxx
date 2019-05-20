@@ -31,6 +31,8 @@ using namespace std::string_view_literals;
         #define _CRTDBG_MAP_ALLOC
         #include <crtdbg.h>
     #else
+        #include <csignal>
+
         void posix_signal_handler(int signum)
         {
             auto currentThread = std::this_thread::get_id();
