@@ -16,6 +16,8 @@ layout (std430, binding = 1) writeonly buffer framebuffer {
 	vec4 color[];
 };
 
+layout (binding = 0, rgba32f) uniform image2D image;
+
 
 void main()
 {
@@ -24,4 +26,6 @@ void main()
 	float y = x + 1.f;
 
 	color[pixel_index] = vec4(y);
+
+    imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(pixel_index) / 16);
 }

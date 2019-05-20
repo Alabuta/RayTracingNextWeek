@@ -56,7 +56,7 @@ int main()
     if (auto result = glfwInit(); result != GLFW_TRUE)
         throw std::runtime_error("failed to init GLFW"s);
 
-    app::state app_state{800, 600};
+    app::state app_state{512, 512};
 
     auto [width, height] = app_state.window_size;
 
@@ -99,6 +99,10 @@ int main()
         std::cout << std::endl;
     }
 
+    glUseProgram(shader_program.handle);
+
+    glBindTextureUnit(0, image.handle);
+
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
@@ -108,6 +112,8 @@ int main()
 
         auto [app_width, app_height] = app_state.window_size;
         auto [fbo_width, fbo_height] = framebuffer.size;
+
+        glDispatchCompute(fbo_width / 16, fbo_height / 16, 1);
 
         render_scene(framebuffer);
 
