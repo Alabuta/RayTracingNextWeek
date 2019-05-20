@@ -31,14 +31,30 @@ include_directories(Raytracer/src)
 
 set(SOURCE_FILES
     Raytracer/src/gfx/context.hxx
+    Raytracer/src/gfx/shader.hxx
 
     Raytracer/src/platform/platform.hxx
     Raytracer/src/platform/window.hxx		Raytracer/src/platform/window.cxx
+
+    Raytracer/src/loaders/spirv_loader.hxx
 
 	Raytracer/src/main.hxx					Raytracer/src/main.cxx
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
+if(NOT WIN32)
+    set(EXTRA_LIBS ${EXTRA_LIBS}
+        stdc++fs
+        # pthread
+    )
+
+    set(EXTRA_LIBS_LINK_OPTIONS ${EXTRA_LIBS}
+        -Wl,-no-undefined
+        -Wl,-no-allow-shlib-undefined
+        -Wl,-unresolved-symbols=report-all
+    )
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}
@@ -104,13 +120,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    #-Wl,-no-undefined
-    #-Wl,-no-allow-shlib-undefined
-    #-Wl,-unresolved-symbols=report-all
+    ${EXTRA_LIBS_LINK_OPTIONS}
 
-    #pthread
-
-    #stdc++fs
+    ${EXTRA_LIBS}
 
     glm
     glfw
