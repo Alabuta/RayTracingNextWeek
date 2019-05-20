@@ -29,7 +29,7 @@ private:
 };
 }
 
-void render_scene(gfx::framebuffer const &framebuffer)
+void render_scene(gfx::framebuffer const &framebuffer, std::uint32_t vao)
 {
     auto [width, height] = framebuffer.size;
 
@@ -39,7 +39,8 @@ void render_scene(gfx::framebuffer const &framebuffer)
 
     glClearNamedFramebufferfv(framebuffer.handle, GL_COLOR, 0, std::data(app::clear_color));
 
-    ;
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 int main()
@@ -80,6 +81,20 @@ int main()
     }
 
 
+    gfx::program screen_quad_program;
+
+    {
+        auto vertex_stage = gfx::create_shader_stage<gfx::shader::vertex>("shader.vert.spv"sv, "main"sv);
+        auto fragment_stage = gfx::create_shader_stage<gfx::shader::fragment>("shader.frag.spv"sv, "main"sv);
+
+        screen_quad_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
+    }
+
+
+    std::uint32_t vao;
+    glCreateVertexArrays(1, &vao);
+    glObjectLabel(GL_VERTEX_ARRAY, vao, -1, "[VAO]");
+
     {
         std::int32_t max_compute_work_group_invocations = -1;
         glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &max_compute_work_group_invocations);
@@ -106,23 +121,23 @@ int main()
         std::cout << std::endl;
     }
 
-    glUseProgram(shader_program.handle);
-
     glBindTextureUnit(0, image.handle);
 
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-    window.update([&app_state, &framebuffer] (auto &&window)
+    window.update([&app_state, &framebuffer, &compute_program, &screen_quad_program, vao] (auto &&window)
     {
         glfwPollEvents();
 
         auto [app_width, app_height] = app_state.window_size;
         auto [fbo_width, fbo_height] = framebuffer.size;
 
-        glDispatchCompute(fbo_width / 16, fbo_height / 16, 1);
+        /*glUseProgram(compute_program.handle);
+        glDispatchCompute(fbo_width / 16, fbo_height / 16, 1);*/
 
-        render_scene(framebuffer);
+        glUseProgram(screen_quad_program.handle);
+        render_scene(framebuffer, vao);
 
         glBlitNamedFramebuffer(framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 

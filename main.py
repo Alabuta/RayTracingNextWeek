@@ -20,7 +20,7 @@ for root, dirs, files in os.walk(shaders_path):
             in_path = os.path.join(root, file)
             out_path = in_path.replace('.glsl', '.spv')
 
-            call([compiler_path, '-V', '-I' + shaders_include_path, in_path, '-o', out_path])
+            call([compiler_path, '-G', '-I' + shaders_include_path, in_path, '-o', out_path])
 
 
 #if not os.path.exists(out_path):

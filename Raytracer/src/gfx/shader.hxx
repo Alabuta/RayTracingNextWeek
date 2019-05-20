@@ -68,11 +68,20 @@ gfx::shader_stage create_shader_stage(std::string_view module_name, std::string_
     shader_stage.entry_point = entry_point;
 
     switch (T::semantic) {
+        case gfx::shader::STAGE::VERTEX:
+            shader_stage.handle = glCreateShader(GL_VERTEX_SHADER);
+            break;
+
+        case gfx::shader::STAGE::FRAGMENT:
+            shader_stage.handle = glCreateShader(GL_FRAGMENT_SHADER);
+            break;
+
         case gfx::shader::STAGE::COMPUTE:
             shader_stage.handle = glCreateShader(GL_COMPUTE_SHADER);
             break;
 
         default:
+            throw std::runtime_error("unsupported shader stage"s);
             break;
     }
 
