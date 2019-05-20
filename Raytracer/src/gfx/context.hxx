@@ -14,8 +14,6 @@
     #include <GL/glxext.h>
 #endif
 
-//#include <GL/glext.h>
-
 #ifdef _MSC_VER
     #pragma comment(lib, "OpenGL32.lib")
     #pragma comment(lib, "glew32d.lib")
