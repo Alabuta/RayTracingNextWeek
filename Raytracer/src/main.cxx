@@ -67,7 +67,8 @@ int main()
 
     gfx::framebuffer framebuffer{width, height};
 
-    auto shader_stage = gfx::create_shader_stage<gfx::shader::compute>("compute.spv"sv, "main"sv);
+    auto shader_stage = gfx::create_shader_stage<gfx::shader::compute>("shader.comp.spv"sv, "main"sv);
+    auto shader_program = gfx::create_program(std::vector{shader_stage});
 
     {
         std::int32_t max_compute_work_group_invocations = -1;

@@ -44,7 +44,6 @@ struct fragment final : public stage<STAGE::FRAGMENT> { };
 struct compute final : public stage<STAGE::COMPUTE> { };
 }
 
-
 namespace gfx {
 using shader_stage = std::variant<
     shader::vertex,
@@ -85,17 +84,17 @@ gfx::shader_stage create_shader_stage(std::string_view module_name, std::string_
     std::string _entry_point{entry_point};
     glSpecializeShader(shader_stage.handle, _entry_point.c_str(), 0, nullptr, nullptr);
 
-    auto success = 0;
-    glGetShaderiv(shader_stage.handle, GL_COMPILE_STATUS, &success);
+    auto status = 0;
+    glGetShaderiv(shader_stage.handle, GL_COMPILE_STATUS, &status);
 
-    if (success != GL_TRUE) {
+    if (status != GL_TRUE) {
         auto length = -1;
         glGetShaderiv(shader_stage.handle, GL_INFO_LOG_LENGTH, &length);
 
-        std::vector<char> log(static_cast<std::size_t>(length), '\0');
-        glGetShaderInfoLog(shader_stage.handle, static_cast<std::int32_t>(log.size()), &length, std::data(log));
-
         if (length > 0) {
+            std::vector<char> log(static_cast<std::size_t>(length), '\0');
+            glGetShaderInfoLog(shader_stage.handle, static_cast<std::int32_t>(log.size()), &length, std::data(log));
+
             std::string error_log{std::begin(log), std::end(log)};
 
             throw std::runtime_error("shader stage compilation error: "s + error_log);
@@ -106,5 +105,82 @@ gfx::shader_stage create_shader_stage(std::string_view module_name, std::string_
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
     return shader_stage;
+}
+}
+
+namespace gfx {
+struct program final {
+    std::uint32_t handle;
+
+    std::vector<gfx::shader_stage> shader_stages;
+};
+
+gfx::program create_program(std::vector<gfx::shader_stage> const &shader_stages)
+{
+    auto handle = glCreateProgram();
+
+    glObjectLabel(GL_PROGRAM, handle, -1, "[shader program object]");
+
+    for (auto &&shader_stage : shader_stages) {
+        std::visit([handle] (auto &&stage)
+        {
+            glAttachShader(handle, stage.handle);
+
+        }, shader_stage);
+    }
+
+    glLinkProgram(handle);
+
+    auto status = 0;
+    glGetProgramiv(handle, GL_LINK_STATUS, &status);
+
+    if (status != GL_TRUE) {
+        auto length = -1;
+        glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &length);
+
+        if (length > 0) {
+            std::vector<char> log(static_cast<std::size_t>(length), '\0');
+
+            glGetProgramInfoLog(handle, static_cast<std::int32_t>(log.size()), &length, std::data(log));
+
+            std::string error_log{std::begin(log), std::end(log)};
+
+            throw std::runtime_error("shader program link error: "s + error_log);
+        }
+    }
+
+    glValidateProgram(handle);
+
+    glGetProgramiv(handle, GL_VALIDATE_STATUS, &status);
+
+    if (status != GL_TRUE) {
+        auto length = -1;
+        glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &length);
+
+        if (length > 0) {
+            std::vector<char> log(static_cast<std::size_t>(length), '\0');
+
+            glGetProgramInfoLog(handle, static_cast<std::int32_t>(log.size()), &length, std::data(log));
+
+            std::string error_log{std::begin(log), std::end(log)};
+
+            throw std::runtime_error("shader program link error: "s + error_log);
+        }
+    }
+
+    for (auto &&shader_stage : shader_stages) {
+        std::visit([handle] (auto &&stage)
+        {
+            glDetachShader(handle, stage.handle);
+
+        }, shader_stage);
+    }
+
+    if (auto result = glGetError(); result != GL_NO_ERROR)
+        throw std::runtime_error("OpenGL error: "s + std::to_string(result));
+
+    gfx::program program{handle, {std::cbegin(shader_stages), std::cend(shader_stages)}};
+
+    return program;
 }
 }
