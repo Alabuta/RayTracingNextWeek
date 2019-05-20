@@ -9,8 +9,8 @@ project(RayTracingNextWeek VERSION ${PROJECT_VERSION})
 enable_language(CXX)
 
 configure_file(
-    "${PROJECT_SOURCE_DIR}/config.h.in"
-    "${PROJECT_SOURCE_DIR}/include/config.h"
+    "${PROJECT_SOURCE_DIR}/config.hxx.in"
+    "${PROJECT_SOURCE_DIR}/include/config.hxx"
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/bin")
@@ -26,19 +26,19 @@ if(NOT WIN32)
     find_package(X11 REQUIRED)
 endif()
 
-include_directories(SYSTEM Raytracer/include)
-include_directories(Raytracer/src)
+include_directories(SYSTEM include)
+include_directories(src)
 
 set(SOURCE_FILES
-    Raytracer/src/gfx/context.hxx
-    Raytracer/src/gfx/shader.hxx
+    src/gfx/context.hxx
+    src/gfx/shader.hxx
 
-    Raytracer/src/platform/platform.hxx
-    Raytracer/src/platform/window.hxx		Raytracer/src/platform/window.cxx
+    src/platform/platform.hxx
+    src/platform/window.hxx		    src/platform/window.cxx
 
-    Raytracer/src/loaders/spirv_loader.hxx
+    src/loaders/spirv_loader.hxx
 
-	Raytracer/src/main.hxx					Raytracer/src/main.cxx
+    src/main.hxx					src/main.cxx
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
