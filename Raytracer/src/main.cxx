@@ -1,6 +1,7 @@
 #include "main.hxx"
 #include "gfx/context.hxx"
 #include "platform/window.hxx"
+#include "gfx/framebuffer.hxx"
 #include "gfx/shader.hxx"
 #include "gfx/image.hxx"
 
@@ -66,8 +67,8 @@ int main()
 
     gfx::context context{window};
 
-    gfx::framebuffer framebuffer{width, height};
     auto image = gfx::create_image2D(width, height, GL_RGBA32F);
+    auto framebuffer = gfx::create_framebuffer(width, height, image);
 
     auto shader_stage = gfx::create_shader_stage<gfx::shader::compute>("shader.comp.spv"sv, "main"sv);
     auto shader_program = gfx::create_program(std::vector{shader_stage});

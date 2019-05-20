@@ -17,6 +17,7 @@
   <ItemGroup>
     <ClInclude Include="include\config.hxx" />
     <ClInclude Include="src\gfx\context.hxx" />
+    <ClInclude Include="src\gfx\framebuffer.hxx" />
     <ClInclude Include="src\gfx\image.hxx" />
     <ClInclude Include="src\gfx\shader.hxx" />
     <ClInclude Include="src\loaders\spirv_loader.hxx" />
