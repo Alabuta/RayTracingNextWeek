@@ -69,6 +69,32 @@ int main()
 
     auto shader_stage = gfx::create_shader_stage<gfx::shader::compute>("compute.spv"sv, "main"sv);
 
+    {
+        std::int32_t max_compute_work_group_invocations = -1;
+        glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &max_compute_work_group_invocations);
+
+        std::cout << "\nGL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS: "s << max_compute_work_group_invocations;
+        std::cout << "\nGL_MAX_COMPUTE_WORK_GROUP_COUNT: "s;
+
+        for (auto index : {0u, 1u, 2u}) {
+            std::int32_t max_compute_work_group_count = -1;
+            glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, index, &max_compute_work_group_count);
+
+            std::cout << max_compute_work_group_count << ' ';
+        }
+
+        std::cout << "\nGL_MAX_COMPUTE_WORK_GROUP_SIZE: "s;
+
+        for (auto index : {0u, 1u, 2u}) {
+            std::int32_t max_compute_work_group_size = -1;
+            glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, index, &max_compute_work_group_size);
+
+            std::cout << max_compute_work_group_size << ' ';
+        }
+
+        std::cout << std::endl;
+    }
+
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
