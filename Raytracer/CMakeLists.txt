@@ -34,6 +34,7 @@ set(SOURCE_FILES
     src/gfx/framebuffer.hxx
     src/gfx/image.hxx
     src/gfx/shader.hxx
+    src/gfx/render_pass.hxx
 
     src/loaders/spirv_loader.hxx
 

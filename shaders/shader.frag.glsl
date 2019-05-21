@@ -4,11 +4,13 @@
 // #extension GL_ARB_shading_language_include : require
 #extension GL_GOOGLE_include_directive : require
 
+layout(binding = 4) uniform sampler2D image;
+
 layout(location = 0) in vec2 uv;
 
 layout(location = 0) out vec4 frag_color;
 
 void main()
 {
-    frag_color = vec4(uv, .2f, 1.f);
+    frag_color = texture(image, uv);
 }

@@ -2,6 +2,7 @@
 #include "gfx/context.hxx"
 #include "platform/window.hxx"
 #include "gfx/framebuffer.hxx"
+#include "gfx/render_pass.hxx"
 #include "gfx/shader.hxx"
 #include "gfx/image.hxx"
 
@@ -29,15 +30,19 @@ private:
 };
 }
 
-void render_scene(gfx::framebuffer const &framebuffer, std::uint32_t vao)
+
+
+void render_scene(gfx::render_pass const &render_pass)
 {
+    auto [vao, framebuffer] = render_pass;
+
     auto [width, height] = framebuffer.size;
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.handle);
 
     glViewport(0, 0, width, height);
 
-    glClearNamedFramebufferfv(framebuffer.handle, GL_COLOR, 0, std::data(app::clear_color));
+    // glClearNamedFramebufferfv(framebuffer.handle, GL_COLOR, 0, std::data(app::clear_color));
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -70,8 +75,17 @@ int main()
 
     auto image = gfx::create_image2D(width, height, GL_RGBA32F);
 
-    auto attachment = gfx::create_image2D(width, height, GL_SRGB8_ALPHA8);
-    auto framebuffer = gfx::create_framebuffer(width, height, attachment);
+    glBindImageTexture(2, image.handle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    glBindTextureUnit(4, image.handle);
+
+    gfx::render_pass render_pass;
+
+    {
+        auto attachment = gfx::create_image2D(width, height, GL_SRGB8_ALPHA8);
+        auto framebuffer = gfx::create_framebuffer(width, height, attachment);
+
+        render_pass = gfx::create_render_pass(std::move(framebuffer));
+    }
 
     gfx::program compute_program;
 
@@ -79,7 +93,6 @@ int main()
         auto compute_shader_stage = gfx::create_shader_stage<gfx::shader::compute>("shader.comp.spv"sv, "main"sv);
         compute_program = gfx::create_program(std::vector{compute_shader_stage});
     }
-
 
     gfx::program screen_quad_program;
 
@@ -89,11 +102,6 @@ int main()
 
         screen_quad_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
     }
-
-
-    std::uint32_t vao;
-    glCreateVertexArrays(1, &vao);
-    glObjectLabel(GL_VERTEX_ARRAY, vao, -1, "[VAO]");
 
     {
         std::int32_t max_compute_work_group_invocations = -1;
@@ -121,25 +129,24 @@ int main()
         std::cout << std::endl;
     }
 
-    glBindTextureUnit(0, image.handle);
-
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-    window.update([&app_state, &framebuffer, &compute_program, &screen_quad_program, vao] (auto &&window)
+    window.update([&app_state, &render_pass, &compute_program, &screen_quad_program] (auto &&window)
     {
         glfwPollEvents();
 
         auto [app_width, app_height] = app_state.window_size;
-        auto [fbo_width, fbo_height] = framebuffer.size;
+        auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
 
-        /*glUseProgram(compute_program.handle);
-        glDispatchCompute(fbo_width / 16, fbo_height / 16, 1);*/
+        glUseProgram(compute_program.handle);
+        glDispatchCompute(static_cast<std::uint32_t>(fbo_width) / 16, static_cast<std::uint32_t>(fbo_height) / 16, 1);
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
         glUseProgram(screen_quad_program.handle);
-        render_scene(framebuffer, vao);
+        render_scene(render_pass);
 
-        glBlitNamedFramebuffer(framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glfwSwapBuffers(window.handle());
 

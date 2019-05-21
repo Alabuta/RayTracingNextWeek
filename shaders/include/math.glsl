@@ -1,4 +1,3 @@
-const float x = 1.f;
 
 struct sphere {
     vec3 position;
