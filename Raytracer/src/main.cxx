@@ -8,8 +8,6 @@
 
 
 namespace app {
-auto clear_color = std::array{0.f, .254901f, .6f, 1.f};
-
 struct state final {
 
     std::array<std::int32_t, 2> window_size{800, 600};
@@ -41,8 +39,6 @@ void render_scene(gfx::render_pass const &render_pass)
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.handle);
 
     glViewport(0, 0, width, height);
-
-    // glClearNamedFramebufferfv(framebuffer.handle, GL_COLOR, 0, std::data(app::clear_color));
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -136,7 +132,6 @@ int main()
     {
         glfwPollEvents();
 
-        auto [app_width, app_height] = app_state.window_size;
         auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
 
         glUseProgram(compute_program.handle);
@@ -145,6 +140,8 @@ int main()
 
         glUseProgram(screen_quad_program.handle);
         render_scene(render_pass);
+
+        auto [app_width, app_height] = app_state.window_size;
 
         glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 

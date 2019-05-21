@@ -21,7 +21,15 @@ layout(binding = 2, rgba32f) uniform image2D image;
 
 void main()
 {
-  	uint pixel_index = gl_LocalInvocationIndex;
+	vec3 lower_left_corner = vec3(-1, -1, -1);
+	vec3 horizontal = vec3(2, 0, 0);
+	vec3 vertical = vec3(0, 2, 0);
+	vec3 origin = vec3(0);
 
-    imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(gl_GlobalInvocationID.xy / vec2(512, 512), .2f, 1.f));
+	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize(image).xy;
+
+	ray _ray = ray(origin, lower_left_corner + horizontal * uv.x + vertical * uv.y);
+
+    // imageStore(image, uv, vec4(uv / vec2(512, 512), .2f, 1.f));
+    imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color(_ray), 1.f));
 }
