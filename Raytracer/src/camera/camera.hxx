@@ -23,20 +23,22 @@ struct camera final {
         auto u = glm::normalize(glm::cross(up, w));
         auto v = glm::normalize(glm::cross(w, u));
 
-        data.origin = position;
+        auto origin = position;
 
-        data.lower_left_corner = data.origin - (u * width + v * height + w);
+        auto lower_left_corner = origin - (u * width + v * height + w);
 
-        data.horizontal = u * width * 2.f;
-        data.vertical = v * height * 2.f;
+        auto horizontal = u * width * 2.f;
+        auto vertical = v * height * 2.f;
 
         data.lower_left_corner = glm::vec3(-1);
         data.horizontal = glm::vec3(2, 0, 0);
         data.vertical = glm::vec3(0, 2, 0);
         data.origin = glm::vec3(0);
+
+        std::cout << sizeof(gpu_data);
     }
 
-    struct gpu_data final {
+    struct alignas(sizeof(glm::vec4)) gpu_data final {
         glm::vec3 origin;
 
         glm::vec3 lower_left_corner;

@@ -113,7 +113,7 @@ int main()
 
     {
         glUseProgram(compute_program.handle);
-        auto index = glGetProgramResourceIndex(compute_program.handle, GL_SHADER_STORAGE_BLOCK, "CAMERA");
+        auto index = glGetProgramResourceIndex(compute_program.handle, GL_SHADER_STORAGE_BLOCK, "PER_VIEW");
 
         if (index == GL_INVALID_INDEX)
             throw std::runtime_error("can't init the SSBO - invalid index param"s);
@@ -123,10 +123,12 @@ int main()
         glCreateBuffers(1, &camera_ssbo_handle);
         glObjectLabel(GL_BUFFER, camera_ssbo_handle, -1, "[BO]");
 
-        glNamedBufferStorage(camera_ssbo_handle, sizeof(scene::camera::gpu_data), &camera.data, GL_SHADER_STORAGE_BUFFER);
+        glNamedBufferStorage(camera_ssbo_handle, sizeof(scene::camera::gpu_data), &camera.data, GL_DYNAMIC_STORAGE_BIT);
 
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kCAMERA_BINDING, camera_ssbo_handle);
-        glShaderStorageBlockBinding(compute_program.handle, index, kCAMERA_BINDING);
+        //glShaderStorageBlockBinding(compute_program.handle, index, kCAMERA_BINDING);
+
+        glMemoryBarrier(GL_ALL_BARRIER_BITS);
     }
 
     if (auto result = glGetError(); result != GL_NO_ERROR)

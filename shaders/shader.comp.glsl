@@ -24,7 +24,7 @@ layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
 
 layout(binding = kCAMERA_BINDING, std430) readonly buffer PER_VIEW
 {
-    camera  _camera;
+    camera  _camera[];
 };
 
 
@@ -49,7 +49,8 @@ void main()
 {
 	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize(image).xy;
 
-    vec3 color = color(generate_ray(_camera, uv));
+    vec3 color = color(generate_ray(_camera[0], uv));
 
-    imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
+    //imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
+    imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(_camera[0].horizontal, 1.f));
 }
