@@ -31,12 +31,14 @@ include_directories(src)
 
 set(SOURCE_FILES
     src/gfx/context.hxx
+    src/gfx/framebuffer.hxx
+    src/gfx/image.hxx
     src/gfx/shader.hxx
+
+    src/loaders/spirv_loader.hxx
 
     src/platform/platform.hxx
     src/platform/window.hxx		    src/platform/window.cxx
-
-    src/loaders/spirv_loader.hxx
 
     src/main.hxx					src/main.cxx
 )
