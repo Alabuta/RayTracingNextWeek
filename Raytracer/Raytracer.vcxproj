@@ -19,11 +19,15 @@
     <ClInclude Include="src\gfx\context.hxx" />
     <ClInclude Include="src\gfx\framebuffer.hxx" />
     <ClInclude Include="src\gfx\image.hxx" />
+    <ClInclude Include="src\gfx\render_pass.hxx" />
     <ClInclude Include="src\gfx\shader.hxx" />
     <ClInclude Include="src\loaders\spirv_loader.hxx" />
     <ClInclude Include="src\main.hxx" />
     <ClInclude Include="src\platform\platform.hxx" />
     <ClInclude Include="src\platform\window.hxx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.hxx.in" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

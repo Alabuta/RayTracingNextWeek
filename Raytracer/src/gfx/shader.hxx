@@ -82,7 +82,6 @@ gfx::shader_stage create_shader_stage(std::string_view module_name, std::string_
 
         default:
             throw std::runtime_error("unsupported shader stage"s);
-            break;
     }
 
     glObjectLabel(GL_SHADER, shader_stage.handle, -1, "[shader stage object]");

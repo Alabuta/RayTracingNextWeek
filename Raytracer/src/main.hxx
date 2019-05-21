@@ -4,6 +4,7 @@
 #include <sstream>
 #include <array>
 #include <vector>
+#include <chrono>
 
 #include <string>
 using namespace std::string_literals;
@@ -13,17 +14,24 @@ using namespace std::string_view_literals;
 
 #include "config.hxx"
 
-#define GLM_FORCE_CXX17
-#define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtx/polar_coordinates.hpp> 
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/hash.hpp>
+#include "math.hxx"
+
+
+
+template<typename T = std::chrono::milliseconds>
+struct measure {
+    template<typename F, typename... Args>
+    static auto execution(F func, Args &&... args)
+    {
+        auto start = std::chrono::system_clock::now();
+
+        func(std::forward<Args>(args)...);
+
+        auto duration = std::chrono::duration_cast<T>(std::chrono::system_clock::now() - start);
+
+        return duration.count();
+    }
+};
 
 
 #ifdef _DEBUG

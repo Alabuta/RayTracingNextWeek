@@ -134,6 +134,8 @@ int main()
 
         auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
 
+        auto start = std::chrono::system_clock::now();
+
         glUseProgram(compute_program.handle);
         glDispatchCompute(static_cast<std::uint32_t>(fbo_width) / 16, static_cast<std::uint32_t>(fbo_height) / 16, 1);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -146,6 +148,10 @@ int main()
         glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glfwSwapBuffers(window.handle());
+
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
+
+        glfwSetWindowTitle(window.handle(), std::to_string(duration.count()).c_str());
 
         if (auto result = glGetError(); result != GL_NO_ERROR)
             throw std::runtime_error("OpenGL error: "s + std::to_string(result));
