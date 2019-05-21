@@ -1,10 +1,16 @@
 #include "main.hxx"
+
 #include "gfx/context.hxx"
 #include "platform/window.hxx"
+
 #include "gfx/framebuffer.hxx"
 #include "gfx/render_pass.hxx"
 #include "gfx/shader.hxx"
 #include "gfx/image.hxx"
+
+
+auto constexpr kCAMERA_BINDING = 7;
+auto constexpr kOUT_IMAGE_BINDING = 2;
 
 
 namespace app {
@@ -71,7 +77,7 @@ int main()
 
     auto image = gfx::create_image2D(width, height, GL_RGBA32F);
 
-    glBindImageTexture(2, image.handle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    glBindImageTexture(kOUT_IMAGE_BINDING, image.handle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
     glBindTextureUnit(4, image.handle);
 
     gfx::render_pass render_pass;

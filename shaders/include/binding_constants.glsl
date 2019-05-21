@@ -1,0 +1,9 @@
+#ifndef BINDING_CONSTANTS_H
+#define BINDING_CONSTANTS_H
+
+
+const uint kCAMERA_BINDING = 7;
+
+const uint kOUT_IMAGE_BINDING = 2;
+
+#endif    // BINDING_CONSTANTS_H
