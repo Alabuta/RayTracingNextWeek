@@ -18,19 +18,38 @@ layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
 #include "primitives.glsl"
 #include "raytracer.glsl"
 
+#include "camera.glsl"
 
+//layout(location = kCAMERA_BINDING) uniform camera _camera;
+
+layout(binding = kCAMERA_BINDING, std430) readonly buffer PER_VIEW
+{
+    camera  _camera;
+};
+
+
+const sphere kSphere = sphere(vec3(0, 0, -1), .5f, 0);
+
+
+vec3 color(const in ray _ray)
+{
+    hit _hit = intersect(_ray, kSphere, .0001f, 10.0e9);
+
+    if (_hit.valid)
+        return vec3(1, 0, 0);
+
+    vec3 unit_direction = ray_unit_direction(_ray);
+
+    float t = .5f * (unit_direction.y + 1.f);
+
+    return background_color(t);
+}
 
 void main()
 {
-	vec3 lower_left_corner = vec3(-1, -1, -1);
-	vec3 horizontal = vec3(2, 0, 0);
-	vec3 vertical = vec3(0, 2, 0);
-	vec3 origin = vec3(0);
-
 	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize(image).xy;
 
-	ray _ray = ray(origin, lower_left_corner + horizontal * uv.x + vertical * uv.y);
+    vec3 color = color(generate_ray(_camera, uv));
 
-    // imageStore(image, uv, vec4(uv / vec2(512, 512), .2f, 1.f));
-    imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color(_ray), 1.f));
+    imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
 }

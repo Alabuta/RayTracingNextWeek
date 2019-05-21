@@ -8,6 +8,8 @@
 #include "gfx/shader.hxx"
 #include "gfx/image.hxx"
 
+#include "camera/camera.hxx"
+
 
 auto constexpr kCAMERA_BINDING = 7;
 auto constexpr kOUT_IMAGE_BINDING = 2;
@@ -16,7 +18,7 @@ auto constexpr kOUT_IMAGE_BINDING = 2;
 namespace app {
 struct state final {
 
-    std::array<std::int32_t, 2> window_size{800, 600};
+    std::array<std::int32_t, 2> window_size{0, 0};
 };
 
 class window_event_handler final : public platform::events_handler {
@@ -68,6 +70,10 @@ int main()
 
     auto [width, height] = app_state.window_size;
 
+    auto aspect = static_cast<float>(width) / height;
+
+    auto camera = scene::camera{glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1}, glm::vec3{0, 1, 0}, 90.f, aspect};
+
     platform::window window{"Raytracer"sv, width, height};
 
     auto app_window_event_handler = std::make_shared<app::window_event_handler>(app_state);
@@ -106,29 +112,21 @@ int main()
     }
 
     {
-        std::int32_t max_compute_work_group_invocations = -1;
-        glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &max_compute_work_group_invocations);
+        glUseProgram(compute_program.handle);
+        auto index = glGetProgramResourceIndex(compute_program.handle, GL_SHADER_STORAGE_BLOCK, "CAMERA");
 
-        std::cout << "\nGL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS: "s << max_compute_work_group_invocations;
-        std::cout << "\nGL_MAX_COMPUTE_WORK_GROUP_COUNT: "s;
+        if (index == GL_INVALID_INDEX)
+            throw std::runtime_error("can't init the SSBO - invalid index param"s);
 
-        for (auto index : {0u, 1u, 2u}) {
-            std::int32_t max_compute_work_group_count = -1;
-            glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, index, &max_compute_work_group_count);
+        std::uint32_t camera_ssbo_handle = 0;
 
-            std::cout << max_compute_work_group_count << ' ';
-        }
+        glCreateBuffers(1, &camera_ssbo_handle);
+        glObjectLabel(GL_BUFFER, camera_ssbo_handle, -1, "[BO]");
 
-        std::cout << "\nGL_MAX_COMPUTE_WORK_GROUP_SIZE: "s;
+        glNamedBufferStorage(camera_ssbo_handle, sizeof(scene::camera::gpu_data), &camera.data, GL_SHADER_STORAGE_BUFFER);
 
-        for (auto index : {0u, 1u, 2u}) {
-            std::int32_t max_compute_work_group_size = -1;
-            glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, index, &max_compute_work_group_size);
-
-            std::cout << max_compute_work_group_size << ' ';
-        }
-
-        std::cout << std::endl;
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kCAMERA_BINDING, camera_ssbo_handle);
+        glShaderStorageBlockBinding(compute_program.handle, index, kCAMERA_BINDING);
     }
 
     if (auto result = glGetError(); result != GL_NO_ERROR)

@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\config.hxx" />
+    <ClInclude Include="src\camera\camera.hxx" />
     <ClInclude Include="src\gfx\context.hxx" />
     <ClInclude Include="src\gfx\framebuffer.hxx" />
     <ClInclude Include="src\gfx\image.hxx" />
