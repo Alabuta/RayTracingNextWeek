@@ -5,17 +5,19 @@
 
 namespace scene {
 struct camera final {
-    float vFOV{72.f};
+    float vFOV{90.f};
     float aspect{1.f};
 
     struct gpu_data final {
-        alignas(sizeof(glm::vec4)) glm::vec3 origin;
+        alignas(sizeof(glm::vec4)) glm::vec3 origin{0};
 
-        alignas(sizeof(glm::vec4)) glm::vec3 lower_left_corner;
+        alignas(sizeof(glm::vec4)) glm::vec3 lower_left_corner{0};
 
-        alignas(sizeof(glm::vec4)) glm::vec3 horizontal;
-        alignas(sizeof(glm::vec4)) glm::vec3 vertical;
-    } data;
+        alignas(sizeof(glm::vec4)) glm::vec3 horizontal{0};
+        alignas(sizeof(glm::vec4)) glm::vec3 vertical{0};
+    };
+
+    gpu_data data;
 
     camera() = default;
 

@@ -121,7 +121,7 @@ int main()
         screen_quad_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
     }
 
-    std::uint32_t camera_ssbo_handle = 0;
+    std::uint32_t camera_ssbo_handle{0};
 
     {
         app_state.camera.aspect = static_cast<float>(width) / static_cast<float>(height);
@@ -143,15 +143,15 @@ int main()
         spheres.emplace_back(primitives::sphere{glm::vec3{0, 0, -1}, .5f, 0});
         spheres.emplace_back(primitives::sphere{glm::vec3{0, -100.5f, -1}, 100.f, 3});
         
-        std::uint32_t primitives_ssbo_handle = 0;
+        std::uint32_t ssbo_handle{0};
 
         glUseProgram(compute_program.handle);
 
-        glCreateBuffers(1, &primitives_ssbo_handle);
-        glObjectLabel(GL_BUFFER, primitives_ssbo_handle, -1, "[BO]");
+        glCreateBuffers(1, &ssbo_handle);
+        glObjectLabel(GL_BUFFER, ssbo_handle, -1, "[BO]");
 
-        glNamedBufferStorage(primitives_ssbo_handle, sizeof(primitives::sphere) * std::size(spheres), std::data(spheres), GL_DYNAMIC_STORAGE_BIT);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kPRIMITIVES_BINDING, primitives_ssbo_handle);
+        glNamedBufferStorage(ssbo_handle, sizeof(primitives::sphere) * std::size(spheres), std::data(spheres), GL_DYNAMIC_STORAGE_BIT);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kPRIMITIVES_BINDING, ssbo_handle);
 
         glUseProgram(0);
     }
@@ -210,9 +210,9 @@ int main()
 
         glfwSwapBuffers(window.handle());
 
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start);
 
-        glfwSetWindowTitle(window.handle(), std::to_string(duration.count()).c_str());
+        glfwSetWindowTitle(window.handle(), std::to_string(duration.count() * .001f).c_str());
 
         if (auto result = glGetError(); result != GL_NO_ERROR)
             throw std::runtime_error("OpenGL error: "s + std::to_string(result));
