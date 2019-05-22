@@ -30,21 +30,24 @@ struct camera final {
         auto horizontal = u * width * 2.f;
         auto vertical = v * height * 2.f;
 
+        data.origin = std::move(origin);
+        data.lower_left_corner = std::move(lower_left_corner);
+        data.horizontal = std::move(horizontal);
+        data.vertical = std::move(vertical);
+
+        /*data.origin = glm::vec3(0);
         data.lower_left_corner = glm::vec3(-1);
         data.horizontal = glm::vec3(2, 0, 0);
-        data.vertical = glm::vec3(0, 2, 0);
-        data.origin = glm::vec3(0);
-
-        std::cout << sizeof(gpu_data);
+        data.vertical = glm::vec3(0, 2, 0);*/
     }
 
     struct alignas(sizeof(glm::vec4)) gpu_data final {
-        glm::vec3 origin;
+        alignas(sizeof(glm::vec4)) glm::vec3 origin;
 
-        glm::vec3 lower_left_corner;
+        alignas(sizeof(glm::vec4)) glm::vec3 lower_left_corner;
 
-        glm::vec3 horizontal;
-        glm::vec3 vertical;
+        alignas(sizeof(glm::vec4)) glm::vec3 horizontal;
+        alignas(sizeof(glm::vec4)) glm::vec3 vertical;
     } data;
 };
 }

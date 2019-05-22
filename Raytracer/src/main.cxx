@@ -111,14 +111,14 @@ int main()
         screen_quad_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
     }
 
+    std::uint32_t camera_ssbo_handle = 0;
+
     {
         glUseProgram(compute_program.handle);
         auto index = glGetProgramResourceIndex(compute_program.handle, GL_SHADER_STORAGE_BLOCK, "PER_VIEW");
 
         if (index == GL_INVALID_INDEX)
             throw std::runtime_error("can't init the SSBO - invalid index param"s);
-
-        std::uint32_t camera_ssbo_handle = 0;
 
         glCreateBuffers(1, &camera_ssbo_handle);
         glObjectLabel(GL_BUFFER, camera_ssbo_handle, -1, "[BO]");
@@ -134,11 +134,17 @@ int main()
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-    window.update([&app_state, &render_pass, &compute_program, &screen_quad_program] (auto &&window)
+    window.update([&app_state, &render_pass, &compute_program, &screen_quad_program, &camera, camera_ssbo_handle] (auto &&window)
     {
         glfwPollEvents();
 
+        auto [app_width, app_height] = app_state.window_size;
+
         auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
+
+        auto aspect = static_cast<float>(app_width) / app_height;
+        auto camera = scene::camera{glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1}, glm::vec3{0, 1, 0}, 90.f, aspect};
+        glNamedBufferSubData(camera_ssbo_handle, 0, sizeof(scene::camera::gpu_data), &camera.data);
 
         auto start = std::chrono::system_clock::now();
 
@@ -148,8 +154,6 @@ int main()
 
         glUseProgram(screen_quad_program.handle);
         render_scene(render_pass);
-
-        auto [app_width, app_height] = app_state.window_size;
 
         glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
