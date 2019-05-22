@@ -5,9 +5,14 @@
 
 layout(local_size_x = 16, local_size_y = 16) in;
 
-#include "binding_constants.glsl"
+#include "constants.glsl"
 
 layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
+
+layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
+{
+    vec3 unit_vectors[];
+};
 
 #include "common.glsl"
 #include "math.glsl"

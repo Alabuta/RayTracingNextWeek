@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 #define GLM_FORCE_CXX17
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
@@ -11,3 +13,19 @@
 #include <glm/gtx/polar_coordinates.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/hash.hpp>
+
+
+namespace math {
+glm::vec3 random_in_unit_sphere(std::mt19937 &generator)
+{
+    static auto random_distribution = std::uniform_real_distribution{-1.f, +1.f};
+
+    glm::vec3 vector;
+
+    do {
+        vector = glm::vec3{random_distribution(generator), random_distribution(generator), random_distribution(generator)};
+    } while (glm::length(vector) > 1.f);
+
+    return vector;
+}
+}

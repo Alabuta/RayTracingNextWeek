@@ -156,6 +156,30 @@ int main()
         glUseProgram(0);
     }
 
+    {
+        std::random_device random_device;
+        std::mt19937 generator{random_device()};
+
+        std::vector<glm::vec3> buffer(kUNIT_VECTORS_BUFFER_SIZE);
+
+        std::generate(std::execution::par_unseq, std::begin(buffer), std::end(buffer), [&generator]
+        {
+            return glm::normalize(math::random_in_unit_sphere(generator));
+        });
+
+        std::uint32_t ssbo_handle{0};
+
+        glUseProgram(compute_program.handle);
+
+        glCreateBuffers(1, &ssbo_handle);
+        glObjectLabel(GL_BUFFER, ssbo_handle, -1, "[BO]");
+
+        glNamedBufferStorage(ssbo_handle, sizeof(glm::vec3) * std::size(buffer), std::data(buffer), 0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kUNIT_VECTORS_BUFFER_BINDING, ssbo_handle);
+
+        glUseProgram(0);
+    }
+
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     if (auto result = glGetError(); result != GL_NO_ERROR)
