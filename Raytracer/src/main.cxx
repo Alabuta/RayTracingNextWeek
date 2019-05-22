@@ -10,15 +10,19 @@
 
 #include "camera/camera.hxx"
 
+#include "raytracer/primitives.hxx"
+
 
 auto constexpr kCAMERA_BINDING = 7;
+auto constexpr kPRIMITIVES_BINDING = 6;
 auto constexpr kOUT_IMAGE_BINDING = 2;
 
 
 namespace app {
 struct state final {
-
     std::array<std::int32_t, 2> window_size{0, 0};
+
+    scene::camera camera;
 };
 
 class window_event_handler final : public platform::events_handler {
@@ -29,6 +33,8 @@ public:
     void on_resize(std::int32_t width, std::int32_t height) override
     {
         app_state.window_size = std::array{width, height};
+
+        app_state.camera.aspect = static_cast<float>(width) / static_cast<float>(height);
     }
 
 private:
@@ -66,13 +72,12 @@ int main()
     if (auto result = glfwInit(); result != GLFW_TRUE)
         throw std::runtime_error("failed to init GLFW"s);
 
-    app::state app_state{512, 512};
+    app::state app_state{800, 600, scene::camera{}};
 
     auto [width, height] = app_state.window_size;
 
-    auto aspect = static_cast<float>(width) / height;
-
-    auto camera = scene::camera{glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1}, glm::vec3{0, 1, 0}, 90.f, aspect};
+    auto const grid_size_x = static_cast<std::uint32_t>(width) / 16;
+    auto const grid_size_y = static_cast<std::uint32_t>(height) / 16;
 
     platform::window window{"Raytracer"sv, width, height};
 
@@ -114,42 +119,59 @@ int main()
     std::uint32_t camera_ssbo_handle = 0;
 
     {
-        glUseProgram(compute_program.handle);
-        auto index = glGetProgramResourceIndex(compute_program.handle, GL_SHADER_STORAGE_BLOCK, "PER_VIEW");
+        app_state.camera.aspect = static_cast<float>(width) / static_cast<float>(height);
 
-        if (index == GL_INVALID_INDEX)
-            throw std::runtime_error("can't init the SSBO - invalid index param"s);
+        glUseProgram(compute_program.handle);
 
         glCreateBuffers(1, &camera_ssbo_handle);
         glObjectLabel(GL_BUFFER, camera_ssbo_handle, -1, "[BO]");
 
-        glNamedBufferStorage(camera_ssbo_handle, sizeof(scene::camera::gpu_data), &camera.data, GL_DYNAMIC_STORAGE_BIT);
-
+        glNamedBufferStorage(camera_ssbo_handle, sizeof(scene::camera::gpu_data), nullptr, GL_DYNAMIC_STORAGE_BIT);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kCAMERA_BINDING, camera_ssbo_handle);
-        //glShaderStorageBlockBinding(compute_program.handle, index, kCAMERA_BINDING);
 
-        glMemoryBarrier(GL_ALL_BARRIER_BITS);
+        glUseProgram(0);
     }
+
+    {
+        std::vector<primitives::sphere> spheres;
+
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, 0, -1}, .5f, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, -100.5f, -1}, 100.f, 3});
+        
+        std::uint32_t primitives_ssbo_handle = 0;
+
+        glUseProgram(compute_program.handle);
+
+        glCreateBuffers(1, &primitives_ssbo_handle);
+        glObjectLabel(GL_BUFFER, primitives_ssbo_handle, -1, "[BO]");
+
+        glNamedBufferStorage(primitives_ssbo_handle, sizeof(primitives::sphere) * std::size(spheres), std::data(spheres), GL_DYNAMIC_STORAGE_BIT);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kPRIMITIVES_BINDING, primitives_ssbo_handle);
+
+        glUseProgram(0);
+    }
+
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-    window.update([&app_state, &render_pass, &compute_program, &screen_quad_program, &camera, camera_ssbo_handle] (auto &&window)
+    window.update([&] (auto &&window)
     {
         glfwPollEvents();
 
-        auto [app_width, app_height] = app_state.window_size;
-
-        auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
-
-        auto aspect = static_cast<float>(app_width) / app_height;
-        auto camera = scene::camera{glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1}, glm::vec3{0, 1, 0}, 90.f, aspect};
-        glNamedBufferSubData(camera_ssbo_handle, 0, sizeof(scene::camera::gpu_data), &camera.data);
-
         auto start = std::chrono::system_clock::now();
 
+        app_state.camera.look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1}, glm::vec3{0, 1, 0});
+        app_state.camera.update();
+
+        auto [app_width, app_height] = app_state.window_size;
+        auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
+
+        glNamedBufferSubData(camera_ssbo_handle, 0, sizeof(scene::camera::gpu_data), &app_state.camera.data);
+
         glUseProgram(compute_program.handle);
-        glDispatchCompute(static_cast<std::uint32_t>(fbo_width) / 16, static_cast<std::uint32_t>(fbo_height) / 16, 1);
+        glDispatchCompute(grid_size_x, grid_size_y, 1);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
         glUseProgram(screen_quad_program.handle);

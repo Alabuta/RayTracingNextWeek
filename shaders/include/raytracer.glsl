@@ -45,7 +45,28 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
         }
     }
 
-    return hit(oc, oc, 0.f, 0, false);
+    return hit(oc, oc, 0.f, 0u, false);
+}
+
+hit hit_world(const in uint spheres_number, const in ray _ray)
+{
+    const float kMAX = 10.0e9;
+    const float kMIN = .008f;
+
+    float min_time = kMAX;
+
+    hit closest_hit = hit(_ray.origin, _ray.origin, 0.f, 0u, false);
+
+    for (uint sphere_index = 0u; sphere_index < spheres_number; ++sphere_index) {
+        hit any_hit = intersect(_ray, spheres[sphere_index], kMIN, min_time);
+
+        if (any_hit.valid) {
+            min_time = any_hit.time;
+            closest_hit = any_hit;
+        }
+    }
+
+    return closest_hit;
 }
 
 #endif    // RAYTRACER_H

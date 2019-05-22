@@ -38,6 +38,10 @@ set(SOURCE_FILES
 
     src/loaders/spirv_loader.hxx
 
+    src/camera/camera.hxx
+
+    src/raytracer/primitives.hxx
+
     src/platform/platform.hxx
     src/platform/window.hxx		    src/platform/window.cxx
 

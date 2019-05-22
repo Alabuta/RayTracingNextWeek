@@ -3,6 +3,7 @@
 
 
 const uint kCAMERA_BINDING = 7;
+const uint kPRIMITIVES_BINDING = 6;
 
 const uint kOUT_IMAGE_BINDING = 2;
 

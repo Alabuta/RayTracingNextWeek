@@ -9,47 +9,67 @@ layout(local_size_x = 16, local_size_y = 16) in;
 
 layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
 
-// layout(std430, binding = 0) readonly buffer world {
-// 	sphere spheres[];
-// };
-
 #include "common.glsl"
 #include "math.glsl"
+
 #include "primitives.glsl"
-#include "raytracer.glsl"
-
-#include "camera.glsl"
-
-//layout(location = kCAMERA_BINDING) uniform camera _camera;
-
-layout(binding = kCAMERA_BINDING, std430) readonly buffer PER_VIEW
-{
-    camera  _camera;
+layout(binding = kPRIMITIVES_BINDING, std430) readonly buffer world {
+	sphere spheres[];
 };
 
-
-const sphere kSphere = sphere(vec3(0, 0, -1), .5f, 0);
-
-
-vec3 color(const in ray _ray)
+#include "camera.glsl"
+//layout(location = kCAMERA_BINDING) uniform camera _camera;
+layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 {
-    hit _hit = intersect(_ray, kSphere, .0001f, 10.0e9);
+    camera _camera;
+};
 
-    if (_hit.valid)
-        return vec3(1, 0, 0);
+#include "raytracer.glsl"
 
-    vec3 unit_direction = ray_unit_direction(_ray);
 
-    float t = .5f * (unit_direction.y + 1.f);
+const uint kSPHERES_NUMBER = 2u;
 
-    return background_color(t);
+
+vec3 color(uint pixel_index, const in ray _ray)
+{
+	uint local_random_state = pixel_index;
+
+	vec3 attenuation = vec3(1);
+
+	ray scattered_ray = _ray;
+	
+    for (uint bounce = 0u; bounce < 10; ++bounce) {
+		hit any_hit = hit_world(kSPHERES_NUMBER, _ray);
+
+    	if (any_hit.valid) {
+			// return any_hit.normal * .5f + .5f;
+
+			/* vec3 random_direction = vec3(0);//random_in_unit_sphere(local_random_state);
+            vec3 target = any_hit.normal + random_direction;
+
+            scattered_ray = ray(any_hit.position, target);
+
+            attenuation *= .5f;
+ */
+			return random_in_unit_sphere(local_random_state);
+		}
+
+		else return background_color(ray_unit_direction(scattered_ray).y * .5f + .5f) * attenuation;
+	}
+
+	return vec3(0);
+
+    
 }
 
 void main()
 {
-	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize(image).xy;
+	ivec2 imageSize = imageSize(image).xy;
+	
+	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize;
+	uint pixel_index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * uint(imageSize.x);
 
-    vec3 color = color(generate_ray(_camera, uv));
+    vec3 color = color(pixel_index, generate_ray(_camera, uv));
 
     imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
 }
