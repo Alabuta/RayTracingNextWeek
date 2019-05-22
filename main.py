@@ -10,8 +10,6 @@ shaders_include_path =  shaders_path + '/include'
 shader_extensions = ('.vert.glsl', '.tesc.glsl', '.tese.glsl', '.geom.glsl', '.frag.glsl', '.comp.glsl')
 
 for root, dirs, files in os.walk(shaders_path):
-    print(dirs)
-
     if 'include' in dirs:
         dirs.remove('include')
 

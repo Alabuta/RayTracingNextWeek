@@ -27,6 +27,7 @@
     <ClInclude Include="src\math.hxx" />
     <ClInclude Include="src\platform\platform.hxx" />
     <ClInclude Include="src\platform\window.hxx" />
+    <ClInclude Include="src\raytracer\primitives.hxx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.hxx.in" />

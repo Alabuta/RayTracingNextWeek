@@ -13,9 +13,12 @@
 #include "raytracer/primitives.hxx"
 
 
-auto constexpr kCAMERA_BINDING = 7;
-auto constexpr kPRIMITIVES_BINDING = 6;
-auto constexpr kOUT_IMAGE_BINDING = 2;
+auto constexpr kOUT_IMAGE_BINDING = 2u;
+auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
+auto constexpr kPRIMITIVES_BINDING = 6u;
+auto constexpr kCAMERA_BINDING = 7u;
+
+auto constexpr kUNIT_VECTORS_BUFFER_SIZE = 1'000;
 
 
 namespace app {
@@ -72,12 +75,14 @@ int main()
     if (auto result = glfwInit(); result != GLFW_TRUE)
         throw std::runtime_error("failed to init GLFW"s);
 
-    app::state app_state{800, 600, scene::camera{}};
+    app::state app_state{512, 512, scene::camera{}};
 
     auto [width, height] = app_state.window_size;
 
     auto const grid_size_x = static_cast<std::uint32_t>(width) / 16;
     auto const grid_size_y = static_cast<std::uint32_t>(height) / 16;
+
+    std::cout << grid_size_x << 'x' << grid_size_y << '\n';
 
     platform::window window{"Raytracer"sv, width, height};
 

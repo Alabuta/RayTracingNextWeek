@@ -1,18 +1,21 @@
 #pragma once
 
+#include <string>
+using namespace std::string_literals;
+
 //#define GL_GLEXT_PROTOTYPES 0
 
 #include <GL/glew.h>
 #include <GL/glcorearb.h>
 
-#ifdef _MSC_VER
-    //#define WGL_WGLEXT_PROTOTYPES 0
-    //#include <GL/wglext.h>
-
-#elif defined(__GNUG__)
-    #include <GL/glx.h>
-    #include <GL/glxext.h>
-#endif
+//#ifdef _MSC_VER
+//    #define WGL_WGLEXT_PROTOTYPES 0
+//    #include <GL/wglext.h>
+//
+//#elif defined(__GNUG__)
+//    #include <GL/glx.h>
+//    #include <GL/glxext.h>
+//#endif
 
 #ifdef _MSC_VER
     #pragma comment(lib, "OpenGL32.lib")
@@ -30,7 +33,7 @@ struct context final {
     context(platform::window const &window) : handle{window.handle()}
     {
         glfwMakeContextCurrent(handle);
-        glfwSwapInterval(-1);
+        glfwSwapInterval(0);
 
         glewExperimental = true;
 

@@ -14,9 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{DD34
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inlcude", "inlcude", "{46E6D5F2-8DFD-4758-8CC5-3B7F2D6667E4}"
 	ProjectSection(SolutionItems) = preProject
-		shaders\include\binding_constants.glsl = shaders\include\binding_constants.glsl
 		shaders\include\camera.glsl = shaders\include\camera.glsl
 		shaders\include\common.glsl = shaders\include\common.glsl
+		shaders\include\constants.glsl = shaders\include\constants.glsl
 		shaders\include\math.glsl = shaders\include\math.glsl
 		shaders\include\primitives.glsl = shaders\include\primitives.glsl
 		shaders\include\raytracer.glsl = shaders\include\raytracer.glsl
