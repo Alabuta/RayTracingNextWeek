@@ -32,47 +32,40 @@ layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 #include "raytracer.glsl"
 
 
-const uint kSPHERES_NUMBER = 2u;
-
-
 vec3 color(uint pixel_index, const in ray _ray)
 {
 	uint local_random_state = pixel_index;
 
-	vec3 attenuation = vec3(1);
+    float attenuation = 1.f;
+	float energy_absorbtion = .5f;
 
-	ray scattered_ray = _ray;
-	
-    for (uint bounce = 0u; bounce < 10; ++bounce) {
-		hit any_hit = hit_world(kSPHERES_NUMBER, _ray);
+	ray scattered_ray = ray(_ray.origin, _ray.direction);
+    // ray scattered_ray = _ray;
+
+    for (uint bounce = 0u; bounce < 32u; ++bounce) {
+		hit any_hit = hit_world(kSPHERES_NUMBER, scattered_ray);
 
     	if (any_hit.valid) {
-			// return any_hit.normal * .5f + .5f;
+            vec3 random_direction = random_in_unit_sphere2(local_random_state);
+            vec3 direction = any_hit.normal + random_direction;
 
-			/* vec3 random_direction = vec3(0);//random_in_unit_sphere(local_random_state);
-            vec3 target = any_hit.normal + random_direction;
+            scattered_ray = ray(any_hit.position, direction);
 
-            scattered_ray = ray(any_hit.position, target);
-
-            attenuation *= .5f;
- */
-			return random_in_unit_sphere(local_random_state);
+            attenuation *= energy_absorbtion;
 		}
 
 		else return background_color(ray_unit_direction(scattered_ray).y * .5f + .5f) * attenuation;
 	}
 
 	return vec3(0);
-
-    
 }
 
 void main()
 {
-	ivec2 imageSize = imageSize(image).xy;
+	uvec2 imageSize = uvec2(imageSize(image));
 	
 	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize;
-	uint pixel_index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * uint(imageSize.x);
+	uint pixel_index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * imageSize.x;
 
     vec3 color = color(pixel_index, generate_ray(_camera, uv));
 
