@@ -30,6 +30,8 @@ include_directories(SYSTEM include)
 include_directories(src)
 
 set(SOURCE_FILES
+    src/math/math.hxx					            src/math/math.cxx
+
     src/gfx/context.hxx
     src/gfx/framebuffer.hxx
     src/gfx/image.hxx

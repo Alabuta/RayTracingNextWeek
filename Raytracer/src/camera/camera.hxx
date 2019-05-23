@@ -1,7 +1,8 @@
 #pragma once
 
-#include "math.hxx"
+#include <memory>
 
+#include "math/math.hxx"
 
 namespace scene {
 struct camera final {

@@ -18,7 +18,7 @@ using namespace std::string_view_literals;
 
 #include "config.hxx"
 
-#include "math.hxx"
+#include "math/math.hxx"
 
 
 

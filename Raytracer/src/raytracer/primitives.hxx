@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "math.hxx"
+#include "math/math.hxx"
 
 
 namespace primitives {
