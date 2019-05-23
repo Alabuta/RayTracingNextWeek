@@ -7,12 +7,12 @@
 
 namespace scene {
 struct camera final {
-    float vFOV{90.f};
+    float fov{90.f};
     float aspect{1.f};
 
     glm::vec3 up{0, 1, 0};
 
-    glm::vec3 u, v, w;
+    glm::vec3 u{1, 0, 0}, v{0, 1, 0}, w{0, 0, 1};
 
     struct gpu_data final {
         alignas(sizeof(glm::vec4)) glm::vec3 origin{0};
@@ -27,24 +27,15 @@ struct camera final {
 
     camera() = default;
 
-    camera(float vFOV, float aspect) noexcept : vFOV{vFOV}, aspect{aspect} { }
-
-    void look_at(glm::vec3 const &origin, glm::vec3 const &target)
-    {
-        w = glm::normalize(origin - target);
-        u = glm::normalize(glm::cross(up, w));
-        v = glm::normalize(glm::cross(w, u));
-
-        data.origin = std::move(origin);
-    }
+    camera(float fov, float aspect) noexcept : fov{fov}, aspect{aspect} { }
 };
 
 class camera_system final {
 public:
 
-    std::shared_ptr<scene::camera> create_camera(float vFOV, float aspect)
+    std::shared_ptr<scene::camera> create_camera(float fov, float aspect)
     {
-        auto camera = std::make_shared<scene::camera>(vFOV, aspect);
+        auto camera = std::make_shared<scene::camera>(fov, aspect);
 
         cameras_.push_back(std::move(camera));
 

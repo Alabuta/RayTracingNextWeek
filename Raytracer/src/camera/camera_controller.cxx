@@ -37,6 +37,12 @@ void OrbitController::look_at(glm::vec3 &&eye, glm::vec3 &&target)
     target_ = target;
     offset_ = eye;
 
+    camera_->w = glm::normalize(eye - target);
+    camera_->u = glm::normalize(glm::cross(camera_->up, camera_->w));
+    camera_->v = glm::normalize(glm::cross(camera_->w, camera_->u));
+
+    camera_->data.origin = std::move(eye);
+
     /* auto &&world = camera_->world;
 
     world = glm::inverse(glm::lookAt(offset_, target_, {0, 1, 0})); */
@@ -81,7 +87,7 @@ void OrbitController::update()
     offset_ = position - target_;
 
     auto radius = glm::length(offset_);
-    auto distance = radius * 2.f * std::tan(camera_->vFOV * .5f);
+    auto distance = radius * 2.f * std::tan(camera_->fov * .5f);
 
     radius = std::clamp(radius * scale_, minZ, maxZ);
 

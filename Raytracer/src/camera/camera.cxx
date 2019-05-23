@@ -12,7 +12,7 @@ void camera_system::update()
     {
         auto camera = *camera_ptr;
         
-        auto theta = glm::radians(camera.vFOV) / 2.f;
+        auto theta = glm::radians(camera.fov) / 2.f;
 
         auto height = std::tan(theta);
         auto width = height * camera.aspect;
