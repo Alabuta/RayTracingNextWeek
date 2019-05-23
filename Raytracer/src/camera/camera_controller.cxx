@@ -43,25 +43,25 @@ void OrbitController::look_at(glm::vec3 &&eye, glm::vec3 &&target)
 
     camera_->data.origin = std::move(eye);
 
-    /* auto &&world = camera_->world;
+    auto &&world = camera_->world;
 
-    world = glm::inverse(glm::lookAt(offset_, target_, {0, 1, 0})); */
+    world = glm::inverse(glm::lookAt(offset_, target_, camera_->up));
 }
 
 void OrbitController::rotate(float longitude, float latitude)
 {
     auto speed = (1.f - damping_) * .008f;
 
-    polarDelta_.x += latitude * speed;
-    polarDelta_.y -= longitude * speed;
+    polar_delta_.x += latitude * speed;
+    polar_delta_.y -= longitude * speed;
 }
 
 void OrbitController::pan(float x, float y)
 {
     auto speed = (1.f - damping_) * .001f;
 
-    panDelta_.x -= x * speed;
-    panDelta_.y += y * speed;
+    pan_delta_.x -= x * speed;
+    pan_delta_.y += y * speed;
 }
 
 void OrbitController::dolly(float delta)
@@ -75,7 +75,6 @@ void OrbitController::dolly(float delta)
 
 void OrbitController::update()
 {
-#if 0
     auto &&world = camera_->world;
 
     auto xAxis = glm::vec3{world[0]};
@@ -91,13 +90,13 @@ void OrbitController::update()
 
     radius = std::clamp(radius * scale_, minZ, maxZ);
 
-    xAxis *= panDelta_.x * distance;
-    yAxis *= panDelta_.y * distance;
+    xAxis *= pan_delta_.x * distance;
+    yAxis *= pan_delta_.y * distance;
 
-    panOffset_ = xAxis + yAxis;
+    pan_offset_ = xAxis + yAxis;
 
     polar_ = glm::polar(offset_);
-    polar_ = glm::clamp(polar_ + polarDelta_, min_polar, max_polar);
+    polar_ = glm::clamp(polar_ + polar_delta_, min_polar, max_polar);
 
     offset_ = glm::euclidean(polar_) * radius;
 
@@ -106,12 +105,11 @@ void OrbitController::update()
     zAxis = orientation_ * (direction_lerped_ * glm::vec3{1, 0, -1});
     panOffset_ += zAxis * std::max(.1f, std::log(std::abs(distance) + 1.f));*/
 
-    target_ += panOffset_;
+    target_ += pan_offset_;
 
     position = target_ + offset_;
 
     world = glm::inverse(glm::lookAt(position, target_, up_));
-#endif
 
 #if 0
     auto orientation = from_two_vec3(camera_->up, glm::vec3{0, 1, 0});
@@ -122,9 +120,9 @@ void OrbitController::update()
 
 void OrbitController::apply_damping()
 {
-    polarDelta_ *= damping_;
+    polar_delta_ *= damping_;
 
-    panDelta_ *= damping_;
+    pan_delta_ *= damping_;
 
     scale_ += (1 - scale_) * (1 - damping_);
 

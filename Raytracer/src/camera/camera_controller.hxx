@@ -7,8 +7,6 @@
 #include "camera/camera.hxx"
 
 
-class MouseHandler;
-
 class OrbitController final {
 public:
 
@@ -28,8 +26,8 @@ private:
     std::shared_ptr<class mouse_handler> mouse_handler_;
 
     glm::vec3 offset_{4};
-    glm::vec2 polar_{0}, polarDelta_{0};
-    glm::vec3 panOffset_{0}, panDelta_{0};
+    glm::vec2 polar_{0}, polar_delta_{0};
+    glm::vec3 pan_offset_{0}, pan_delta_{0};
     glm::vec3 direction_{0}, direction_lerped_{0};
 
     glm::vec3 target_{0};
