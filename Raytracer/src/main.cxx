@@ -9,6 +9,7 @@
 #include "gfx/render_pass.hxx"
 #include "gfx/shader.hxx"
 #include "gfx/image.hxx"
+#include "gfx/buffer.hxx"
 
 #include "camera/camera.hxx"
 #include "camera/camera_controller.hxx"
@@ -33,7 +34,7 @@ struct state final {
 
     std::unique_ptr<OrbitController> camera_controller;
 
-    std::uint32_t camera_ssbo_handle{0};
+    gfx::buffer<scene::camera::gpu_data> camera_buffer;
 };
 
 class window_event_handler final : public platform::event_handler {
@@ -59,7 +60,7 @@ void update(app::state &app_state)
     app_state.camera_controller->update();
     app_state.camera_system.update();
 
-    glNamedBufferSubData(app_state.camera_ssbo_handle, 0, sizeof(scene::camera::gpu_data), &app_state.camera->data);
+    gfx::update_buffer(app_state.camera_buffer, &app_state.camera->data);
 }
 
 
@@ -144,17 +145,13 @@ int main()
         app_state.camera->aspect = static_cast<float>(width) / static_cast<float>(height);
 
         app_state.camera_controller = std::make_unique<OrbitController>(app_state.camera, *input_manager);
-        app_state.camera_controller->look_at(glm::vec3{0, 2, 1}, {0, 0, 0});
+        app_state.camera_controller->look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1});
 
         glUseProgram(compute_program.handle);
 
-        glCreateBuffers(1, &app_state.camera_ssbo_handle);
-        glObjectLabel(GL_BUFFER, app_state.camera_ssbo_handle, -1, "[BO]");
+        app_state.camera_buffer = gfx::create_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
 
-        auto size_in_bytes = static_cast<std::int64_t>(sizeof(scene::camera::gpu_data));
-
-        glNamedBufferStorage(app_state.camera_ssbo_handle, size_in_bytes, nullptr, GL_DYNAMIC_STORAGE_BIT);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kCAMERA_BINDING, app_state.camera_ssbo_handle);
+        gfx::update_buffer(app_state.camera_buffer, &app_state.camera->data);
 
         glUseProgram(0);
     }
@@ -164,18 +161,12 @@ int main()
 
         spheres.emplace_back(primitives::sphere{glm::vec3{0, 0, -1}, .5f, 0});
         spheres.emplace_back(primitives::sphere{glm::vec3{0, -100.5f, -1}, 100.f, 3});
-        
-        std::uint32_t ssbo_handle{0};
 
         glUseProgram(compute_program.handle);
 
-        glCreateBuffers(1, &ssbo_handle);
-        glObjectLabel(GL_BUFFER, ssbo_handle, -1, "[BO]");
+        auto buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, static_cast<std::uint32_t>(std::size(spheres)));
 
-        auto size_in_bytes = static_cast<std::int64_t>(sizeof(primitives::sphere) * std::size(spheres));
-
-        glNamedBufferStorage(ssbo_handle, size_in_bytes, std::data(spheres), GL_DYNAMIC_STORAGE_BIT);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kPRIMITIVES_BINDING, ssbo_handle);
+        gfx::update_buffer(buffer, std::data(spheres));
 
         glUseProgram(0);
     }
@@ -184,31 +175,25 @@ int main()
         std::random_device random_device;
         std::mt19937 generator{random_device()};
 
-        std::vector<glm::vec3> buffer(kUNIT_VECTORS_BUFFER_SIZE);
+        std::vector<glm::vec3> unit_vectors(kUNIT_VECTORS_BUFFER_SIZE);
 
     #ifdef _MSC_VER
-        std::generate(std::execution::par_unseq, std::begin(buffer), std::end(buffer), [&generator]
+        std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
         {
             return glm::normalize(math::random_in_unit_sphere(generator));
         });
     #else
-        std::generate(std::begin(buffer), std::end(buffer), [&generator]
+        std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
         {
             return glm::normalize(math::random_in_unit_sphere(generator));
         });
     #endif
 
-        std::uint32_t ssbo_handle{0};
-
         glUseProgram(compute_program.handle);
 
-        glCreateBuffers(1, &ssbo_handle);
-        glObjectLabel(GL_BUFFER, ssbo_handle, -1, "[BO]");
+        auto buffer = gfx::create_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_BUFFER_SIZE);
 
-        auto size_in_bytes = static_cast<std::int64_t>(sizeof(glm::vec3) * std::size(buffer));
-
-        glNamedBufferStorage(ssbo_handle, size_in_bytes, std::data(buffer), 0);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kUNIT_VECTORS_BUFFER_BINDING, ssbo_handle);
+        gfx::update_buffer(buffer, std::data(unit_vectors));
 
         glUseProgram(0);
     }
