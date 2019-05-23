@@ -57,6 +57,8 @@ private:
 
 void update(app::state &app_state)
 {
+    glfwPollEvents();
+
     app_state.camera_controller->update();
     app_state.camera_system.update();
 
@@ -92,7 +94,8 @@ int main()
     if (auto result = glfwInit(); result != GLFW_TRUE)
         throw std::runtime_error("failed to init GLFW"s);
 
-    app::state app_state{512, 512};
+    app::state app_state;
+    app_state.window_size = std::array{512, 512};
 
     auto [width, height] = app_state.window_size;
 
@@ -142,7 +145,8 @@ int main()
     }
 
     {
-        app_state.camera->aspect = static_cast<float>(width) / static_cast<float>(height);
+        auto aspect = static_cast<float>(width) / static_cast<float>(height);
+        app_state.camera = std::make_shared<scene::camera>(90.f, aspect);
 
         app_state.camera_controller = std::make_unique<OrbitController>(app_state.camera, *input_manager);
         app_state.camera_controller->look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1});
@@ -205,17 +209,9 @@ int main()
 
     window.update([&] (auto &&window)
     {
-        glfwPollEvents();
+        update(app_state);
 
         auto start = std::chrono::system_clock::now();
-
-        // app_state.camera.look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1});
-        // app_state.camera.update();
-
-        // glNamedBufferSubData(camera_ssbo_handle, 0, sizeof(scene::camera::gpu_data), &app_state.camera.data);
-
-        auto [app_width, app_height] = app_state.window_size;
-        auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
 
         glUseProgram(compute_program.handle);
         glDispatchCompute(grid_size_x, grid_size_y, 1);
@@ -223,6 +219,9 @@ int main()
 
         glUseProgram(screen_quad_program.handle);
         render_scene(render_pass);
+
+        auto [app_width, app_height] = app_state.window_size;
+        auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
 
         glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
