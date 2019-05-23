@@ -131,7 +131,9 @@ int main()
         glCreateBuffers(1, &camera_ssbo_handle);
         glObjectLabel(GL_BUFFER, camera_ssbo_handle, -1, "[BO]");
 
-        glNamedBufferStorage(camera_ssbo_handle, sizeof(scene::camera::gpu_data), nullptr, GL_DYNAMIC_STORAGE_BIT);
+        auto size_in_bytes = static_cast<std::int64_t>(sizeof(scene::camera::gpu_data));
+
+        glNamedBufferStorage(camera_ssbo_handle, size_in_bytes, nullptr, GL_DYNAMIC_STORAGE_BIT);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kCAMERA_BINDING, camera_ssbo_handle);
 
         glUseProgram(0);
@@ -150,7 +152,9 @@ int main()
         glCreateBuffers(1, &ssbo_handle);
         glObjectLabel(GL_BUFFER, ssbo_handle, -1, "[BO]");
 
-        glNamedBufferStorage(ssbo_handle, sizeof(primitives::sphere) * std::size(spheres), std::data(spheres), GL_DYNAMIC_STORAGE_BIT);
+        auto size_in_bytes = static_cast<std::int64_t>(sizeof(primitives::sphere) * std::size(spheres));
+
+        glNamedBufferStorage(ssbo_handle, size_in_bytes, std::data(spheres), GL_DYNAMIC_STORAGE_BIT);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kPRIMITIVES_BINDING, ssbo_handle);
 
         glUseProgram(0);
@@ -162,10 +166,17 @@ int main()
 
         std::vector<glm::vec3> buffer(kUNIT_VECTORS_BUFFER_SIZE);
 
+    #ifdef _MSC_VER
         std::generate(std::execution::par_unseq, std::begin(buffer), std::end(buffer), [&generator]
         {
             return glm::normalize(math::random_in_unit_sphere(generator));
         });
+    #else
+        std::generate(std::begin(buffer), std::end(buffer), [&generator]
+        {
+            return glm::normalize(math::random_in_unit_sphere(generator));
+        });
+    #endif
 
         std::uint32_t ssbo_handle{0};
 
@@ -174,7 +185,9 @@ int main()
         glCreateBuffers(1, &ssbo_handle);
         glObjectLabel(GL_BUFFER, ssbo_handle, -1, "[BO]");
 
-        glNamedBufferStorage(ssbo_handle, sizeof(glm::vec3) * std::size(buffer), std::data(buffer), 0);
+        auto size_in_bytes = static_cast<std::int64_t>(sizeof(glm::vec3) * std::size(buffer));
+
+        glNamedBufferStorage(ssbo_handle, size_in_bytes, std::data(buffer), 0);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kUNIT_VECTORS_BUFFER_BINDING, ssbo_handle);
 
         glUseProgram(0);
@@ -212,7 +225,7 @@ int main()
 
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start);
 
-        glfwSetWindowTitle(window.handle(), std::to_string(duration.count() * .001f).c_str());
+        glfwSetWindowTitle(window.handle(), std::to_string(static_cast<float>(duration.count()) * .001f).c_str());
 
         if (auto result = glGetError(); result != GL_NO_ERROR)
             throw std::runtime_error("OpenGL error: "s + std::to_string(result));

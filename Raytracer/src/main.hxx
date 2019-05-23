@@ -5,7 +5,10 @@
 #include <array>
 #include <vector>
 #include <chrono>
-#include <execution>
+
+#ifdef _MSC_VER
+    #include <execution>
+#endif
 
 #include <string>
 using namespace std::string_literals;
