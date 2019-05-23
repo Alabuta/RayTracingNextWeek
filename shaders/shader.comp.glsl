@@ -26,7 +26,12 @@ layout(binding = kPRIMITIVES_BINDING, std430) readonly buffer world {
 //layout(location = kCAMERA_BINDING) uniform camera _camera;
 layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 {
-    camera _camera;
+    vec3 origin;
+
+    vec3 lower_left_corner;
+
+    vec3 horizontal;
+    vec3 vertical;
 };
 
 #include "raytracer.glsl"
@@ -34,7 +39,7 @@ layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 
 vec3 color(uint pixel_index, const in ray _ray)
 {
-	uint local_random_state = pixel_index;
+    uint local_random_state = pixel_index;
 
     float attenuation = 1.f;
 	float energy_absorbtion = .5f;
@@ -62,7 +67,9 @@ vec3 color(uint pixel_index, const in ray _ray)
 
 void main()
 {
-	uvec2 imageSize = uvec2(imageSize(image));
+    camera _camera = camera(origin, lower_left_corner, horizontal, vertical);
+
+    uvec2 imageSize = uvec2(imageSize(image));
 	
 	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize;
 	uint pixel_index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * imageSize.x;

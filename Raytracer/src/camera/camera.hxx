@@ -15,13 +15,15 @@ struct camera final {
     glm::vec3 u{1, 0, 0}, v{0, 1, 0}, w{0, 0, 1};
 
     struct gpu_data final {
-        alignas(sizeof(glm::vec4)) glm::vec3 origin{0};
+        glm::vec3 origin{0}; float _x;
 
-        alignas(sizeof(glm::vec4)) glm::vec3 lower_left_corner{0};
+        glm::vec3 lower_left_corner{-1}; float _y;
 
-        alignas(sizeof(glm::vec4)) glm::vec3 horizontal{0};
-        alignas(sizeof(glm::vec4)) glm::vec3 vertical{0};
+        glm::vec3 horizontal{2, 0, 0}; float _z;
+        glm::vec3 vertical{0, 2, 0}; float _w;
     };
+
+    glm::mat4 world{1.f};
 
     gpu_data data;
 

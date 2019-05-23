@@ -146,7 +146,7 @@ int main()
 
     {
         auto aspect = static_cast<float>(width) / static_cast<float>(height);
-        app_state.camera = std::make_shared<scene::camera>(90.f, aspect);
+        app_state.camera = app_state.camera_system.create_camera(90.f, aspect);
 
         app_state.camera_controller = std::make_unique<OrbitController>(app_state.camera, *input_manager);
         app_state.camera_controller->look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1});
