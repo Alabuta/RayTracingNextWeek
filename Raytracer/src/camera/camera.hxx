@@ -4,10 +4,15 @@
 
 #include "math/math.hxx"
 
+
 namespace scene {
 struct camera final {
     float vFOV{90.f};
     float aspect{1.f};
+
+    glm::vec3 up{0, 1, 0};
+
+    glm::vec3 u, v, w;
 
     struct gpu_data final {
         alignas(sizeof(glm::vec4)) glm::vec3 origin{0};
@@ -24,7 +29,7 @@ struct camera final {
 
     camera(float vFOV, float aspect) noexcept : vFOV{vFOV}, aspect{aspect} { }
 
-    void look_at(glm::vec3 const &origin, glm::vec3 const &target, glm::vec3 const &up)
+    void look_at(glm::vec3 const &origin, glm::vec3 const &target)
     {
         w = glm::normalize(origin - target);
         u = glm::normalize(glm::cross(up, w));
@@ -32,24 +37,24 @@ struct camera final {
 
         data.origin = std::move(origin);
     }
+};
 
-    void update()
+class camera_system final {
+public:
+
+    std::shared_ptr<scene::camera> create_camera(float vFOV, float aspect)
     {
-        auto theta = glm::radians(vFOV) / 2.f;
+        auto camera = std::make_shared<scene::camera>(vFOV, aspect);
 
-        auto height = std::tan(theta);
-        auto width = height * aspect;
+        cameras_.push_back(std::move(camera));
 
-        auto lower_left_corner = data.origin - (u * width + v * height + w);
-
-        auto horizontal = u * width * 2.f;
-        auto vertical = v * height * 2.f;
-
-        data.lower_left_corner = std::move(lower_left_corner);
-        data.horizontal = std::move(horizontal);
-        data.vertical = std::move(vertical);
+        return cameras_.back();
     }
 
-    glm::vec3 u, v, w;
+    void update();
+
+private:
+
+    std::vector<std::shared_ptr<scene::camera>> cameras_;
 };
 }

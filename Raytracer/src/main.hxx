@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <chrono>
+#include <memory>
 
 #ifdef _MSC_VER
     #include <execution>

@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
+﻿cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
 
 if(NOT DEFINED PROJECT_VERSION)
     set(PROJECT_VERSION 1.0.0)
@@ -40,7 +40,9 @@ set(SOURCE_FILES
 
     src/loaders/spirv_loader.hxx
 
-    src/camera/camera.hxx
+    src/camera/camera.hxx                           src/camera/camera.cxx
+    src/camera/camera_controller.hxx                src/camera/camera_controller.cxx
+    src/camera/input_handlers/mouse_handler.hxx     src/camera/input_handlers/mouse_handler.cxx
 
     src/raytracer/primitives.hxx
 
@@ -48,9 +50,9 @@ set(SOURCE_FILES
     src/input/mouse_input.hxx                       src/input/mouse_input.cxx
 
     src/platform/platform.hxx
-    src/platform/window.hxx		    src/platform/window.cxx
+    src/platform/window.hxx		                    src/platform/window.cxx
 
-    src/main.hxx					src/main.cxx
+    src/main.hxx					                src/main.cxx
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
