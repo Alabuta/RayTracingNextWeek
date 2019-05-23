@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
 
 if(NOT DEFINED PROJECT_VERSION)
     set(PROJECT_VERSION 1.0.0)
@@ -41,6 +41,9 @@ set(SOURCE_FILES
     src/camera/camera.hxx
 
     src/raytracer/primitives.hxx
+
+    src/input/input_manager.hxx                     src/input/input_manager.cxx
+    src/input/mouse_input.hxx                       src/input/mouse_input.cxx
 
     src/platform/platform.hxx
     src/platform/window.hxx		    src/platform/window.cxx

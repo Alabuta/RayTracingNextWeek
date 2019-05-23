@@ -47,10 +47,17 @@ window::~window()
         glfwDestroyWindow(handle_);
 }
 
-void window::connect_handler(std::shared_ptr<platform::events_handler> handler)
+void window::connect_handler(std::shared_ptr<platform::event_handler> handler)
 {
     resize_callback_.connect(decltype(resize_callback_)::slot_type(
-        &events_handler::on_resize, handler.get(), _1, _2
+        &event_handler::on_resize, handler.get(), _1, _2
+    ).track_foreign(handler));
+}
+
+void window::connect_handler(std::shared_ptr<platform::input_handler> handler)
+{
+    input_update_callback_.connect(decltype(input_update_callback_)::slot_type(
+        &input_handler::on_update, handler.get(), _1
     ).track_foreign(handler));
 }
 
@@ -72,6 +79,56 @@ void window::set_callbacks()
             instance->height_ = height;
 
             instance->resize_callback_(width, height);
+        }
+    });
+
+    glfwSetCursorPosCallback(handle_, [] (auto handle, auto x, auto y)
+    {
+        auto instance = reinterpret_cast<window *>(glfwGetWindowUserPointer(handle));
+
+        if (instance) {
+            auto coords = input::mouse_input_data::relative_coords{
+                static_cast<decltype(input::mouse_input_data::relative_coords::x)>(x),
+                static_cast<decltype(input::mouse_input_data::relative_coords::y)>(y)
+            };
+
+            input::raw_data raw_data = input::mouse_input_data::raw_data{std::move(coords)};
+
+            instance->input_update_callback_(raw_data);
+        }
+    });
+
+    glfwSetMouseButtonCallback(handle_, [] (auto handle, auto button, auto action, auto)
+    {
+        auto instance = reinterpret_cast<window *>(glfwGetWindowUserPointer(handle));
+
+        if (instance) {
+            auto buttons = input::mouse_input_data::buttons{};
+
+            std::size_t offset = action == GLFW_PRESS ? 0 : 1;
+
+            buttons.value[static_cast<std::size_t>(button) * 2 + offset] = 1;
+
+            input::raw_data data = input::mouse_input_data::raw_data{std::move(buttons)};
+
+            instance->input_update_callback_(data);
+        }
+    });
+
+    // TODO: replace to 'glfwSetMouseWheelCallback'
+    glfwSetScrollCallback(handle_, [] (auto handle, auto xoffset, auto yoffset)
+    {
+        auto instance = reinterpret_cast<window *>(glfwGetWindowUserPointer(handle));
+
+        if (instance) {
+            auto wheel = input::mouse_input_data::wheel{
+                static_cast<decltype(input::mouse_input_data::wheel::xoffset)>(xoffset),
+                static_cast<decltype(input::mouse_input_data::wheel::yoffset)>(yoffset)
+            };
+
+            input::raw_data data = input::mouse_input_data::raw_data{std::move(wheel)};
+
+            instance->input_update_callback_(data);
         }
     });
 }

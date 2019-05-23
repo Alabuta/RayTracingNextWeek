@@ -25,7 +25,8 @@ public:
 
     GLFWwindow *handle() const noexcept { return handle_; }
 
-    void connect_handler(std::shared_ptr<platform::events_handler> handler);
+    void connect_handler(std::shared_ptr<platform::event_handler> handler);
+    void connect_handler(std::shared_ptr<platform::input_handler> handler);
 
 private:
     GLFWwindow *handle_;
@@ -35,6 +36,7 @@ private:
     std::string name_;
 
     boost::signals2::signal<void(std::int32_t, std::int32_t)> resize_callback_;
+    boost::signals2::signal<void(platform::input::raw_data &)> input_update_callback_;
 
     void set_callbacks();
 };
