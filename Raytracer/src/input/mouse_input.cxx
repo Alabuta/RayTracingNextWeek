@@ -17,21 +17,21 @@ namespace {
 namespace input {
 void mouse::connect(std::shared_ptr<handler> slot)
 {
-    on_move_.connect(decltype(on_move_)::slot_type(
+    on_move_.connect(decltype(on_move_)::slot_type{
         &handler::on_move, slot.get(), _1, _2
-    ).track_foreign(slot));
+    }.track_foreign(slot));
 
-    on_wheel_.connect(decltype(on_wheel_)::slot_type(
+    on_wheel_.connect(decltype(on_wheel_)::slot_type{
         &handler::on_wheel, slot.get(), _1
-    ).track_foreign(slot));
+    }.track_foreign(slot));
 
-    on_down_.connect(decltype(on_down_)::slot_type(
+    on_down_.connect(decltype(on_down_)::slot_type{
         &handler::on_down, slot.get(), _1
-    ).track_foreign(slot));
+    }.track_foreign(slot));
 
-    on_up_.connect(decltype(on_up_)::slot_type(
+    on_up_.connect(decltype(on_up_)::slot_type{
         &handler::on_up, slot.get(), _1
-    ).track_foreign(slot));
+    }.track_foreign(slot));
 }
 
 void mouse::update(platform::input::mouse_input_data::raw_data &data)

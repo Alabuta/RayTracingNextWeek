@@ -49,16 +49,16 @@ window::~window()
 
 void window::connect_handler(std::shared_ptr<platform::event_handler> handler)
 {
-    resize_callback_.connect(decltype(resize_callback_)::slot_type(
+    resize_callback_.connect(decltype(resize_callback_)::slot_type{
         &event_handler::on_resize, handler.get(), _1, _2
-    ).track_foreign(handler));
+    }.track_foreign(handler));
 }
 
 void window::connect_handler(std::shared_ptr<platform::input_handler> handler)
 {
-    input_update_callback_.connect(decltype(input_update_callback_)::slot_type(
+    input_update_callback_.connect(decltype(input_update_callback_)::slot_type{
         &input_handler::on_update, handler.get(), _1
-    ).track_foreign(handler));
+    }.track_foreign(handler));
 }
 
 void window::update(std::function<void(window &)> &&callback)

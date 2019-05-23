@@ -44,6 +44,9 @@ public:
 
     void on_resize(std::int32_t width, std::int32_t height) override
     {
+        if (width * height == 0)
+            return;
+
         app_state.window_size = std::array{width, height};
 
         app_state.camera->aspect = static_cast<float>(width) / static_cast<float>(height);
@@ -57,8 +60,6 @@ private:
 
 void update(app::state &app_state)
 {
-    glfwPollEvents();
-
     app_state.camera_controller->update();
     app_state.camera_system.update();
 
@@ -95,8 +96,8 @@ int main()
         throw std::runtime_error("failed to init GLFW"s);
 
     app::state app_state;
-    app_state.window_size = std::array{512, 512};
 
+    app_state.window_size = std::array{1024, 1024};
     auto [width, height] = app_state.window_size;
 
     auto const grid_size_x = static_cast<std::uint32_t>(width) / 16;
@@ -151,13 +152,9 @@ int main()
         app_state.camera_controller = std::make_unique<OrbitController>(app_state.camera, *input_manager);
         app_state.camera_controller->look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1});
 
-        glUseProgram(compute_program.handle);
-
         app_state.camera_buffer = gfx::create_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
 
         gfx::update_buffer(app_state.camera_buffer, &app_state.camera->data);
-
-        glUseProgram(0);
     }
 
     {
@@ -166,13 +163,9 @@ int main()
         spheres.emplace_back(primitives::sphere{glm::vec3{0, 0, -1}, .5f, 0});
         spheres.emplace_back(primitives::sphere{glm::vec3{0, -100.5f, -1}, 100.f, 3});
 
-        glUseProgram(compute_program.handle);
-
         auto buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, static_cast<std::uint32_t>(std::size(spheres)));
 
         gfx::update_buffer(buffer, std::data(spheres));
-
-        glUseProgram(0);
     }
 
     {
@@ -193,13 +186,9 @@ int main()
         });
     #endif
 
-        glUseProgram(compute_program.handle);
-
         auto buffer = gfx::create_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_BUFFER_SIZE);
 
         gfx::update_buffer(buffer, std::data(unit_vectors));
-
-        glUseProgram(0);
     }
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
@@ -209,6 +198,8 @@ int main()
 
     window.update([&] (auto &&window)
     {
+        glfwPollEvents();
+
         update(app_state);
 
         auto start = std::chrono::system_clock::now();
