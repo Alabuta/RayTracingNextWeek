@@ -11,20 +11,32 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\camera\camera.cxx" />
+    <ClCompile Include="src\camera\camera_controller.cxx" />
+    <ClCompile Include="src\camera\input_handlers\mouse_handler.cxx" />
+    <ClCompile Include="src\input\input_manager.cxx" />
+    <ClCompile Include="src\input\mouse_input.cxx" />
     <ClCompile Include="src\main.cxx" />
+    <ClCompile Include="src\math\math.cxx" />
     <ClCompile Include="src\platform\window.cxx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\config.hxx" />
     <ClInclude Include="src\camera\camera.hxx" />
+    <ClInclude Include="src\camera\camera_controller.hxx" />
+    <ClInclude Include="src\camera\input_handlers\mouse_handler.hxx" />
+    <ClInclude Include="src\gfx\buffer.hxx" />
     <ClInclude Include="src\gfx\context.hxx" />
     <ClInclude Include="src\gfx\framebuffer.hxx" />
     <ClInclude Include="src\gfx\image.hxx" />
     <ClInclude Include="src\gfx\render_pass.hxx" />
     <ClInclude Include="src\gfx\shader.hxx" />
+    <ClInclude Include="src\input\input_manager.hxx" />
+    <ClInclude Include="src\input\mouse_input.hxx" />
     <ClInclude Include="src\loaders\spirv_loader.hxx" />
     <ClInclude Include="src\main.hxx" />
     <ClInclude Include="src\math.hxx" />
+    <ClInclude Include="src\math\math.hxx" />
     <ClInclude Include="src\platform\platform.hxx" />
     <ClInclude Include="src\platform\window.hxx" />
     <ClInclude Include="src\raytracer\primitives.hxx" />
@@ -90,7 +102,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -121,7 +133,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
