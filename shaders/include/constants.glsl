@@ -8,7 +8,7 @@ const uint kCAMERA_BINDING = 7u;
 
 const uint kOUT_IMAGE_BINDING = 2u;
 
+
 const uint kSPHERES_NUMBER = 2u;
-const uint kUNIT_VECTORS_BUFFER_SIZE = 1000u;
 
 #endif    // CONSTANTS_H

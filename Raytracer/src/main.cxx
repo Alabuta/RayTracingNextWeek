@@ -168,27 +168,29 @@ int main()
         gfx::update_buffer(buffer, std::data(spheres));
     }
 
-    {
+
+    if (false) {
+        auto unit_vectors_image = gfx::create_image2D(width, height, GL_RGBA32F);
+
         std::random_device random_device;
         std::mt19937 generator{random_device()};
 
-        std::vector<glm::vec3> unit_vectors(kUNIT_VECTORS_BUFFER_SIZE);
+        std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width * height));
 
     #ifdef _MSC_VER
         std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
         {
-            return glm::normalize(math::random_in_unit_sphere(generator));
+            return glm::vec4(glm::normalize(math::random_in_unit_sphere(generator)), 1);
         });
     #else
         std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
         {
-            return glm::normalize(math::random_in_unit_sphere(generator));
+            return glm::vec4(glm::normalize(math::random_in_unit_sphere(generator)), 1);
         });
     #endif
 
-        auto buffer = gfx::create_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_BUFFER_SIZE);
-
-        gfx::update_buffer(buffer, std::data(unit_vectors));
+        glTextureSubImage2D(unit_vectors_image.handle, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, std::data(unit_vectors));
+        glBindImageTexture(kUNIT_VECTORS_BUFFER_BINDING, unit_vectors_image.handle, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
     }
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);

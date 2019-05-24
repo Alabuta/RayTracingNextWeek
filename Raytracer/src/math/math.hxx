@@ -13,7 +13,7 @@
 #include <glm/gtx/polar_coordinates.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/hash.hpp>
-
+#include <glm/gtx/norm.hpp>
 
 namespace math {
 glm::vec3 random_in_unit_sphere(std::mt19937 &generator);

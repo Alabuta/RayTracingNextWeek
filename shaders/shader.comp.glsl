@@ -8,11 +8,12 @@ layout(local_size_x = 16, local_size_y = 16) in;
 #include "constants.glsl"
 
 layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
+layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
 
-layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
-{
-    vec3 unit_vectors[];
-};
+// layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
+// {
+//     vec3 unit_vectors[];
+// };
 
 #include "common.glsl"
 #include "math.glsl"
@@ -74,7 +75,7 @@ void main()
 	vec2 uv = vec2(gl_GlobalInvocationID.xy) / imageSize;
 	uint pixel_index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * imageSize.x;
 
-    vec3 color = color(pixel_index, generate_ray(_camera, uv));
+    // vec3 color = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
 
     imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
 }
