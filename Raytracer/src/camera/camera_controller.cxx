@@ -37,32 +37,38 @@ void OrbitController::look_at(glm::vec3 const &eye, glm::vec3 const &target)
     target_ = target;
     offset_ = eye;
 
-    camera_->w = glm::normalize(eye - target);
-    camera_->u = glm::normalize(glm::cross(up_, camera_->w));
-    camera_->v = glm::normalize(glm::cross(camera_->w, camera_->u));
-
     camera_->data.origin = eye;
-    camera_->direction = eye - target;
+    //camera_->direction = glm::normalize(eye - target);
 
     auto &&world = camera_->world;
 
     world = glm::inverse(glm::lookAt(offset_, target_, up_));
+
+    camera_->x_axis = glm::normalize(glm::vec3{world[0]});
+    camera_->y_axis = glm::normalize(glm::vec3{world[1]});
+    camera_->z_axis = glm::normalize(glm::vec3{world[2]});
 }
 
 void OrbitController::update()
 {
     auto &&world = camera_->world;
 
-    auto xAxis = glm::vec3{world[0]};
-    auto yAxis = glm::vec3{world[1]};
-    // auto zAxis = glm::vec3{world[2]};
+    auto xAxis = glm::normalize(glm::vec3{world[0]});
+    auto yAxis = glm::normalize(glm::vec3{world[1]});
+    //auto zAxis = glm::normalize(glm::vec3{world[2]});
 
     auto position = glm::vec3{world[3]};
 
     offset_ = position - target_;
 
+    if (glm::distance(offset_, glm::zero<glm::vec3>()) <= std::numeric_limits<float>::min()) {
+        position = target_ + glm::vec3{0, 0, std::numeric_limits<float>::min()};
+
+        offset_ = position - target_;
+    }
+
     auto radius = glm::length(offset_);
-    auto distance = radius * 2.f * std::tan(camera_->fov * .5f);
+    auto distance = radius * std::tan(camera_->fov * .5f) * 2.f;
 
     radius = std::clamp(radius * scale_, minZ, maxZ);
 

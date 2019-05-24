@@ -7,12 +7,16 @@
 
 namespace scene {
 struct camera final {
-    float fov{90.f};
+    float fov{glm::radians(90.f)};
     float aspect{1.f};
 
-    glm::vec3 u{1, 0, 0}, v{0, 1, 0}, w{0, 0, 1};
+    glm::vec3 x_axis{1, 0, 0};
+    glm::vec3 y_axis{0, 1, 0};
+    glm::vec3 z_axis{0, 0, 1};
 
-    glm::vec3 direction{0};
+    //glm::vec3 direction{0};
+
+    glm::mat4 world{1.f};
 
     struct gpu_data final {
         glm::vec3 origin{0}; float _x;
@@ -23,13 +27,11 @@ struct camera final {
         glm::vec3 vertical{0, 2, 0}; float _w;
     };
 
-    glm::mat4 world{1.f};
-
     gpu_data data;
 
     camera() = default;
 
-    camera(float fov, float aspect) noexcept : fov{fov}, aspect{aspect} { }
+    camera(float fov, float aspect) noexcept : fov{glm::radians(fov)}, aspect{aspect} { }
 };
 
 class camera_system final {

@@ -16,17 +16,17 @@ void camera_system::update()
     {
         auto &&camera = *camera_ptr;
         
-        auto theta = glm::radians(camera.fov) / 2.f;
+        auto theta = camera.fov / 2.f;
 
         auto height = std::tan(theta);
         auto width = height * camera.aspect;
 
         auto &&data = camera.data;
 
-        data.lower_left_corner = data.origin - (camera.u * width + camera.v * height + camera.w);
+        data.lower_left_corner = data.origin - (camera.x_axis * width + camera.y_axis * height + camera.z_axis);
 
-        data.horizontal = camera.u * width * 2.f;
-        data.vertical = camera.v * height * 2.f;
+        data.horizontal = camera.x_axis * width * 2.f;
+        data.vertical = camera.y_axis * height * 2.f;
     });
 }
 }
