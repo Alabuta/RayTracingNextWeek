@@ -8,6 +8,7 @@ const uint kCAMERA_BINDING = 7u;
 
 const uint kOUT_IMAGE_BINDING = 2u;
 
+const uint kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
 const uint kSPHERES_NUMBER = 2u;
 

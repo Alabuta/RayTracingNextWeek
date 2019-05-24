@@ -22,7 +22,7 @@ auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 auto constexpr kPRIMITIVES_BINDING = 6u;
 auto constexpr kCAMERA_BINDING = 7u;
 
-auto constexpr kUNIT_VECTORS_BUFFER_SIZE = 1'000;
+auto constexpr kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
 
 namespace app {
@@ -97,7 +97,7 @@ int main()
 
     app::state app_state;
 
-    app_state.window_size = std::array{1024, 1024};
+    app_state.window_size = std::array{1920, 1080};
     auto [width, height] = app_state.window_size;
 
     auto const grid_size_x = static_cast<std::uint32_t>(width) / 16;
@@ -198,17 +198,21 @@ int main()
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
+    float frame_number = 1.e3;
+
     window.update([&] (auto &&window)
     {
         glfwPollEvents();
 
         update(app_state);
 
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         glUseProgram(compute_program.handle);
         glDispatchCompute(grid_size_x, grid_size_y, 1);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+        glProgramUniform1f(compute_program.handle, kFRAME_NUMBER_UNIFORM_LOCATION, frame_number++);
 
         glUseProgram(screen_quad_program.handle);
         render_scene(render_pass);
@@ -216,11 +220,12 @@ int main()
         auto [app_width, app_height] = app_state.window_size;
         auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
 
-        glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height,
+                               0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glfwSwapBuffers(window.handle());
 
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - start);
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
 
         glfwSetWindowTitle(window.handle(), std::to_string(static_cast<float>(duration.count()) * .001f).c_str());
 
