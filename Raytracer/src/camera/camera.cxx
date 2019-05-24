@@ -1,4 +1,6 @@
-#include <execution>
+#ifdef _MSC_VER
+    #include <execution>
+#endif
 
 #include "camera/camera.hxx"
 

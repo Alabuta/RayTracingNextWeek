@@ -12,7 +12,7 @@ public:
 
     OrbitController(std::shared_ptr<scene::camera> camera, input::input_manager &input_manager);
 
-    void look_at(glm::vec3 &&eye, glm::vec3 &&target);
+    void look_at(glm::vec3 const &eye, glm::vec3 const &target);
 
     void rotate(float x, float y);
     void pan(float x, float y);

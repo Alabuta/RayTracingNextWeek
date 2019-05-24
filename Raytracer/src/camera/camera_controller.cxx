@@ -32,45 +32,21 @@ OrbitController::OrbitController(std::shared_ptr<scene::camera> camera, input::i
     input_manager.mouse().connect(mouse_handler_);
 }
 
-void OrbitController::look_at(glm::vec3 &&eye, glm::vec3 &&target)
+void OrbitController::look_at(glm::vec3 const &eye, glm::vec3 const &target)
 {
     target_ = target;
     offset_ = eye;
 
     camera_->w = glm::normalize(eye - target);
-    camera_->u = glm::normalize(glm::cross(camera_->up, camera_->w));
+    camera_->u = glm::normalize(glm::cross(up_, camera_->w));
     camera_->v = glm::normalize(glm::cross(camera_->w, camera_->u));
 
-    camera_->data.origin = std::move(eye);
+    camera_->data.origin = eye;
+    camera_->direction = eye - target;
 
     auto &&world = camera_->world;
 
-    world = glm::inverse(glm::lookAt(offset_, target_, camera_->up));
-}
-
-void OrbitController::rotate(float longitude, float latitude)
-{
-    auto speed = (1.f - damping_) * .008f;
-
-    polar_delta_.x += latitude * speed;
-    polar_delta_.y -= longitude * speed;
-}
-
-void OrbitController::pan(float x, float y)
-{
-    auto speed = (1.f - damping_) * .001f;
-
-    pan_delta_.x -= x * speed;
-    pan_delta_.y += y * speed;
-}
-
-void OrbitController::dolly(float delta)
-{
-    auto speed = (1.f - damping_) * 2.f;
-
-    auto dollying = std::pow(.95f, std::abs(delta) * speed);
-
-    scale_ = std::signbit(delta) ? (std::signbit(delta) ? 1.f / dollying : 1.f) : dollying;
+    world = glm::inverse(glm::lookAt(offset_, target_, up_));
 }
 
 void OrbitController::update()
@@ -109,13 +85,43 @@ void OrbitController::update()
 
     position = target_ + offset_;
 
-    world = glm::inverse(glm::lookAt(position, target_, up_));
+    /* world = glm::inverse(glm::lookAt(position, target_, up_));
+
+    camera_->data.origin = position;
+    camera_->direction = position - target_; */
+
+    look_at(position, target_);
 
 #if 0
-    auto orientation = from_two_vec3(camera_->up, glm::vec3{0, 1, 0});
+    auto orientation = from_two_vec3(up_, glm::vec3{0, 1, 0});
 #endif
 
     apply_damping();
+}
+
+void OrbitController::rotate(float longitude, float latitude)
+{
+    auto speed = (1.f - damping_) * .008f;
+
+    polar_delta_.x += latitude * speed;
+    polar_delta_.y -= longitude * speed;
+}
+
+void OrbitController::pan(float x, float y)
+{
+    auto speed = (1.f - damping_) * .001f;
+
+    pan_delta_.x -= x * speed;
+    pan_delta_.y += y * speed;
+}
+
+void OrbitController::dolly(float delta)
+{
+    auto speed = (1.f - damping_) * 1.f;
+
+    auto dollying = std::pow(.95f, std::abs(delta) * speed);
+
+    scale_ = std::signbit(delta) ? (std::signbit(delta) ? 1.f / dollying : 1.f) : dollying;
 }
 
 void OrbitController::apply_damping()

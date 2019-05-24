@@ -10,9 +10,9 @@ struct camera final {
     float fov{90.f};
     float aspect{1.f};
 
-    glm::vec3 up{0, 1, 0};
-
     glm::vec3 u{1, 0, 0}, v{0, 1, 0}, w{0, 0, 1};
+
+    glm::vec3 direction{0};
 
     struct gpu_data final {
         glm::vec3 origin{0}; float _x;
