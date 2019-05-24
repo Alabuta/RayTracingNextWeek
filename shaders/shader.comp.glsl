@@ -3,15 +3,16 @@
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_GOOGLE_include_directive : require
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 8, local_size_y = 8) in;
+
+const uint SAMPLING_NUMBER = 16u;
+const uint BOUNCES_NUMBER = 32u;
 
 #include "constants.glsl"
 
-layout(location = kFRAME_NUMBER_UNIFORM_LOCATION) uniform float frame_number = 1.f;
-
 layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
-layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
-// };
+
+//layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
 
 #include "common.glsl"
 #include "math.glsl"
@@ -39,8 +40,6 @@ layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 
 vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
 {
-    const uint bounces_number = 64u;
-
     vec3 attenuation = vec3(1.f);
 	vec3 energy_absorption = vec3(0.f);
 
@@ -48,7 +47,7 @@ vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
 
     lambertian material = lambertian(vec3(.5f));
 
-    for (uint bounce = 0u; bounce < bounces_number; ++bounce) {
+    for (uint bounce = 0u; bounce < BOUNCES_NUMBER; ++bounce) {
 		hit closest_hit = hit_world(kSPHERES_NUMBER, scattered_ray);
 
     	if (closest_hit.valid) {
@@ -72,12 +71,12 @@ vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
 
 void main()
 {
-    const uint sampling_number = 16u;
-
     uvec2 imageSize = uvec2(imageSize(image));
 
+    if (any(greaterThanEqual(gl_GlobalInvocationID.xy, imageSize)))
+        return;
+
     vec2 xy = vec2(gl_GlobalInvocationID);
-	vec2 uv = xy / imageSize;
 
     random_engine rng = create_random_engine(gl_GlobalInvocationID.xy);
 
@@ -85,13 +84,13 @@ void main()
 
     vec3 color = vec3(0);
 
-    for (uint s = 0u; s < sampling_number; ++s) {
+    for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
         vec2 _uv = (xy + generate_real(rng)) / imageSize;
 
         color += render(rng, _camera, _uv);
     }
 
-    color /= float(sampling_number);
+    color /= float(SAMPLING_NUMBER);
 
     // color = vec3(generate_real(rng));
 

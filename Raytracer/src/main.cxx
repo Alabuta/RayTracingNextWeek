@@ -35,6 +35,11 @@ struct state final {
     std::unique_ptr<OrbitController> camera_controller;
 
     gfx::buffer<scene::camera::gpu_data> camera_buffer;
+
+    gfx::render_pass render_pass;
+
+    gfx::program compute_program;
+    gfx::program blit_program;
 };
 
 class window_event_handler final : public platform::event_handler {
@@ -55,8 +60,6 @@ public:
 private:
     app::state &app_state;
 };
-}
-
 
 void update(app::state &app_state)
 {
@@ -66,20 +69,36 @@ void update(app::state &app_state)
     gfx::update_buffer(app_state.camera_buffer, &app_state.camera->data);
 }
 
-
-void render_scene(gfx::render_pass const &render_pass)
+void render(app::state const &app_state, std::uint32_t grid_size_x, std::uint32_t grid_size_y)
 {
-    auto [vao, framebuffer] = render_pass;
+    glUseProgram(app_state.compute_program.handle);
 
-    auto [width, height] = framebuffer.size;
+    glDispatchCompute(grid_size_x, grid_size_y, 1);
+
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+}
+
+void blit_framebuffer(app::state const &app_state)
+{
+    glUseProgram(app_state.blit_program.handle);
+
+    auto &&[vao, framebuffer] = app_state.render_pass;
+
+    auto [app_width, app_height] = app_state.window_size;
+    auto [fbo_width, fbo_height] = framebuffer.size;
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.handle);
 
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, fbo_width, fbo_height);
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    glBlitNamedFramebuffer(framebuffer.handle, 0, 0, 0, fbo_width, fbo_height,
+                           0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
+}
+
 
 int main()
 {
@@ -100,8 +119,8 @@ int main()
     app_state.window_size = std::array{1920, 1080};
     auto [width, height] = app_state.window_size;
 
-    auto const grid_size_x = static_cast<std::uint32_t>(width) / 16;
-    auto const grid_size_y = static_cast<std::uint32_t>(height) / 16;
+    auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(width / 8.f));
+    auto const grid_size_y = static_cast<std::uint32_t>(std::ceil(height / 8.f));
 
     std::cout << grid_size_x << 'x' << grid_size_y << '\n';
 
@@ -120,34 +139,28 @@ int main()
     glBindImageTexture(kOUT_IMAGE_BINDING, image.handle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
     glBindTextureUnit(4, image.handle);
 
-    gfx::render_pass render_pass;
-
     {
         auto attachment = gfx::create_image2D(width, height, GL_SRGB8_ALPHA8);
         auto framebuffer = gfx::create_framebuffer(width, height, attachment);
 
-        render_pass = gfx::create_render_pass(std::move(framebuffer));
+        app_state.render_pass = gfx::create_render_pass(std::move(framebuffer));
     }
-
-    gfx::program compute_program;
 
     {
         auto compute_shader_stage = gfx::create_shader_stage<gfx::shader::compute>("shader.comp.spv"sv, "main"sv);
-        compute_program = gfx::create_program(std::vector{compute_shader_stage});
+        app_state.compute_program = gfx::create_program(std::vector{compute_shader_stage});
     }
-
-    gfx::program screen_quad_program;
 
     {
         auto vertex_stage = gfx::create_shader_stage<gfx::shader::vertex>("shader.vert.spv"sv, "main"sv);
         auto fragment_stage = gfx::create_shader_stage<gfx::shader::fragment>("shader.frag.spv"sv, "main"sv);
 
-        screen_quad_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
+        app_state.blit_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
     }
 
     {
         auto aspect = static_cast<float>(width) / static_cast<float>(height);
-        app_state.camera = app_state.camera_system.create_camera(90.f, aspect);
+        app_state.camera = app_state.camera_system.create_camera(72.f, aspect);
 
         app_state.camera_controller = std::make_unique<OrbitController>(app_state.camera, *input_manager);
         app_state.camera_controller->look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1});
@@ -167,7 +180,6 @@ int main()
 
         gfx::update_buffer(buffer, std::data(spheres));
     }
-
 
     if (false) {
         auto unit_vectors_image = gfx::create_image2D(width, height, GL_RGBA32F);
@@ -198,36 +210,25 @@ int main()
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-    float frame_number = 1.e3;
-
     window.update([&] (auto &&window)
     {
         glfwPollEvents();
 
-        update(app_state);
+        app::update(app_state);
 
         auto start = std::chrono::high_resolution_clock::now();
 
-        glUseProgram(compute_program.handle);
-        glDispatchCompute(grid_size_x, grid_size_y, 1);
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        app::render(app_state, grid_size_x, grid_size_y);
 
-        glProgramUniform1f(compute_program.handle, kFRAME_NUMBER_UNIFORM_LOCATION, frame_number++);
-
-        glUseProgram(screen_quad_program.handle);
-        render_scene(render_pass);
-
-        auto [app_width, app_height] = app_state.window_size;
-        auto [fbo_width, fbo_height] = render_pass.framebuffer.size;
-
-        glBlitNamedFramebuffer(render_pass.framebuffer.handle, 0, 0, 0, fbo_width, fbo_height,
-                               0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-        glfwSwapBuffers(window.handle());
+        glFinish();
 
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
 
-        glfwSetWindowTitle(window.handle(), std::to_string(static_cast<float>(duration.count()) * .001f).c_str());
+        glfwSetWindowTitle(window.handle(), std::to_string(static_cast<float>(duration.count()) * 1e-3).c_str());
+
+        app::blit_framebuffer(app_state);
+
+        glfwSwapBuffers(window.handle());
 
         if (auto result = glGetError(); result != GL_NO_ERROR)
             throw std::runtime_error("OpenGL error: "s + std::to_string(result));
