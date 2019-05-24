@@ -19,7 +19,7 @@ public:
         using buttons_t = std::bitset<8>;
 
         virtual void on_move(float x, float y) = 0;
-        virtual void on_wheel(float delta) = 0;
+        virtual void on_wheel(float xoffset, float yoffset) = 0;
         virtual void on_down(buttons_t buttons) = 0;
         virtual void on_up(buttons_t buttons) = 0;
     };
@@ -33,7 +33,7 @@ private:
     handler::buttons_t buttons_{0};
 
     boost::signals2::signal<void(float, float)> on_move_;
-    boost::signals2::signal<void(float)> on_wheel_;
+    boost::signals2::signal<void(float, float)> on_wheel_;
     boost::signals2::signal<void(handler::buttons_t)> on_down_;
     boost::signals2::signal<void(handler::buttons_t)> on_up_;
 };

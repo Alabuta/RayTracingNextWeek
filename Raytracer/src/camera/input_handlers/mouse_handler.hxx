@@ -27,7 +27,7 @@ private:
     glm::vec2 dolly_direction{0, -1};
 
     void on_move(float x, float y) override;
-    void on_wheel(float delta) override;
+    void on_wheel(float xoffset, float yoffset) override;
     void on_down(input::mouse::handler::buttons_t buttons) override;
     void on_up(input::mouse::handler::buttons_t buttons) override;
 };
