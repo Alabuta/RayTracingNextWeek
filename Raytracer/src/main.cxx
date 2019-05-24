@@ -180,12 +180,12 @@ int main()
     #ifdef _MSC_VER
         std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
         {
-            return glm::vec4(glm::normalize(math::random_in_unit_sphere(generator)), 1);
+            return glm::vec4(glm::normalize(math::random_on_unit_sphere(generator)), 1);
         });
     #else
         std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
         {
-            return glm::vec4(glm::normalize(math::random_in_unit_sphere(generator)), 1);
+            return glm::vec4(glm::normalize(math::random_on_unit_sphere(generator)), 1);
         });
     #endif
 

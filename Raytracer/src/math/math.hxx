@@ -16,5 +16,5 @@
 #include <glm/gtx/norm.hpp>
 
 namespace math {
-glm::vec3 random_in_unit_sphere(std::mt19937 &generator);
+glm::vec3 random_on_unit_sphere(std::mt19937 &generator);
 }

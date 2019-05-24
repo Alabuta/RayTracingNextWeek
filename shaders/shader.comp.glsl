@@ -37,7 +37,7 @@ layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 #include "material.glsl"
 
 
-vec3 render(inout sfc32 rng, const in camera _camera, const in vec2 uv)
+vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
 {
     const uint bounces_number = 64u;
 
@@ -79,8 +79,7 @@ void main()
     vec2 xy = vec2(gl_GlobalInvocationID);
 	vec2 uv = xy / imageSize;
 
-    // random_engine rng = random_engine(uv, frame_number, 0u);
-    sfc32 rng;
+    random_engine rng;
     seed_fast(rng, gl_GlobalInvocationID.x, gl_GlobalInvocationID.y);
 
     camera _camera = camera(origin, lower_left_corner, horizontal, vertical);
@@ -88,14 +87,14 @@ void main()
     vec3 color = vec3(0);
 
     for (uint s = 0u; s < sampling_number; ++s) {
-        vec2 _uv = (xy + random(rng)) / imageSize;
+        vec2 _uv = (xy + generate_real(rng)) / imageSize;
 
         color += render(rng, _camera, _uv);
     }
 
     color /= float(sampling_number);
 
-    // color = vec3(generate(rng));
+    // color = vec3(generate_real(rng));
 
     // vec3 color = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
 
