@@ -5,7 +5,8 @@
 
 
 struct random_engine {
-    uint a, b, c, counter;
+    uvec2 seed;
+    uint c, counter;
 };
 
 uint generate(inout random_engine rng)
@@ -14,35 +15,23 @@ uint generate(inout random_engine rng)
     const uint RSHIFT = 8u;
     const uint LSHIFT = 3u;
 
-	uint tmp = rng.a + rng.b + rng.counter++;
+	uint tmp = rng.seed.x + rng.seed.y + rng.counter++;
 
-	rng.a = rng.b ^ (rng.b >> RSHIFT);
-	rng.b = rng.c + (rng.c << LSHIFT);
+	rng.seed.x = rng.seed.y ^ (rng.seed.y >> RSHIFT);
+	rng.seed.y = rng.c + (rng.c << LSHIFT);
 	rng.c = ((rng.c << BARREL_SHIFT) | (rng.c >> (32 - BARREL_SHIFT))) + tmp;
 
 	return tmp;
 }
 
-void seed_fast(inout random_engine rng, uint a, uint b)
+random_engine create_random_engine(uvec2 seed)
 {
-    rng.a = a;
-	rng.b = b;
-	rng.c = 0;
-	rng.counter = 1;
-
-	for (uint i = 0u; i < 8u; ++i)
-        generate(rng);
-}
-
-void seed(inout random_engine rng, uint a, uint b)
-{
-    rng.a = a;
-	rng.b = b;
-	rng.c = 0;
-	rng.counter = 1;
+    random_engine rng = random_engine(seed, 0, 1);
 
 	for (uint i = 0u; i < 12u; ++i)
         generate(rng);
+
+    return rng;
 }
 
 float generate_real(inout random_engine rng)

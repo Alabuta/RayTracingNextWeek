@@ -79,8 +79,7 @@ void main()
     vec2 xy = vec2(gl_GlobalInvocationID);
 	vec2 uv = xy / imageSize;
 
-    random_engine rng;
-    seed_fast(rng, gl_GlobalInvocationID.x, gl_GlobalInvocationID.y);
+    random_engine rng = create_random_engine(gl_GlobalInvocationID.xy);
 
     camera _camera = camera(origin, lower_left_corner, horizontal, vertical);
 
