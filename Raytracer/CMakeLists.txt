@@ -13,8 +13,8 @@ configure_file(
     "${PROJECT_SOURCE_DIR}/include/config.hxx"
 )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/bin")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/bin")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/bin")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/bin")
 
 find_package(OpenGL REQUIRED)
 
@@ -46,6 +46,7 @@ set(SOURCE_FILES
     src/camera/input_handlers/mouse_handler.hxx     src/camera/input_handlers/mouse_handler.cxx
 
     src/raytracer/primitives.hxx
+    src/raytracer/material.hxx
 
     src/input/input_manager.hxx                     src/input/input_manager.cxx
     src/input/mouse_input.hxx                       src/input/mouse_input.cxx
