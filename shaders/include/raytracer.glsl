@@ -25,6 +25,7 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
                 position,
                 (position - _sphere.center) / _sphere.radius,
                 temp,
+                _sphere.material_type,
                 _sphere.material_index,
                 true
             );
@@ -39,13 +40,14 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
                 position,
                 (position - _sphere.center) / _sphere.radius,
                 temp,
+                _sphere.material_type,
                 _sphere.material_index,
                 true
             );
         }
     }
 
-    return hit(oc, oc, 0.f, 0u, false);
+    return hit(oc, oc, 0.f, 0u, 0u, false);
 }
 
 hit hit_world(const in uint spheres_number, const in ray _ray)
@@ -55,7 +57,7 @@ hit hit_world(const in uint spheres_number, const in ray _ray)
 
     float min_time = kMAX;
 
-    hit closest_hit = hit(_ray.origin, _ray.origin, 0.f, 0u, false);
+    hit closest_hit = hit(_ray.origin, _ray.origin, 0.f, 0u, 0u, false);
 
     for (uint sphere_index = 0u; sphere_index < spheres_number; ++sphere_index) {
         hit any_hit = intersect(_ray, spheres[sphere_index], kMIN, min_time);

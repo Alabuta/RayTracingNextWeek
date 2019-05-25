@@ -15,9 +15,13 @@
 #include "camera/camera_controller.hxx"
 
 #include "raytracer/primitives.hxx"
+#include "raytracer/material.hxx"
 
 
 auto constexpr kOUT_IMAGE_BINDING = 2u;
+auto constexpr kLAMBERTIAN_BUFFER_BINDING = 2u;
+auto constexpr kMETAL_BUFFER_BINDING = 3u;
+auto constexpr kDIELECTRIC_BUFFER_BINDING = 4u;
 auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 auto constexpr kPRIMITIVES_BINDING = 6u;
 auto constexpr kCAMERA_BINDING = 7u;
@@ -116,7 +120,7 @@ int main()
 
     app::state app_state;
 
-    app_state.window_size = std::array{800, 600};
+    app_state.window_size = std::array{1920, 1080};
     auto [width, height] = app_state.window_size;
 
     auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(width / 8.f));
@@ -171,13 +175,44 @@ int main()
     }
 
     {
+        {
+            std::vector<material::lambertian> lambertian;
+            lambertian.push_back({glm::vec3{.2, .4, .5}});
+            lambertian.push_back({glm::vec3{.4, .6, .6}});
+
+            auto buffer = gfx::create_buffer<material::lambertian>(kLAMBERTIAN_BUFFER_BINDING, static_cast<std::uint32_t>(std::size(lambertian)));
+            gfx::update_buffer(buffer, std::data(lambertian));
+        }
+
+        {
+            std::vector<material::metal> metal;
+            metal.push_back({glm::vec3{.8, .6, .2}, 0});
+
+            auto buffer = gfx::create_buffer<material::metal>(kMETAL_BUFFER_BINDING, static_cast<std::uint32_t>(std::size(metal)));
+            gfx::update_buffer(buffer, std::data(metal));
+        }
+
+        {
+            std::vector<material::dielectric> dielectric;
+            dielectric.push_back({glm::vec3{1}, 1.5f});
+
+            auto buffer = gfx::create_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, static_cast<std::uint32_t>(std::size(dielectric)));
+            gfx::update_buffer(buffer, std::data(dielectric));
+        }
+    }
+
+    {
         std::vector<primitives::sphere> spheres;
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, .5f, 0}, 1, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, -100.5f, 0}, 100, 3});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, .5f, 0}, 1, 0, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, -1000.5f, 0}, 1000, 0, 1});
+
+        spheres.emplace_back(primitives::sphere{glm::vec3{+2, .5f, 0}, 1, 1, 0});
+
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2, .5f, 0}, 1, 2, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2, .5f, 0}, -.99f, 2, 0});
 
         auto buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, static_cast<std::uint32_t>(std::size(spheres)));
-
         gfx::update_buffer(buffer, std::data(spheres));
     }
 

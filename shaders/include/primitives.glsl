@@ -6,6 +6,7 @@ struct sphere {
     vec3 center;
     float radius;
 
+    uint material_type;
     uint material_index;
 };
 
@@ -15,6 +16,7 @@ struct hit {
 
     float time;
 
+    uint material_type;
     uint material_index;
 
     bool valid;
