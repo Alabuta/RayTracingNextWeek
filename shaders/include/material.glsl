@@ -20,7 +20,7 @@ struct surface_response {
 surface_response apply_material(inout random_engine rng, const in hit _hit, const in lambertian material)
 {
     // vec3 random_direction = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
-    vec3 random_direction = random_in_unit_sphere(rng);
+    vec3 random_direction = random_on_unit_sphere(rng);
     vec3 direction = _hit.normal + random_direction;
 
     ray scattered_ray = ray(_hit.position, direction);

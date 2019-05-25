@@ -116,7 +116,7 @@ int main()
 
     app::state app_state;
 
-    app_state.window_size = std::array{1920, 1080};
+    app_state.window_size = std::array{800, 600};
     auto [width, height] = app_state.window_size;
 
     auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(width / 8.f));
@@ -173,8 +173,8 @@ int main()
     {
         std::vector<primitives::sphere> spheres;
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, 0, -1}, .5f, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, -100.5f, -1}, 100.f, 3});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, .5f, 0}, 1, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, -100.5f, 0}, 100, 3});
 
         auto buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, static_cast<std::uint32_t>(std::size(spheres)));
 

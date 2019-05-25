@@ -41,7 +41,7 @@ float generate_real(inout random_engine rng)
     return generate(rng) * delim;
 }
 
-vec3 random_in_unit_sphere(inout random_engine rng)
+vec3 random_on_unit_sphere(inout random_engine rng)
 {
     float phi = generate_real(rng) * kTAU;
     float cos_theta = generate_real(rng) * 2.f - 1.f;

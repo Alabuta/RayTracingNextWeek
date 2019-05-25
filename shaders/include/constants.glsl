@@ -2,6 +2,9 @@
 #define CONSTANTS_H
 
 
+const uint SAMPLING_NUMBER = 32u;
+const uint BOUNCES_NUMBER = 32u;
+
 const uint kUNIT_VECTORS_BUFFER_BINDING = 5u;
 const uint kPRIMITIVES_BINDING = 6u;
 const uint kCAMERA_BINDING = 7u;

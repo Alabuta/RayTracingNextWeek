@@ -5,9 +5,6 @@
 
 layout(local_size_x = 8, local_size_y = 8) in;
 
-const uint SAMPLING_NUMBER = 16u;
-const uint BOUNCES_NUMBER = 32u;
-
 #include "constants.glsl"
 
 layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;

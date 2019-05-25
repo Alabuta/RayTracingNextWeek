@@ -19,7 +19,7 @@ using namespace std::string_literals;
 
 #ifdef _MSC_VER
     #pragma comment(lib, "OpenGL32.lib")
-    #ifdef _NDEBUG
+    #ifdef _DEBUG
         #pragma comment(lib, "glew32d.lib")
     #else
         #pragma comment(lib, "glew32.lib")
