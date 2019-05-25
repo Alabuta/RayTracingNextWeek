@@ -26,7 +26,7 @@ public:
 
     void connect(std::shared_ptr<handler> slot);
 
-    void update(platform::input::mouse_input_data::raw_data &data);
+    void update(platform::input::mouse_data::raw_data &data);
 
 private:
 

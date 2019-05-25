@@ -49,7 +49,8 @@ set(SOURCE_FILES
     src/raytracer/material.hxx
 
     src/input/input_manager.hxx                     src/input/input_manager.cxx
-    src/input/mouse_input.hxx                       src/input/mouse_input.cxx
+    src/input/mouse.hxx								src/input/mouse.cxx
+    src/input/keyboard.hxx							src/input/keyboard.cxx
 
     src/platform/platform.hxx
     src/platform/window.hxx		                    src/platform/window.cxx

@@ -7,7 +7,7 @@
 namespace platform {
     namespace input
     {
-        namespace mouse_input_data
+        namespace mouse_data
         {
             struct buttons final {
                 std::bitset<16> value;
@@ -22,16 +22,26 @@ namespace platform {
             };
 
             using raw_data = std::variant<
-                mouse_input_data::buttons, mouse_input_data::relative_coords, mouse_input_data::wheel
+                mouse_data::buttons, mouse_data::relative_coords, mouse_data::wheel
             >;
         }
 
-        namespace keyboard_input_data
+        namespace keyboard_data
         {
-            using raw_data = bool;
+            struct press final {
+                std::int32_t key;
+                std::int32_t mods;
+            };
+
+            struct release final {
+                std::int32_t key;
+                std::int32_t mods;
+            };
+
+            using raw_data = std::variant<keyboard_data::press, keyboard_data::release>;
         }
 
-        using raw_data = std::variant<mouse_input_data::raw_data, keyboard_input_data::raw_data>;
+        using raw_data = std::variant<mouse_data::raw_data, keyboard_data::raw_data>;
     }
     
     struct event_handler {

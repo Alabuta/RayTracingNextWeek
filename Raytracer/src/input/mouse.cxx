@@ -1,4 +1,4 @@
-#include "input/mouse_input.hxx"
+#include "input/mouse.hxx"
 
 namespace {
     std::bitset<16> constexpr kPRESSED_MASK{
@@ -15,7 +15,7 @@ namespace {
 
 
 namespace input {
-void mouse::connect(std::shared_ptr<handler> slot)
+void mouse::connect(std::shared_ptr<mouse::handler> slot)
 {
     on_move_.connect(decltype(on_move_)::slot_type{
         &handler::on_move, slot.get(), _1, _2
@@ -34,19 +34,19 @@ void mouse::connect(std::shared_ptr<handler> slot)
     }.track_foreign(slot));
 }
 
-void mouse::update(platform::input::mouse_input_data::raw_data &data)
+void mouse::update(platform::input::mouse_data::raw_data &data)
 {
     std::visit(overloaded{
-        [this] (platform::input::mouse_input_data::relative_coords &coords)
+        [this] (platform::input::mouse_data::relative_coords &coords)
         {
             if (coords.x != 0.f || coords.y != 0.f)
                 on_move_(coords.x, coords.y);
         },
-        [this] (platform::input::mouse_input_data::wheel wheel)
+        [this] (platform::input::mouse_data::wheel wheel)
         {
             on_wheel_(wheel.xoffset, wheel.yoffset);
         },
-        [this] (platform::input::mouse_input_data::buttons &buttons)
+        [this] (platform::input::mouse_data::buttons &buttons)
         {
             if (buttons.value.any()) {
                 auto const buttonsBitCount = kPRESSED_MASK.count();

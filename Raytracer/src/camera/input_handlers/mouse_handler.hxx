@@ -5,7 +5,7 @@
 
 
 #include "input/input_manager.hxx"
-#include "input/mouse_input.hxx"
+#include "input/mouse.hxx"
 
 #include "camera/camera_controller.hxx"
 
