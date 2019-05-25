@@ -121,6 +121,12 @@
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)compile-shaders.py"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>GLSL shaders to SPIR-V compilation is being performed...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -150,6 +156,12 @@
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
       <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)compile-shaders.py"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>GLSL shaders to SPIR-V compilation is being performed...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
