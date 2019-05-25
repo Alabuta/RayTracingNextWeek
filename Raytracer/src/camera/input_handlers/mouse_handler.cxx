@@ -1,15 +1,11 @@
 #include "camera/input_handlers/mouse_handler.hxx"
 
 
-mouse_handler::mouse_handler(OrbitController &controller) : controller_{controller}
-{
-    ;
-}
-
+namespace camera {
 void mouse_handler::on_move(float x, float y)
 {
     delta = glm::vec2{x, y};
-    //delta = last - delta;
+    delta = last - delta;
 
     update_handler_(*this);
 
@@ -53,4 +49,5 @@ void mouse_handler::on_down(input::mouse::handler::buttons_t buttons)
 void mouse_handler::on_up(input::mouse::handler::buttons_t)
 {
     update_handler_ = [] (auto &&) { };
+}
 }

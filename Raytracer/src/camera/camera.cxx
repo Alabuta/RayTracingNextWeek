@@ -23,10 +23,8 @@ void camera_system::update()
 
         auto &&data = camera.data;
 
-        data.lower_left_corner = data.origin - (camera.x_axis * width + camera.y_axis * height + camera.z_axis);
-
-        data.horizontal = camera.x_axis * width * 2.f;
-        data.vertical = camera.y_axis * height * 2.f;
+        data.projection[0] = glm::vec2{width, 0};
+        data.projection[1] = glm::vec2{0, height};
     });
 }
 }

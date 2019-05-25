@@ -5,40 +5,18 @@
 
 
 struct camera {
-    vec3 origin;
-
-    vec3 lower_left_corner;
-
-    vec3 horizontal;
-    vec3 vertical;
+    mat4 world;
+    mat2 projection;
 };
 
 ray generate_ray(const in camera _camera, const in vec2 uv)
 {
-    vec3 direction = _camera.lower_left_corner + _camera.horizontal * uv.x + _camera.vertical * uv.y;
+    vec2 xy = _camera.projection * (uv * 2.f - 1.f);
 
-    ray _ray = ray(
-        _camera.origin,
-        direction
-    );
+    vec4 direction = _camera.world * vec4(xy, -1, 0);
+    vec3 origin = vec3(_camera.world[3]);
 
-    return _ray;
-}
-
-ray generate_ray(const in mat4 projection, const in camera _camera, const in vec2 uv)
-{
-    //vec3 direction = _camera.lower_left_corner + _camera.horizontal * uv.x + _camera.vertical * uv.y;
-
-    //vec3 direction = vec3(-1, 0, 0) * uv.x + vec3(0, -1, 0) * uv.y;
-    //vec3 direction = vec3(inverse(projection) * vec4(uv * 2.f - 1.f, 1, 1));
-    vec3 direction = vec3(inverse(projection) * vec4(uv * 2.f - 1.f, 1, 1));
-
-    ray _ray = ray(
-        _camera.origin,
-        direction
-    );
-
-    return _ray;
+    return ray(origin, direction.xyz);
 }
 
 #endif    // CAMERA_H

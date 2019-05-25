@@ -32,7 +32,7 @@ struct state final {
     scene::camera_system camera_system;
     std::shared_ptr<scene::camera> camera;
 
-    std::unique_ptr<OrbitController> camera_controller;
+    std::unique_ptr<camera::orbit_controller> camera_controller;
 
     gfx::buffer<scene::camera::gpu_data> camera_buffer;
 
@@ -162,8 +162,8 @@ int main()
         auto aspect = static_cast<float>(width) / static_cast<float>(height);
         app_state.camera = app_state.camera_system.create_camera(72.f, aspect);
 
-        app_state.camera_controller = std::make_unique<OrbitController>(app_state.camera, *input_manager);
-        app_state.camera_controller->look_at(glm::vec3{0, 0, 0}, glm::vec3{0, 0, -1});
+        app_state.camera_controller = std::make_unique<camera::orbit_controller>(app_state.camera, *input_manager);
+        app_state.camera_controller->look_at(glm::vec3{0, 2, 4}, glm::vec3{0, .5f, 0});
 
         app_state.camera_buffer = gfx::create_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
 

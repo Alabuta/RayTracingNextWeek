@@ -7,10 +7,11 @@
 #include "camera/camera.hxx"
 
 
-class OrbitController final {
+namespace camera {
+class orbit_controller final {
 public:
 
-    OrbitController(std::shared_ptr<scene::camera> camera, input::input_manager &input_manager);
+    orbit_controller(std::shared_ptr<scene::camera> camera, input::input_manager &input_manager);
 
     void look_at(glm::vec3 const &eye, glm::vec3 const &target);
 
@@ -42,9 +43,10 @@ private:
     glm::vec2 min_polar{-glm::pi<float>() * .49f, -glm::pi<float>()};
     glm::vec2 max_polar{+glm::pi<float>() * .49f, +glm::pi<float>()};
 
-    float minZ{.01f}, maxZ{1000.f};
+    float min_z{.01f}, max_z{1000.f};
 
     glm::vec3 const up_{0, 1, 0};
 
     void apply_damping();
 };
+}

@@ -26,12 +26,7 @@ layout(binding = kPRIMITIVES_BINDING, std430) readonly buffer world {
 #include "camera.glsl"
 layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 {
-    vec3 origin;
-
-    vec3 lower_left_corner;
-
-    vec3 horizontal;
-    vec3 vertical;
+    camera _camera;
 };
 
 #include "raytracer.glsl"
@@ -79,8 +74,6 @@ void main()
     vec2 xy = vec2(gl_GlobalInvocationID);
 
     random_engine rng = create_random_engine(gl_GlobalInvocationID.xy);
-
-    camera _camera = camera(origin, lower_left_corner, horizontal, vertical);
 
     vec3 color = vec3(0);
 

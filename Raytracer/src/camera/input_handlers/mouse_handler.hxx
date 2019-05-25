@@ -10,16 +10,17 @@
 #include "camera/camera_controller.hxx"
 
 
+namespace camera {
 class mouse_handler final : public input::mouse::handler {
 public:
 
-    mouse_handler(OrbitController &controller);
+    mouse_handler(camera::orbit_controller &controller) : controller_{controller} { }
 
 private:
 
-    OrbitController &controller_;
+    camera::orbit_controller &controller_;
 
-    std::function<void(mouse_handler &)> update_handler_{[] (auto &&) { }};
+    std::function<void(mouse_handler &)> update_handler_{[](auto &&) { }};
 
     glm::vec2 delta{0};
     glm::vec2 last{0};
@@ -31,3 +32,4 @@ private:
     void on_down(input::mouse::handler::buttons_t buttons) override;
     void on_up(input::mouse::handler::buttons_t buttons) override;
 };
+}
