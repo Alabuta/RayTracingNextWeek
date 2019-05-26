@@ -28,6 +28,9 @@ auto constexpr kCAMERA_BINDING = 7u;
 
 auto constexpr kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
+auto constexpr kUNIT_VECTORS_NUMBER = 32'768u;
+auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
+
 
 namespace app {
 struct state final {
@@ -245,6 +248,12 @@ int main()
 
         glTextureSubImage2D(unit_vectors_image.handle, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, std::data(unit_vectors));
         glBindImageTexture(kUNIT_VECTORS_BUFFER_BINDING, unit_vectors_image.handle, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+    }
+
+    {
+        auto unit_vectors = math::spherical_fibonacci_lattice(kUNIT_VECTORS_NUMBER);
+
+        auto buffer = gfx::create_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_NUMBER, std::data(unit_vectors));
     }
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);

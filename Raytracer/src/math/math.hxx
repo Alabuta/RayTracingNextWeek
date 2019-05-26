@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <vector>
 
 #define GLM_FORCE_CXX17
 #define GLM_ENABLE_EXPERIMENTAL
@@ -17,4 +18,6 @@
 
 namespace math {
 glm::vec3 random_on_unit_sphere(std::mt19937 &generator);
+
+std::vector<glm::vec3> spherical_fibonacci_lattice(std::size_t number);
 }
