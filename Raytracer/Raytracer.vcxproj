@@ -32,6 +32,7 @@
     <ClInclude Include="src\gfx\image.hxx" />
     <ClInclude Include="src\gfx\render_pass.hxx" />
     <ClInclude Include="src\gfx\shader.hxx" />
+    <ClInclude Include="src\gfx\vertex_array.hxx" />
     <ClInclude Include="src\input\input_manager.hxx" />
     <ClInclude Include="src\input\keyboard.hxx" />
     <ClInclude Include="src\input\mouse.hxx" />
