@@ -15,16 +15,16 @@ void camera_system::update()
 #endif
     {
         auto &&camera = *camera_ptr;
-        
-        auto theta = camera.fov / 2.f;
-
-        auto height = std::tan(theta);
-        auto width = height * camera.aspect;
 
         auto &&data = camera.data;
+        
+        /*auto height = std::tan(camera.fov / 2.f);
+        auto width = height * camera.aspect;
 
         data.projection[0] = glm::vec2{width, 0};
-        data.projection[1] = glm::vec2{0, height};
+        data.projection[1] = glm::vec2{0, height};*/
+
+        data.projection = glm::inverse(glm::perspective(camera.fov, camera.aspect, 1e-3f, 1e3f));
     });
 }
 }

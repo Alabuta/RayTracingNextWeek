@@ -61,10 +61,6 @@ void orbit_controller::update()
 
     world = glm::inverse(glm::lookAt(position, target_, up_));
 
-#if 0
-    auto orientation = from_two_vec3(up_, glm::vec3{0, 1, 0});
-#endif
-
     apply_damping();
 }
 

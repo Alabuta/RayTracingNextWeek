@@ -35,8 +35,6 @@ private:
 
     float damping_{.5f};
 
-    // glm::quat orientation_;
-
     float scale_{1.f};
 
     // latitude ands longitude
