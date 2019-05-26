@@ -177,27 +177,33 @@ int main()
     {
         {
             std::vector<material::lambertian> lambertian;
+
             lambertian.push_back({glm::vec3{.2, .4, .5}});
             lambertian.push_back({glm::vec3{.4, .6, .6}});
 
-            auto buffer = gfx::create_buffer<material::lambertian>(kLAMBERTIAN_BUFFER_BINDING, static_cast<std::uint32_t>(std::size(lambertian)));
-            gfx::update_buffer(buffer, std::data(lambertian));
+            auto length = static_cast<std::uint32_t>(std::size(lambertian));
+
+            auto buffer = gfx::create_buffer<material::lambertian>(kLAMBERTIAN_BUFFER_BINDING, length, std::data(lambertian));
         }
 
         {
             std::vector<material::metal> metal;
+
             metal.push_back({glm::vec3{.8, .6, .2}, 0});
 
-            auto buffer = gfx::create_buffer<material::metal>(kMETAL_BUFFER_BINDING, static_cast<std::uint32_t>(std::size(metal)));
-            gfx::update_buffer(buffer, std::data(metal));
+            auto length = static_cast<std::uint32_t>(std::size(metal));
+
+            auto buffer = gfx::create_buffer<material::metal>(kMETAL_BUFFER_BINDING, length, std::data(metal));
         }
 
         {
             std::vector<material::dielectric> dielectric;
+
             dielectric.push_back({glm::vec3{1}, 1.5f});
 
-            auto buffer = gfx::create_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, static_cast<std::uint32_t>(std::size(dielectric)));
-            gfx::update_buffer(buffer, std::data(dielectric));
+            auto length = static_cast<std::uint32_t>(std::size(dielectric));
+
+            auto buffer = gfx::create_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, length, std::data(dielectric));
         }
     }
 
@@ -212,8 +218,9 @@ int main()
         spheres.emplace_back(primitives::sphere{glm::vec3{-2, .5f, 0}, 1, 2, 0});
         spheres.emplace_back(primitives::sphere{glm::vec3{-2, .5f, 0}, -.99f, 2, 0});
 
-        auto buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, static_cast<std::uint32_t>(std::size(spheres)));
-        gfx::update_buffer(buffer, std::data(spheres));
+        auto length = static_cast<std::uint32_t>(std::size(spheres));
+
+        auto buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length, std::data(spheres));
     }
 
     if (false) {
