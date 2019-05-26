@@ -13,14 +13,11 @@ configure_file(
     "${PROJECT_SOURCE_DIR}/include/config.hxx"
 )
 
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/bin")
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/bin")
-
 find_package(OpenGL REQUIRED)
 
 find_package(glm REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(GLEW REQUIRED)
+find_package(glfw3 3.3 REQUIRED)
+find_package(GLEW 2.1 REQUIRED)
 
 if(NOT WIN32)
     find_package(X11 REQUIRED)

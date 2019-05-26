@@ -2,7 +2,8 @@
 #define CONSTANTS_H
 
 
-const uint SAMPLING_NUMBER = 32u;
+
+const uint SAMPLING_NUMBER = 128u;
 const uint BOUNCES_NUMBER = 32u;
 
 const uint kLAMBERTIAN_BUFFER_BINDING = 2u;

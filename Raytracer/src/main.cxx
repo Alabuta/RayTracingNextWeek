@@ -120,7 +120,7 @@ int main()
 
     app::state app_state;
 
-    app_state.window_size = std::array{1920, 1080};
+    app_state.window_size = std::array{512, 512};
     auto [width, height] = app_state.window_size;
 
     auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(width / 8.f));
@@ -179,7 +179,7 @@ int main()
             std::vector<material::lambertian> lambertian;
 
             lambertian.push_back({glm::vec3{.2, .4, .5}});
-            lambertian.push_back({glm::vec3{.4, .6, .6}});
+            lambertian.push_back({glm::vec3{.6, .8, .8}});
 
             auto length = static_cast<std::uint32_t>(std::size(lambertian));
 
@@ -213,10 +213,10 @@ int main()
         spheres.emplace_back(primitives::sphere{glm::vec3{0, .5f, 0}, 1, 0, 0});
         spheres.emplace_back(primitives::sphere{glm::vec3{0, -1000.5f, 0}, 1000, 0, 1});
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{+2, .5f, 0}, 1, 1, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{+2.1f, .5f, 0}, 1, 1, 0});
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2, .5f, 0}, 1, 2, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2, .5f, 0}, -.99f, 2, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1f, .5f, 0}, 1, 2, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1f, .5f, 0}, -.99f, 2, 0});
 
         auto length = static_cast<std::uint32_t>(std::size(spheres));
 
@@ -229,7 +229,7 @@ int main()
         std::random_device random_device;
         std::mt19937 generator{random_device()};
 
-        std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width * height));
+        std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width) * height);
 
     #ifdef _MSC_VER
         std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
@@ -248,6 +248,7 @@ int main()
     }
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
+    glFinish();
 
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
@@ -256,11 +257,9 @@ int main()
     {
         glfwPollEvents();
 
-        app::update(app_state);
-
         auto start = std::chrono::high_resolution_clock::now();
 
-        app::render(app_state, grid_size_x, grid_size_y);
+        app::update(app_state);
 
         glFinish();
 

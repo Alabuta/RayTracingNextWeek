@@ -41,10 +41,20 @@ struct context final {
 
         glewExperimental = true;
 
-        glDisable(GL_CULL_FACE);
-
         if (auto result = glewInit(); result != GLEW_OK)
             throw std::runtime_error("failed to init GLEW"s);
+
+        glPointSize(2.f);
+
+        glClearColor(0.f, .254901f, .6f, 1.f);
+
+        glDisable(GL_CULL_FACE);
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_CLAMP);
+        //glDepthFunc(GL_GREATER);
+
+        glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
     }
 };
 }
