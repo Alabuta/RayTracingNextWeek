@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 
+const uint VERTEX_SEMANTIC_POSITION = 0u;
 
 const uint SAMPLING_NUMBER = 128u;
 const uint BOUNCES_NUMBER = 32u;

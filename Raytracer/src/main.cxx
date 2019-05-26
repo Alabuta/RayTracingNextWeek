@@ -10,6 +10,7 @@
 #include "gfx/shader.hxx"
 #include "gfx/image.hxx"
 #include "gfx/buffer.hxx"
+#include "gfx/vertex_array.hxx"
 
 #include "camera/camera.hxx"
 #include "camera/camera_controller.hxx"
@@ -18,16 +19,18 @@
 #include "raytracer/material.hxx"
 
 
+auto constexpr kVERTEX_SEMANTIC_POSITION = 0u;
+
 auto constexpr kOUT_IMAGE_BINDING = 2u;
 auto constexpr kLAMBERTIAN_BUFFER_BINDING = 2u;
 auto constexpr kMETAL_BUFFER_BINDING = 3u;
 auto constexpr kDIELECTRIC_BUFFER_BINDING = 4u;
-auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 auto constexpr kPRIMITIVES_BINDING = 6u;
 auto constexpr kCAMERA_BINDING = 7u;
 
 auto constexpr kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
+auto constexpr kDEBUG_SPHERICAL_FIBONACCI_LATTICE = false;
 auto constexpr kUNIT_VECTORS_NUMBER = 32'768u;
 auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 
@@ -47,6 +50,9 @@ struct state final {
 
     gfx::program compute_program;
     gfx::program blit_program;
+
+    gfx::program sphere_debug_program;
+    gfx::vertex_array<3, float> sphere_debug_vao;
 };
 
 class window_event_handler final : public platform::event_handler {
@@ -83,6 +89,19 @@ void render(app::state const &app_state, std::uint32_t grid_size_x, std::uint32_
     glDispatchCompute(grid_size_x, grid_size_y, 1);
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+}
+
+void render_spherical_fibonacci_lattice(app::state const &app_state)
+{
+    glUseProgram(app_state.sphere_debug_program.handle);
+
+    auto [width, height] = app_state.window_size;
+
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glBindVertexArray(app_state.sphere_debug_vao.handle);
+    glDrawArrays(GL_POINTS, 0, kUNIT_VECTORS_NUMBER);
 }
 
 void blit_framebuffer(app::state const &app_state)
@@ -254,6 +273,14 @@ int main()
         auto unit_vectors = math::spherical_fibonacci_lattice(kUNIT_VECTORS_NUMBER);
 
         auto buffer = gfx::create_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_NUMBER, std::data(unit_vectors));
+
+        if constexpr (kDEBUG_SPHERICAL_FIBONACCI_LATTICE) {
+            auto vertex_stage = gfx::create_shader_stage<gfx::shader::vertex>("debug-sphere.vert.spv"sv, "main"sv);
+            auto fragment_stage = gfx::create_shader_stage<gfx::shader::fragment>("debug-sphere.frag.spv"sv, "main"sv);
+
+            app_state.sphere_debug_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
+            app_state.sphere_debug_vao = create_vertex_array(kVERTEX_SEMANTIC_POSITION, buffer);
+        }
     }
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
@@ -270,18 +297,26 @@ int main()
 
         app::update(app_state);
 
-        glFinish();
+        if constexpr (kDEBUG_SPHERICAL_FIBONACCI_LATTICE) {
+            app::render_spherical_fibonacci_lattice(app_state);
+        }
 
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
+        else {
+            app::render(app_state, grid_size_x, grid_size_y);
 
-        glfwSetWindowTitle(window.handle(), std::to_string(static_cast<float>(duration.count()) * 1e-3).c_str());
+            glFinish();
 
-        app::blit_framebuffer(app_state);
+            app::blit_framebuffer(app_state);
+        }
 
         glfwSwapBuffers(window.handle());
 
         if (auto result = glGetError(); result != GL_NO_ERROR)
             throw std::runtime_error("OpenGL error: "s + std::to_string(result));
+
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
+
+        glfwSetWindowTitle(window.handle(), std::to_string(static_cast<float>(duration.count()) * 1e-3f).c_str());
     });
 
     glfwTerminate();
