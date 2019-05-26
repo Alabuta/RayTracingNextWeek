@@ -248,29 +248,42 @@ int main()
     if (false) {
         auto unit_vectors_image = gfx::create_image2D(width, height, GL_RGBA32F);
 
+        std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width) * height);
+
         std::random_device random_device;
         std::mt19937 generator{random_device()};
 
-        std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width) * height);
-
     #ifdef _MSC_VER
         std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
-        {
-            return glm::vec4(glm::normalize(math::random_on_unit_sphere(generator)), 1);
-        });
     #else
         std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
+    #endif
         {
             return glm::vec4(glm::normalize(math::random_on_unit_sphere(generator)), 1);
         });
-    #endif
 
         glTextureSubImage2D(unit_vectors_image.handle, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, std::data(unit_vectors));
         glBindImageTexture(kUNIT_VECTORS_BUFFER_BINDING, unit_vectors_image.handle, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
     }
 
     {
+#if 1
         auto unit_vectors = math::spherical_fibonacci_lattice(kUNIT_VECTORS_NUMBER);
+#else
+        std::vector<glm::vec3> unit_vectors(kUNIT_VECTORS_NUMBER);
+
+        std::random_device random_device;
+        std::mt19937 generator{random_device()};
+
+    #ifdef _MSC_VER
+        std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
+    #else
+        std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
+    #endif
+        {
+            return glm::normalize(math::random_on_unit_sphere(generator));
+        });
+#endif
 
         auto buffer = gfx::create_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_NUMBER, std::data(unit_vectors));
 

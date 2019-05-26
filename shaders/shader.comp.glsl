@@ -11,6 +11,11 @@ layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
 
 //layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
 
+layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
+{
+    vec3 unit_vectors[kUNIT_VECTORS_NUMBER];
+};
+
 #include "common.glsl"
 #include "math.glsl"
 #include "random.glsl"
@@ -117,7 +122,9 @@ void main()
 
     // color = vec3(generate_real(rng));
 
-    // vec3 color = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
+    // color = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
+
+    // color = unit_vectors[uint(generate_real(rng) * kUNIT_VECTORS_NUMBER)];
 
     imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
 }

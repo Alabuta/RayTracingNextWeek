@@ -6,9 +6,11 @@
 namespace math {
 glm::vec3 random_on_unit_sphere(std::mt19937 &generator)
 {
+    glm::vec3 vector;
+
+#if 0
     static auto random_distribution = std::uniform_real_distribution{-1.f, +1.f};
 
-    glm::vec3 vector;
     float norm;
 
     do {
@@ -22,6 +24,22 @@ glm::vec3 random_on_unit_sphere(std::mt19937 &generator)
     } while (norm < .01f || norm > 1.f);
 
     return glm::normalize(vector);
+#else
+    static auto random_distribution = std::uniform_real_distribution{0.f, 1.f};
+
+    float phi = random_distribution(generator) * glm::pi<float>() * 2.f;
+    float cos_theta = random_distribution(generator) * 2.f - 1.f;
+
+    float theta = acos(cos_theta);
+
+    float sin_theta = sin(theta);
+
+    vector.x = sin_theta * cos(phi);
+    vector.y = sin_theta * sin(phi);
+    vector.z = cos_theta;
+
+    return vector;
+#endif
 }
 
 std::vector<glm::vec3> spherical_fibonacci_lattice(std::size_t number)

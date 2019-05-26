@@ -41,8 +41,20 @@ float generate_real(inout random_engine rng)
     return generate(rng) * delim;
 }
 
+float gradient_noise(vec2 xy)
+{
+    return fract(52.9829189f * fract(.06711056f * xy.x) + .00583715f * xy.y);
+}
+
+//float noise(vec2 uv)
+//{
+//    return gradient_noise(floor(fmod(uv, 1024)) + seed * time);
+//}
+
 vec3 random_on_unit_sphere(inout random_engine rng)
 {
+    //return unit_vectors[uint(generate_real(rng) * float(kUNIT_VECTORS_NUMBER - 1u))];
+
     float phi = generate_real(rng) * kTAU;
     float cos_theta = generate_real(rng) * 2.f - 1.f;
 
