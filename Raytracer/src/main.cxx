@@ -145,8 +145,8 @@ int main()
     app_state.window_size = std::array{512, 512};
     auto [width, height] = app_state.window_size;
 
-    auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(width / 8.f));
-    auto const grid_size_y = static_cast<std::uint32_t>(std::ceil(height / 8.f));
+    auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(static_cast<float>(width) / 8.f));
+    auto const grid_size_y = static_cast<std::uint32_t>(std::ceil(static_cast<float>(height) / 8.f));
 
     std::cout << grid_size_x << 'x' << grid_size_y << '\n';
 
@@ -205,7 +205,7 @@ int main()
 
             auto length = static_cast<std::uint32_t>(std::size(lambertian));
 
-            auto buffer = gfx::create_buffer<material::lambertian>(kLAMBERTIAN_BUFFER_BINDING, length, std::data(lambertian));
+            gfx::create_buffer<material::lambertian>(kLAMBERTIAN_BUFFER_BINDING, length, std::data(lambertian));
         }
 
         {
@@ -215,7 +215,7 @@ int main()
 
             auto length = static_cast<std::uint32_t>(std::size(metal));
 
-            auto buffer = gfx::create_buffer<material::metal>(kMETAL_BUFFER_BINDING, length, std::data(metal));
+            gfx::create_buffer<material::metal>(kMETAL_BUFFER_BINDING, length, std::data(metal));
         }
 
         {
@@ -225,7 +225,7 @@ int main()
 
             auto length = static_cast<std::uint32_t>(std::size(dielectric));
 
-            auto buffer = gfx::create_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, length, std::data(dielectric));
+            gfx::create_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, length, std::data(dielectric));
         }
     }
 
@@ -242,13 +242,13 @@ int main()
 
         auto length = static_cast<std::uint32_t>(std::size(spheres));
 
-        auto buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length, std::data(spheres));
+        gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length, std::data(spheres));
     }
 
     if (false) {
         auto unit_vectors_image = gfx::create_image2D(width, height, GL_RGBA32F);
 
-        std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width) * height);
+        std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width) * static_cast<std::size_t>(height));
 
         std::random_device random_device;
         std::mt19937 generator{random_device()};
@@ -292,7 +292,7 @@ int main()
             auto fragment_stage = gfx::create_shader_stage<gfx::shader::fragment>("debug-sphere.frag.spv"sv, "main"sv);
 
             app_state.sphere_debug_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
-            app_state.sphere_debug_vao = create_vertex_array(kVERTEX_SEMANTIC_POSITION, buffer);
+            app_state.sphere_debug_vao = gfx::create_vertex_array<3, float>(kVERTEX_SEMANTIC_POSITION, buffer);
         }
     }
 

@@ -14,7 +14,7 @@ using namespace std::string_literals;
 
 
 namespace gfx {
-template<std::size_t N, class T>
+template<std::int32_t N, class T>
 struct vertex_array final {
     static auto constexpr number{N};
     using type = T;
@@ -25,7 +25,7 @@ struct vertex_array final {
     gfx::buffer<glm::vec<N, T>> buffer;
 };
 
-template<std::size_t N, class T>
+template<std::int32_t N, class T>
 gfx::vertex_array<N, T> create_vertex_array(std::uint32_t attribute_index, gfx::buffer<glm::vec<N, T>> const &buffer)
 {
     std::uint32_t handle{0};
