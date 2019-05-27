@@ -245,7 +245,7 @@ int main()
         gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length, std::data(spheres));
     }
 
-    if (false) {
+    if constexpr (false) {
         auto unit_vectors_image = gfx::create_image2D(width, height, GL_RGBA32F);
 
         std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width) * static_cast<std::size_t>(height));

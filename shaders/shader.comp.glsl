@@ -113,7 +113,7 @@ void main()
     vec3 color = vec3(0);
 
     for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
-        vec2 offset = vec2(generate_real(rng), generate_real(rng));
+        vec2 offset = vec2(generate_real(rng), generate_real(rng)) * 2.f - 1.f;
         vec2 _uv = (xy + offset) / imageSize;
 
         color += render(rng, _camera, _uv);
