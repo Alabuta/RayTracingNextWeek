@@ -12,7 +12,7 @@ struct camera final {
 
     struct gpu_data final {
         glm::mat4 world{1.f};
-        glm::mat4 projection{1.f};
+        glm::mat4 inverted_projection{1.f};
     };
 
     gpu_data data;

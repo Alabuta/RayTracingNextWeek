@@ -21,10 +21,10 @@ void camera_system::update()
         /*auto height = std::tan(camera.fov / 2.f);
         auto width = height * camera.aspect;
 
-        data.projection[0] = glm::vec2{width, 0};
-        data.projection[1] = glm::vec2{0, height};*/
+        data.inverted_projection[0] = glm::vec2{width, 0};
+        data.inverted_projection[1] = glm::vec2{0, height};*/
 
-        data.projection = glm::inverse(glm::perspective(camera.fov, camera.aspect, 1e-3f, 1e3f));
+        data.inverted_projection = glm::inverse(glm::perspective(camera.fov, camera.aspect, 1e-3f, 1e3f));
     });
 }
 }

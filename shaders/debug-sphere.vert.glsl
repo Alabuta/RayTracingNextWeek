@@ -16,5 +16,5 @@ layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 
 void main()
 {
-    gl_Position = inverse(_camera.projection) * inverse(_camera.world) * vec4(inVertex, 1);
+    gl_Position = inverse(_camera.inverted_projection) * inverse(_camera.world) * vec4(inVertex, 1);
 }
