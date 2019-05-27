@@ -113,7 +113,8 @@ void main()
     vec3 color = vec3(0);
 
     for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
-        vec2 _uv = (xy + generate_real(rng)) / imageSize;
+        vec2 offset = vec2(generate_real(rng), generate_real(rng));
+        vec2 _uv = (xy + offset) / imageSize;
 
         color += render(rng, _camera, _uv);
     }
@@ -122,9 +123,11 @@ void main()
 
     // color = vec3(generate_real(rng));
 
+    // color = random_on_unit_sphere(rng);
+
     // color = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
 
-    // color = unit_vectors[uint(generate_real(rng) * kUNIT_VECTORS_NUMBER)];
+    // color = unit_vectors[uint(generate_real(rng) * float(kUNIT_VECTORS_NUMBER - 1))];
 
     imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
 }

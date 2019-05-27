@@ -39,9 +39,8 @@ float schlick_reflection_probability(float refraction_index, float cosine_theta)
 
 surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray, const in lambertian material)
 {
-    // vec3 random_direction = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
     vec3 random_direction = random_on_unit_sphere(rng);
-    vec3 direction = _hit.normal + random_direction;
+    vec3 direction = normalize(_hit.normal + random_direction);
 
     ray scattered_ray = ray(_hit.position, direction);
     vec3 attenuation = material.albedo;
@@ -54,12 +53,13 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
     vec3 reflected = reflect(ray_unit_direction(_ray), _hit.normal);
 
     vec3 random_direction = random_on_unit_sphere(rng);
+    vec3 direction = normalize(reflected + random_direction * material.roughness);
 
-    ray scattered_ray = ray(_hit.position, reflected + random_direction * material.roughness);
+    ray scattered_ray = ray(_hit.position, direction);
 
     vec3 attenuation = material.albedo;
 
-    return surface_response(scattered_ray, attenuation, dot(scattered_ray.direction, _hit.normal) > 0.f);
+    return surface_response(scattered_ray, attenuation, dot(direction, _hit.normal) > 0.f);
 }
 
 surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray, const in dielectric material)

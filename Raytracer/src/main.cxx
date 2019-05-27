@@ -31,7 +31,7 @@ auto constexpr kCAMERA_BINDING = 7u;
 auto constexpr kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
 auto constexpr kDEBUG_SPHERICAL_FIBONACCI_LATTICE = false;
-auto constexpr kUNIT_VECTORS_NUMBER = 32'768u;
+auto constexpr kUNIT_VECTORS_NUMBER = 8'192u;
 auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 
 

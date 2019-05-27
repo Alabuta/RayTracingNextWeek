@@ -53,7 +53,7 @@ float gradient_noise(vec2 xy)
 
 vec3 random_on_unit_sphere(inout random_engine rng)
 {
-    //return unit_vectors[uint(generate_real(rng) * float(kUNIT_VECTORS_NUMBER - 1u))];
+    // return unit_vectors[generate(rng) % 6100];
 
     float phi = generate_real(rng) * kTAU;
     float cos_theta = generate_real(rng) * 2.f - 1.f;
@@ -69,6 +69,13 @@ vec3 random_on_unit_sphere(inout random_engine rng)
     vector.z = cos_theta;
 
     return vector;
+}
+
+vec3 random_in_unit_disk(inout random_engine rng)
+{
+    float theta = sqrt(generate_real(rng)) * kTAU;
+
+    return vec3(cos(theta), sin(theta), 0.f);
 }
 
 #endif    // RANDOM_H
