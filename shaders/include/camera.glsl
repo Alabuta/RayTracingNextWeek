@@ -10,11 +10,6 @@ struct camera {
     mat4 inverted_projection;
 };
 
-// float circle_of_confusion(float aperture)
-// {
-//     ;
-// }
-
 ray generate_ray(/* inout random_engine rng,  */const in camera _camera, const in vec2 uv)
 {
     /*const float aperture = .1f;

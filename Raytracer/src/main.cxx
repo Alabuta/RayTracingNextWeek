@@ -142,7 +142,7 @@ int main()
 
     app::state app_state;
 
-    app_state.window_size = std::array{512, 512};
+    app_state.window_size = std::array{800, 600};
     auto [width, height] = app_state.window_size;
 
     auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(static_cast<float>(width) / 8.f));
@@ -186,10 +186,10 @@ int main()
 
     {
         auto aspect = static_cast<float>(width) / static_cast<float>(height);
-        app_state.camera = app_state.camera_system.create_camera(72.f, aspect);
+        app_state.camera = app_state.camera_system.create_camera(42.f, aspect);
 
         app_state.camera_controller = std::make_unique<camera::orbit_controller>(app_state.camera, *input_manager);
-        app_state.camera_controller->look_at(glm::vec3{0, 2, 4}, glm::vec3{0, .5f, 0});
+        app_state.camera_controller->look_at(glm::vec3{6.4, 1.6, 2.7}, glm::vec3{0, .5f, 0});
 
         app_state.camera_buffer = gfx::create_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
 
@@ -238,7 +238,7 @@ int main()
         spheres.emplace_back(primitives::sphere{glm::vec3{+2.1f, .5f, 0}, 1, 1, 0});
 
         spheres.emplace_back(primitives::sphere{glm::vec3{-2.1f, .5f, 0}, 1, 2, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1f, .5f, 0}, -.99f, 2, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1f, .5f, 0}, -.88f, 2, 0});
 
         auto length = static_cast<std::uint32_t>(std::size(spheres));
 

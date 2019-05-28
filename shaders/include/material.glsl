@@ -40,7 +40,7 @@ float schlick_reflection_probability(float refraction_index, float cosine_theta)
 surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray, const in lambertian material)
 {
     vec3 random_direction = random_on_unit_sphere(rng);
-    vec3 direction = normalize(_hit.normal + random_direction);
+    vec3 direction = _hit.normal + random_direction;
 
     ray scattered_ray = ray(_hit.position, direction);
     vec3 attenuation = material.albedo;

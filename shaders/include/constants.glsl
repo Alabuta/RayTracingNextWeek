@@ -18,7 +18,7 @@ const uint kOUT_IMAGE_BINDING = 2u;
 
 const uint kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
-const uint kSPHERES_NUMBER = 5u;
+const uint kSPHERES_NUMBER = 4u;
 const uint kUNIT_VECTORS_NUMBER = 8192u;
 
 #endif    // CONSTANTS_H

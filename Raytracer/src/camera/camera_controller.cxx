@@ -82,7 +82,7 @@ void orbit_controller::pan(float x, float y)
 
 void orbit_controller::dolly(float delta)
 {
-    auto speed = (1.f - damping_) * 2.f;
+    auto speed = (1.f - damping_) * 1.6f;
 
     auto dollying = std::pow(.95f, std::abs(delta) * speed);
 

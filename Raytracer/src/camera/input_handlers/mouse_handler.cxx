@@ -31,7 +31,7 @@ void mouse_handler::on_down(input::mouse::handler::buttons_t buttons)
             update_handler_ = [] (auto &handler)
             {
                 auto direction = glm::dot(handler.delta, handler.dolly_direction);
-                handler.controller_.dolly(glm::length(handler.delta) * direction);
+                handler.controller_.dolly(glm::length(handler.delta) * direction * .01f);
             }; break;
 
         case 0x01:

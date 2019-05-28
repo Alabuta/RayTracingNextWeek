@@ -62,13 +62,13 @@ vec3 random_on_unit_sphere(inout random_engine rng)
 
     float sin_theta = sin(theta);
 
-    vec3 vector;
+    vec3 vec;
 
-    vector.x = sin_theta * cos(phi);
-    vector.y = sin_theta * sin(phi);
-    vector.z = cos_theta;
+    vec.x = sin_theta * cos(phi);
+    vec.y = sin_theta * sin(phi);
+    vec.z = cos_theta;
 
-    return vector;
+    return vec;
 }
 
 vec3 random_in_unit_disk(inout random_engine rng)
