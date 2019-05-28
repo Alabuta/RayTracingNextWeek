@@ -73,6 +73,14 @@ vec3 random_on_unit_sphere(inout random_engine rng)
 
 vec3 random_in_unit_disk(inout random_engine rng)
 {
+    float radius = sqrt(generate_real(rng));
+    float theta = generate_real(rng) * kTAU;
+
+    return vec3(cos(theta), sin(theta), 0.f) * radius;
+}
+
+vec3 random_on_unit_disk_edge(inout random_engine rng)
+{
     float theta = sqrt(generate_real(rng)) * kTAU;
 
     return vec3(cos(theta), sin(theta), 0.f);

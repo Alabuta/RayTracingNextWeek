@@ -57,7 +57,7 @@ vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
     vec3 attenuation = vec3(1.f);
 	vec3 energy_absorption = vec3(0.f);
 
-	ray scattered_ray = generate_ray(_camera, uv);
+	ray scattered_ray = generate_ray(rng, _camera, uv);
 
     for (uint bounce = 0u; bounce < BOUNCES_NUMBER; ++bounce) {
 		hit closest_hit = hit_world(kSPHERES_NUMBER, scattered_ray);
