@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="src\camera\camera.cxx" />
     <ClCompile Include="src\camera\camera_controller.cxx" />
+    <ClCompile Include="src\camera\input_handlers\keyboard_handler.cxx" />
     <ClCompile Include="src\camera\input_handlers\mouse_handler.cxx" />
     <ClCompile Include="src\input\input_manager.cxx" />
     <ClCompile Include="src\input\keyboard.cxx" />
@@ -25,6 +26,7 @@
     <ClInclude Include="include\config.hxx" />
     <ClInclude Include="src\camera\camera.hxx" />
     <ClInclude Include="src\camera\camera_controller.hxx" />
+    <ClInclude Include="src\camera\input_handlers\keyboard_handler.hxx" />
     <ClInclude Include="src\camera\input_handlers\mouse_handler.hxx" />
     <ClInclude Include="src\gfx\buffer.hxx" />
     <ClInclude Include="src\gfx\context.hxx" />

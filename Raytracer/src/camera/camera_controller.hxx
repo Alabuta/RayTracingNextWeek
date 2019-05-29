@@ -25,6 +25,7 @@ private:
     std::shared_ptr<scene::camera> camera_;
 
     std::shared_ptr<class mouse_handler> mouse_handler_;
+    std::shared_ptr<class keyboard_handler> keyboard_handler_;
 
     glm::vec3 offset_{4};
     glm::vec2 polar_{0}, polar_delta_{0};

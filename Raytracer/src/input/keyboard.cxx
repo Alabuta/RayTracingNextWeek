@@ -25,7 +25,10 @@ void keyboard::update(platform::input::keyboard_data::raw_data &data)
         {
             [[maybe_unused]] auto [key, mods] = press;
 
-            pressed_[0] = key;
+
+            //if (std::find(std::cbegin(pressed_.set), std::cend(pressed_.set), static_cast<handler::key>(key)))
+
+            //pressed_[0] = static_cast<std::int16_t>(key);
 
             on_press_(pressed_);
         },
@@ -33,7 +36,7 @@ void keyboard::update(platform::input::keyboard_data::raw_data &data)
         {
             [[maybe_unused]] auto [key, mods] = release;
 
-            pressed_[0] = -1;
+            //pressed_[0] = -1;
 
             on_release_(pressed_);
         },

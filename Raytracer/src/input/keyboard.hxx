@@ -17,10 +17,17 @@ public:
 
         virtual ~handler() = default;
 
-        using keys_t = std::array<std::int32_t, 4>;
+        enum class key : std::int16_t {
+            A = 0x41, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W
+        };
 
-        virtual void on_press(keys_t const &key) = 0;
-        virtual void on_release(keys_t const &key) = 0;
+        struct keys_state final {
+            std::array<key, 8> set;
+            std::size_t length{0};
+        };
+
+        virtual void on_press(keys_state const &keys_state) = 0;
+        virtual void on_release(keys_state const &keys_state) = 0;
     };
 
     void connect(std::shared_ptr<handler> slot);
@@ -29,9 +36,10 @@ public:
 
 private:
 
-    handler::keys_t pressed_;
+    handler::keys_state pressed_;
+    //handler::keys_state released_;
 
-    boost::signals2::signal<void(handler::keys_t const &)> on_press_;
-    boost::signals2::signal<void(handler::keys_t const &)> on_release_;
+    boost::signals2::signal<void(handler::keys_state const &)> on_press_;
+    boost::signals2::signal<void(handler::keys_state const &)> on_release_;
 };
 }
