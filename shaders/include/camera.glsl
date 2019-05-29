@@ -17,7 +17,7 @@ ray generate_ray(inout random_engine rng, const in camera _camera, const in vec2
     vec3 direction = normalize(vec3(_camera.world * vec4(xy, -1.f, 0.f)));
     vec3 origin = vec3(_camera.world[3]);
 
-    const float aperture = .4f;
+    const float aperture = .2f;
     const float lens_radius = aperture * .5f;
     const float focus_dist = 5.f;// distance(origin, vec3(0.f, .5f, 0.f));
 

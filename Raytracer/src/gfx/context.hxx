@@ -37,7 +37,7 @@ struct context final {
     context(platform::window const &window) : handle{window.handle()}
     {
         glfwMakeContextCurrent(handle);
-        glfwSwapInterval(-1);
+        glfwSwapInterval(1);
 
         glewExperimental = true;
 

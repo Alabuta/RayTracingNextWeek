@@ -23,8 +23,8 @@ gfx::image2D create_image2D(std::int32_t width, std::int32_t height, GLenum inte
     glCreateTextures(GL_TEXTURE_2D, 1, &handle);
     glObjectLabel(GL_TEXTURE, handle, -1, "[texture object]");
 
-    glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
