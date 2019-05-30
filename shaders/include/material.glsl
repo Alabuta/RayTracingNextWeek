@@ -42,6 +42,7 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
     vec3 random_direction = random_on_unit_sphere(rng);
     vec3 direction = _hit.normal + random_direction;
 
+    // ray scattered_ray = ray(_hit.position, direction, _ray.time);
     ray scattered_ray = ray(_hit.position, direction);
     vec3 attenuation = material.albedo;
 
@@ -55,6 +56,7 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
     vec3 random_direction = random_on_unit_sphere(rng);
     vec3 direction = normalize(reflected + random_direction * material.roughness);
 
+    // ray scattered_ray = ray(_hit.position, direction, _ray.time);
     ray scattered_ray = ray(_hit.position, direction);
 
     vec3 attenuation = material.albedo;
@@ -86,9 +88,11 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
 
     if (generate_real(rng) < reflection_probability) {
         vec3 reflected = reflect(ray_unit_direction(_ray), _hit.normal);
+        // scattered_ray = ray(_hit.position, reflected, _ray.time);
         scattered_ray = ray(_hit.position, reflected);
     }
 
+    // else scattered_ray = ray(_hit.position, refracted, _ray.time);
     else scattered_ray = ray(_hit.position, refracted);
 
     return surface_response(scattered_ray, attenuation, true);

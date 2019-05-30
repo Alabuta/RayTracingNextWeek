@@ -8,6 +8,8 @@
 struct camera {
     mat4 world;
     mat4 inverted_projection;
+
+    //float shutter_open, shutter_close;
 };
 
 ray generate_ray(inout random_engine rng, const in camera _camera, const in vec2 uv)
@@ -26,6 +28,11 @@ ray generate_ray(inout random_engine rng, const in camera _camera, const in vec2
     vec3 offset = vec3(_camera.world * vec4(random_direction, 0.f));
 
     vec3 bended_direction = normalize(direction * focus_dist - offset);
+
+    /*const float shutter_open = 0.f;
+    const float shutter_close = 1.f;
+
+    float time = shutter_open + (shutter_close - shutter_open) * generate_real(rng);*/
 
     return ray(origin + offset, bended_direction);
 }

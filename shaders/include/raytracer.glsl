@@ -7,7 +7,10 @@
 
 hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float time_max)
 {
-    vec3 oc = _ray.origin - _sphere.center;
+    // vec3 center = _sphere.center + (_ray.time) * vec3(0, 0, 1);
+    vec3 center = _sphere.center;
+
+    vec3 oc = _ray.origin - center;
 
     float a = dot(_ray.direction, _ray.direction);
     float b = dot(oc, _ray.direction);
@@ -23,7 +26,7 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
 
             return hit(
                 position,
-                (position - _sphere.center) / _sphere.radius,
+                (position - center) / _sphere.radius,
                 temp,
                 _sphere.material_type,
                 _sphere.material_index,
@@ -38,7 +41,7 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
 
             return hit(
                 position,
-                (position - _sphere.center) / _sphere.radius,
+                (position - center) / _sphere.radius,
                 temp,
                 _sphere.material_type,
                 _sphere.material_index,

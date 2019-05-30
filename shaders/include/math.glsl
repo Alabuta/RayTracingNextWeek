@@ -6,6 +6,8 @@ const float kTAU = 3.141592654f * 2.f;
 struct ray {
     vec3 origin;
     vec3 direction;
+
+    // float time;
 };
 
 vec3 ray_unit_direction(const in ray _ray)
