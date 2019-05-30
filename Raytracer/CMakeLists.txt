@@ -42,6 +42,7 @@ set(SOURCE_FILES
     src/camera/camera.hxx                           src/camera/camera.cxx
     src/camera/camera_controller.hxx                src/camera/camera_controller.cxx
     src/camera/input_handlers/mouse_handler.hxx     src/camera/input_handlers/mouse_handler.cxx
+    src/camera/input_handlers/keyboard_handler.hxx  src/camera/input_handlers/keyboard_handler.cxx
 
     src/raytracer/primitives.hxx
     src/raytracer/material.hxx

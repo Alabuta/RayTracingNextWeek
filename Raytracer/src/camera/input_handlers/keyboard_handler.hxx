@@ -23,8 +23,11 @@ private:
 
     glm::vec3 direction_{0};
 
-    void on_press(input::keyboard::handler::keys_state const &key) override;
-    void on_release(input::keyboard::handler::keys_state const &key) override;
+    void state_on_press(keys_state const &) override { }
+    void state_on_release(keys_state const &) override { }
+
+    void on_press_key(handler::key key) override;
+    void on_release_key(handler::key key) override;
 };
 }
 #pragma once

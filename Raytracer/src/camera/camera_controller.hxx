@@ -18,6 +18,7 @@ public:
     void rotate(float x, float y);
     void pan(float x, float y);
     void dolly(float delta);
+    void move(glm::vec3 const &direction);
 
     void update();
 

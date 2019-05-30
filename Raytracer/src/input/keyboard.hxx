@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <array>
+#include <memory>
+#include <set>
 
 #include <boost/signals2.hpp>
 
@@ -12,6 +13,8 @@ namespace input {
 class keyboard final {
 public:
 
+    keyboard();
+
     class handler {
     public:
 
@@ -21,13 +24,23 @@ public:
             A = 0x41, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W
         };
 
-        struct keys_state final {
-            std::array<key, 8> set;
-            std::size_t length{0};
+        class keys_state final {
+        public:
+
+            keys_state(std::set<key> &state) noexcept : state_{state} { }
+
+            bool operator() (handler::key key) const { return state_.count(key) != 0; };
+
+        private:
+
+            std::set<key> &state_;
         };
 
-        virtual void on_press(keys_state const &keys_state) = 0;
-        virtual void on_release(keys_state const &keys_state) = 0;
+        virtual void state_on_press(keys_state const &keys_state) = 0;
+        virtual void state_on_release(keys_state const &keys_state) = 0;
+
+        virtual void on_press_key(handler::key key) = 0;
+        virtual void on_release_key(handler::key key) = 0;
     };
 
     void connect(std::shared_ptr<handler> slot);
@@ -36,10 +49,13 @@ public:
 
 private:
 
-    handler::keys_state pressed_;
-    //handler::keys_state released_;
+    std::set<handler::key> keys_;
+    std::unique_ptr<handler::keys_state> keys_state_;
 
-    boost::signals2::signal<void(handler::keys_state const &)> on_press_;
-    boost::signals2::signal<void(handler::keys_state const &)> on_release_;
+    boost::signals2::signal<void(handler::keys_state const &)> state_on_press_;
+    boost::signals2::signal<void(handler::keys_state const &)> state_on_release_;
+
+    boost::signals2::signal<void(handler::key)> on_press_key_;
+    boost::signals2::signal<void(handler::key)> on_release_key_;
 };
 }

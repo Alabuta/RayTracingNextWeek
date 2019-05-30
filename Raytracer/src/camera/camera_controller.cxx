@@ -90,6 +90,13 @@ void orbit_controller::dolly(float delta)
     scale_ = std::signbit(delta) ? (std::signbit(delta) ? 1.f / dollying : 1.f) : dollying;
 }
 
+void orbit_controller::move(glm::vec3 const &direction)
+{
+    auto speed = (1.f - damping_) * 1.f;
+
+    direction_ = direction * speed;
+}
+
 void orbit_controller::apply_damping()
 {
     polar_delta_ *= damping_;

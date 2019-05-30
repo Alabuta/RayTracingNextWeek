@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "input/keyboard.hxx"
 
 namespace {
@@ -7,14 +8,27 @@ template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;
 
 
 namespace input {
+keyboard::keyboard()
+{
+    keys_state_ = std::make_unique<keyboard::handler::keys_state>(keys_);
+}
+
 void keyboard::connect(std::shared_ptr<keyboard::handler> slot)
 {
-    on_press_.connect(decltype(on_press_)::slot_type{
-        &handler::on_press, slot.get(), _1
+    state_on_press_.connect(decltype(state_on_press_)::slot_type{
+        &handler::state_on_press, slot.get(), _1
     }.track_foreign(slot));
 
-    on_release_.connect(decltype(on_release_)::slot_type{
-        &handler::on_release, slot.get(), _1
+    state_on_release_.connect(decltype(state_on_release_)::slot_type{
+        &handler::state_on_release, slot.get(), _1
+    }.track_foreign(slot));
+
+    on_press_key_.connect(decltype(on_press_key_)::slot_type{
+        &handler::on_press_key, slot.get(), _1
+    }.track_foreign(slot));
+
+    on_release_key_.connect(decltype(on_release_key_)::slot_type{
+        &handler::on_release_key, slot.get(), _1
     }.track_foreign(slot));
 }
 
@@ -25,20 +39,29 @@ void keyboard::update(platform::input::keyboard_data::raw_data &data)
         {
             [[maybe_unused]] auto [key, mods] = press;
 
+            auto _key = static_cast<handler::key>(key);
 
-            //if (std::find(std::cbegin(pressed_.set), std::cend(pressed_.set), static_cast<handler::key>(key)))
+            if (!(*keys_state_)(_key)) {
+                on_press_key_(_key);
 
-            //pressed_[0] = static_cast<std::int16_t>(key);
+                keys_.emplace(_key);
+            }
 
-            on_press_(pressed_);
+            state_on_press_(*keys_state_);
         },
         [this] (platform::input::keyboard_data::release &release)
         {
             [[maybe_unused]] auto [key, mods] = release;
 
-            //pressed_[0] = -1;
+            auto _key = static_cast<handler::key>(key);
 
-            on_release_(pressed_);
+            if (!(*keys_state_)(_key)) {
+                on_release_key_(_key);
+
+                keys_.erase(_key);
+            }
+
+            state_on_release_(*keys_state_);
         },
         [] (auto &&) { }
     }, data);
