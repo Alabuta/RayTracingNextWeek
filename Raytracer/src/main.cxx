@@ -17,6 +17,7 @@
 
 #include "raytracer/primitives.hxx"
 #include "raytracer/material.hxx"
+#include "raytracer/physics.hxx"
 
 
 auto constexpr kVERTEX_SEMANTIC_POSITION = 0u;
@@ -56,6 +57,8 @@ struct state final {
 
     gfx::buffer<primitives::sphere> spheres_buffer;
     std::vector<primitives::sphere> spheres;
+
+    // std::unique_ptr<physics::system> physics_system;
 };
 
 class window_event_handler final : public platform::event_handler {
@@ -77,12 +80,15 @@ private:
     app::state &app_state;
 };
 
-void update(app::state &app_state)
+void update(app::state &app_state, [[maybe_unused]] float delta_time)
 {
     app_state.camera_controller->update();
     app_state.camera_system.update();
 
     gfx::update_buffer(app_state.camera_buffer, &app_state.camera->data);
+
+    // app_state.physics_system->update(delta_time);
+    // gfx::update_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
 }
 
 void render(app::state const &app_state, std::uint32_t grid_size_x, std::uint32_t grid_size_y)
@@ -251,6 +257,8 @@ int main()
         gfx::update_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
     }
 
+    // app_state.physics_system = std::make_unique<physics::system>(app_state.spheres);
+
     if constexpr (false) {
         auto unit_vectors_image = gfx::create_image2D(width, height, GL_RGBA32F);
 
@@ -308,13 +316,19 @@ int main()
     if (auto result = glGetError(); result != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
+    auto last_time = std::chrono::high_resolution_clock::now();
+
     window.update([&] (auto &&window)
     {
-        glfwPollEvents();
-
         auto start = std::chrono::high_resolution_clock::now();
 
-        app::update(app_state);
+        auto delta_time = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(start - last_time).count()) * 1e-6f;
+
+        last_time = start;
+
+        glfwPollEvents();
+
+        app::update(app_state, delta_time);
 
         if constexpr (kDEBUG_SPHERICAL_FIBONACCI_LATTICE) {
             app::render_spherical_fibonacci_lattice(app_state);
@@ -333,9 +347,7 @@ int main()
         if (auto result = glGetError(); result != GL_NO_ERROR)
             throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
-
-        glfwSetWindowTitle(window.handle(), std::to_string(static_cast<float>(duration.count()) * 1e-3f).c_str());
+        glfwSetWindowTitle(window.handle(), ("Raytracer "s + std::to_string(delta_time * 1e+3f)).c_str());
     });
 
     glfwTerminate();
