@@ -53,6 +53,9 @@ struct state final {
 
     gfx::program sphere_debug_program;
     gfx::vertex_array<3, float> sphere_debug_vao;
+
+    gfx::buffer<primitives::sphere> spheres_buffer;
+    std::vector<primitives::sphere> spheres;
 };
 
 class window_event_handler final : public platform::event_handler {
@@ -189,7 +192,7 @@ int main()
         app_state.camera = app_state.camera_system.create_camera(42.f, aspect);
 
         app_state.camera_controller = std::make_unique<camera::orbit_controller>(app_state.camera, *input_manager);
-        app_state.camera_controller->look_at(glm::vec3{6.4, 1.6, 2.7}, glm::vec3{0, .5f, 0});
+        app_state.camera_controller->look_at(glm::vec3{6.4, 1.6, 2.7}, glm::vec3{0, 1, 0});
 
         app_state.camera_buffer = gfx::create_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
 
@@ -230,19 +233,22 @@ int main()
     }
 
     {
-        std::vector<primitives::sphere> spheres;
+        auto &&spheres = app_state.spheres;
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, .5f, 0}, 1, 0, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, -1000.5f, 0}, 1000, 0, 1});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, 1, 0}, 1, 0, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, -1000, 0}, 1000, 0, 1});
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{+2.1f, .5f, 0}, 1, 1, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{+2.1, 1, 0}, 1, 1, 0});
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1f, .5f, 0}, 1, 2, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1f, .5f, 0}, -.88f, 2, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1, 1, 0}, 1, 2, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1, 1, 0}, -.92f, 2, 0});
+
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, 1, 2}, 0.2f, 2, 0});
 
         auto length = static_cast<std::uint32_t>(std::size(spheres));
 
-        gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length, std::data(spheres));
+        app_state.spheres_buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length);
+        gfx::update_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
     }
 
     if constexpr (false) {
