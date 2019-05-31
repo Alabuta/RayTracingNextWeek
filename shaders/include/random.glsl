@@ -86,4 +86,17 @@ vec3 random_on_unit_disk_edge(inout random_engine rng)
     return vec3(cos(theta), sin(theta), 0.f);
 }
 
+vec3 random_in_unit_hexagon(inout random_engine rng)
+{
+    const float K = sqrt(3.f) / 2.f;
+    const float kPI_DIV_3 = kPI / 3.f;
+
+    float theta = generate_real(rng) * kTAU;
+
+    float radius = K / sin(theta - kPI_DIV_3 * (floor(theta / kPI_DIV_3) - 1));
+    radius *= sqrt(generate_real(rng));
+
+    return vec3(cos(theta), sin(theta), 0.f) * radius;
+}
+
 #endif    // RANDOM_H

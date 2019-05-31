@@ -1,7 +1,8 @@
 #ifndef MATH_H
 #define MATH_H
 
-const float kTAU = 3.141592654f * 2.f;
+const float kPI = 3.141592654f;
+const float kTAU = kPI * 2.f;
 
 struct ray {
     vec3 origin;
