@@ -247,7 +247,7 @@ int main()
         spheres.emplace_back(primitives::sphere{glm::vec3{+2.1, 1, 0}, 1, 1, 0});
 
         spheres.emplace_back(primitives::sphere{glm::vec3{-2.1, 1, 0}, 1, 2, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1, 1, 0}, -.92f, 2, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1, 1, 0}, -.98f, 2, 0});
 
         spheres.emplace_back(primitives::sphere{glm::vec3{0, 1, 2}, 0.2f, 2, 0});
 
