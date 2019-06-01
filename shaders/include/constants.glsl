@@ -4,7 +4,7 @@
 
 const uint VERTEX_SEMANTIC_POSITION = 0u;
 
-const uint SAMPLING_NUMBER = 128u;
+const uint SAMPLING_NUMBER = 64u;
 const uint BOUNCES_NUMBER = 64u;
 
 const uint kLAMBERTIAN_BUFFER_BINDING = 2u;

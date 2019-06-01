@@ -93,7 +93,7 @@ vec3 random_in_unit_hexagon(inout random_engine rng)
 
     float theta = generate_real(rng) * kTAU;
 
-    float radius = K / sin(theta - kPI_DIV_3 * (floor(theta / kPI_DIV_3) - 1));
+    float radius = K / sin(theta - kPI_DIV_3 * (floor(theta / kPI_DIV_3) - 1.f));
     radius *= sqrt(generate_real(rng));
 
     return vec3(cos(theta), sin(theta), 0.f) * radius;
