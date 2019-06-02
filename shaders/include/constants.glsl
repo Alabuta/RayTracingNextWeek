@@ -7,6 +7,7 @@ const uint VERTEX_SEMANTIC_POSITION = 0u;
 const uint SAMPLING_NUMBER = 64u;
 const uint BOUNCES_NUMBER = 64u;
 
+const uint kATOMIC_COUNTER_BINDING = 0u;
 const uint kLAMBERTIAN_BUFFER_BINDING = 2u;
 const uint kMETAL_BUFFER_BINDING = 3u;
 const uint kDIELECTRIC_BUFFER_BINDING = 4u;
