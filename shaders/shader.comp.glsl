@@ -14,13 +14,13 @@ layout(local_size_x = kGROUP_SIZE.x, local_size_y = kGROUP_SIZE.y, local_size_z 
     shared vec3 local_data[kLOCAL_DATA_LENGTH];
 #endif
 
-layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
+layout(binding = kOUT_IMAGE_BINDING, rgba32f) writeonly restrict uniform image2D image;
 
 //layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
-layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
-{
-    vec3 unit_vectors[kUNIT_VECTORS_NUMBER];
-};
+//layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
+//{
+//    vec3 unit_vectors[kUNIT_VECTORS_NUMBER];
+//};
 
 #include "common.glsl"
 #include "math.glsl"

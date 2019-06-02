@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{DD34
 	ProjectSection(SolutionItems) = preProject
 		shaders\debug-sphere.frag.glsl = shaders\debug-sphere.frag.glsl
 		shaders\debug-sphere.vert.glsl = shaders\debug-sphere.vert.glsl
+		shaders\first-pass.comp.glsl = shaders\first-pass.comp.glsl
 		shaders\shader.comp.glsl = shaders\shader.comp.glsl
 		shaders\shader.frag.glsl = shaders\shader.frag.glsl
 		shaders\shader.vert.glsl = shaders\shader.vert.glsl

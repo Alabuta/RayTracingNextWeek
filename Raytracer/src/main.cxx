@@ -282,7 +282,7 @@ int main()
         glBindImageTexture(kUNIT_VECTORS_BUFFER_BINDING, unit_vectors_image.handle, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
     }
 
-    {
+    if constexpr (false) {
 #if 1
         auto unit_vectors = math::spherical_fibonacci_lattice(kUNIT_VECTORS_NUMBER);
 #else
