@@ -10,7 +10,7 @@ using namespace std::string_literals;
 #include <glm/glm.hpp>
 
 #include "gfx/context.hxx"
-#include "gfx/buffer.hxx"
+#include "gfx/shader_storage.hxx"
 
 
 namespace gfx {
@@ -22,11 +22,11 @@ struct vertex_array final {
     std::uint32_t handle{0};
     std::uint32_t attribute_index{0};
 
-    gfx::buffer<glm::vec<N, T>> buffer;
+    gfx::shader_storage_buffer<glm::vec<N, T>> buffer;
 };
 
 template<std::int32_t N, class T>
-gfx::vertex_array<N, T> create_vertex_array(std::uint32_t attribute_index, gfx::buffer<glm::vec<N, T>> const &buffer)
+gfx::vertex_array<N, T> create_vertex_array(std::uint32_t attribute_index, gfx::shader_storage_buffer<glm::vec<N, T>> const &buffer)
 {
     std::uint32_t handle{0};
 

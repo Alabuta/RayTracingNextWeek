@@ -8,7 +8,7 @@
 
 namespace gfx {
 template<class T>
-struct buffer final {
+struct shader_storage_buffer final {
     using type = T;
 
     std::uint32_t handle{0};
@@ -17,7 +17,7 @@ struct buffer final {
 };
 
 template<class T>
-gfx::buffer<T> create_buffer(std::uint32_t binding_index, std::uint32_t length, T const *data)
+gfx::shader_storage_buffer<T> create_shader_storage_buffer(std::uint32_t binding_index, std::uint32_t length, T const *data)
 {
     std::uint32_t handle;
 
@@ -29,11 +29,11 @@ gfx::buffer<T> create_buffer(std::uint32_t binding_index, std::uint32_t length, 
     glNamedBufferStorage(handle, size_in_bytes, data, 0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding_index, handle);
 
-    return gfx::buffer<T>{handle, binding_index, length};
+    return gfx::shader_storage_buffer<T>{handle, binding_index, length};
 }
 
 template<class T>
-gfx::buffer<T> create_buffer(std::uint32_t binding_index, std::uint32_t length)
+gfx::shader_storage_buffer<T> create_shader_storage_buffer(std::uint32_t binding_index, std::uint32_t length)
 {
     std::uint32_t handle;
 
@@ -45,11 +45,11 @@ gfx::buffer<T> create_buffer(std::uint32_t binding_index, std::uint32_t length)
     glNamedBufferStorage(handle, size_in_bytes, nullptr, GL_DYNAMIC_STORAGE_BIT);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding_index, handle);
 
-    return gfx::buffer<T>{handle, binding_index, length};
+    return gfx::shader_storage_buffer<T>{handle, binding_index, length};
 }
 
 template<class T>
-void update_buffer(gfx::buffer<T> const &buffer, T const *data)
+void update_shader_storage_buffer(gfx::shader_storage_buffer<T> const &buffer, T const *data)
 {
     auto size_in_bytes = static_cast<std::ptrdiff_t>(sizeof(T) * buffer.length);
 

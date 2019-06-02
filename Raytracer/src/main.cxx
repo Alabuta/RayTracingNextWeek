@@ -9,7 +9,7 @@
 #include "gfx/render_pass.hxx"
 #include "gfx/shader.hxx"
 #include "gfx/image.hxx"
-#include "gfx/buffer.hxx"
+#include "gfx/shader_storage.hxx"
 #include "gfx/vertex_array.hxx"
 
 #include "camera/camera.hxx"
@@ -45,7 +45,7 @@ struct state final {
 
     std::unique_ptr<camera::orbit_controller> camera_controller;
 
-    gfx::buffer<scene::camera::gpu_data> camera_buffer;
+    gfx::shader_storage_buffer<scene::camera::gpu_data> camera_buffer;
 
     gfx::render_pass render_pass;
 
@@ -55,7 +55,7 @@ struct state final {
     gfx::program sphere_debug_program;
     gfx::vertex_array<3, float> sphere_debug_vao;
 
-    gfx::buffer<primitives::sphere> spheres_buffer;
+    gfx::shader_storage_buffer<primitives::sphere> spheres_buffer;
     std::vector<primitives::sphere> spheres;
 
     // std::unique_ptr<physics::system> physics_system;
@@ -85,10 +85,10 @@ void update(app::state &app_state, [[maybe_unused]] float delta_time)
     app_state.camera_controller->update();
     app_state.camera_system.update();
 
-    gfx::update_buffer(app_state.camera_buffer, &app_state.camera->data);
+    gfx::update_shader_storage_buffer(app_state.camera_buffer, &app_state.camera->data);
 
     // app_state.physics_system->update(delta_time);
-    // gfx::update_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
+    // gfx::update_shader_storage_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
 }
 
 void render(app::state const &app_state, std::uint32_t grid_size_x, std::uint32_t grid_size_y)
@@ -200,9 +200,9 @@ int main()
         app_state.camera_controller = std::make_unique<camera::orbit_controller>(app_state.camera, *input_manager);
         app_state.camera_controller->look_at(glm::vec3{6.4, 1.6, 2.7}, glm::vec3{0, 1, 0});
 
-        app_state.camera_buffer = gfx::create_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
+        app_state.camera_buffer = gfx::create_shader_storage_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
 
-        gfx::update_buffer(app_state.camera_buffer, &app_state.camera->data);
+        gfx::update_shader_storage_buffer(app_state.camera_buffer, &app_state.camera->data);
     }
 
     {
@@ -214,7 +214,7 @@ int main()
 
             auto length = static_cast<std::uint32_t>(std::size(lambertian));
 
-            gfx::create_buffer<material::lambertian>(kLAMBERTIAN_BUFFER_BINDING, length, std::data(lambertian));
+            gfx::create_shader_storage_buffer<material::lambertian>(kLAMBERTIAN_BUFFER_BINDING, length, std::data(lambertian));
         }
 
         {
@@ -224,7 +224,7 @@ int main()
 
             auto length = static_cast<std::uint32_t>(std::size(metal));
 
-            gfx::create_buffer<material::metal>(kMETAL_BUFFER_BINDING, length, std::data(metal));
+            gfx::create_shader_storage_buffer<material::metal>(kMETAL_BUFFER_BINDING, length, std::data(metal));
         }
 
         {
@@ -234,7 +234,7 @@ int main()
 
             auto length = static_cast<std::uint32_t>(std::size(dielectric));
 
-            gfx::create_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, length, std::data(dielectric));
+            gfx::create_shader_storage_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, length, std::data(dielectric));
         }
     }
 
@@ -253,8 +253,8 @@ int main()
 
         auto length = static_cast<std::uint32_t>(std::size(spheres));
 
-        app_state.spheres_buffer = gfx::create_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length);
-        gfx::update_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
+        app_state.spheres_buffer = gfx::create_shader_storage_buffer<primitives::sphere>(kPRIMITIVES_BINDING, length);
+        gfx::update_shader_storage_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
     }
 
     // app_state.physics_system = std::make_unique<physics::system>(app_state.spheres);
@@ -299,7 +299,7 @@ int main()
         });
 #endif
 
-        auto buffer = gfx::create_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_NUMBER, std::data(unit_vectors));
+        auto buffer = gfx::create_shader_storage_buffer<glm::vec3>(kUNIT_VECTORS_BUFFER_BINDING, kUNIT_VECTORS_NUMBER, std::data(unit_vectors));
 
         if constexpr (kDEBUG_SPHERICAL_FIBONACCI_LATTICE) {
             auto vertex_stage = gfx::create_shader_stage<gfx::shader::vertex>("debug-sphere.vert.spv"sv, "main"sv);

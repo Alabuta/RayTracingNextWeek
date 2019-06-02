@@ -28,8 +28,8 @@
     <ClInclude Include="src\camera\camera_controller.hxx" />
     <ClInclude Include="src\camera\input_handlers\keyboard_handler.hxx" />
     <ClInclude Include="src\camera\input_handlers\mouse_handler.hxx" />
-    <ClInclude Include="src\gfx\buffer.hxx" />
     <ClInclude Include="src\gfx\atomic_counter.hxx" />
+    <ClInclude Include="src\gfx\shader_storage.hxx" />
     <ClInclude Include="src\gfx\context.hxx" />
     <ClInclude Include="src\gfx\framebuffer.hxx" />
     <ClInclude Include="src\gfx\image.hxx" />
