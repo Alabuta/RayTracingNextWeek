@@ -35,6 +35,8 @@ auto constexpr kDEBUG_SPHERICAL_FIBONACCI_LATTICE = false;
 auto constexpr kUNIT_VECTORS_NUMBER = 8'192u;
 auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 
+auto constexpr kGROUP_SIZE = glm::uvec2{8, 8};
+
 
 namespace app {
 struct state final {
@@ -77,6 +79,7 @@ public:
     }
 
 private:
+
     app::state &app_state;
 };
 
@@ -91,11 +94,11 @@ void update(app::state &app_state, [[maybe_unused]] float delta_time)
     // gfx::update_shader_storage_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
 }
 
-void render(app::state const &app_state, std::uint32_t grid_size_x, std::uint32_t grid_size_y)
+void render(app::state const &app_state, glm::uvec2 groups_number)
 {
     glUseProgram(app_state.compute_program.handle);
 
-    glDispatchCompute(grid_size_x, grid_size_y, 1);
+    glDispatchCompute(groups_number.x, groups_number.y, 1);
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
@@ -154,10 +157,9 @@ int main()
     app_state.window_size = std::array{800, 600};
     auto [width, height] = app_state.window_size;
 
-    auto const grid_size_x = static_cast<std::uint32_t>(std::ceil(static_cast<float>(width) / 8.f));
-    auto const grid_size_y = static_cast<std::uint32_t>(std::ceil(static_cast<float>(height) / 8.f));
+    auto const groups_number = glm::uvec2{glm::ceil(glm::vec2{width, height} / glm::vec2{kGROUP_SIZE})};
 
-    std::cout << grid_size_x << 'x' << grid_size_y << '\n';
+    std::cout << groups_number.x << 'x' << groups_number.y << '\n';
 
     platform::window window{"Raytracer"sv, width, height};
 
@@ -335,7 +337,7 @@ int main()
         }
 
         else {
-            app::render(app_state, grid_size_x, grid_size_y);
+            app::render(app_state, groups_number);
 
             glFinish();
 

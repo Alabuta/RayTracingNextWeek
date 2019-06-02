@@ -22,4 +22,6 @@ const uint kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 const uint kSPHERES_NUMBER = 6u;
 const uint kUNIT_VECTORS_NUMBER = 8192u;
 
+const uvec3 kGROUP_SIZE = uvec3(8, 8, 1);
+
 #endif    // CONSTANTS_H

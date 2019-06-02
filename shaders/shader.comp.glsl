@@ -3,10 +3,10 @@
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_GOOGLE_include_directive : require
 
-layout(local_size_x = 8, local_size_y = 8) in;
 
 #include "constants.glsl"
 
+layout(local_size_x = kGROUP_SIZE.x, local_size_y = kGROUP_SIZE.y, local_size_z = kGROUP_SIZE.z) in;
 layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
 
 //layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
