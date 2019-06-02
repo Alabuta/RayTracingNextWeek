@@ -24,4 +24,8 @@ const uint kUNIT_VECTORS_NUMBER = 8192u;
 
 const uvec3 kGROUP_SIZE = uvec3(8, 8, 1);
 
+//const uint kPARTS = 1;
+
+const uint kLOCAL_DATA_LENGTH = kGROUP_SIZE.x * kGROUP_SIZE.y * kGROUP_SIZE.z * SAMPLING_NUMBER;
+
 #endif    // CONSTANTS_H

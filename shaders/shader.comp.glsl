@@ -3,14 +3,20 @@
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_GOOGLE_include_directive : require
 
+#define USE_SCHEDULER 0
 
 #include "constants.glsl"
 
 layout(local_size_x = kGROUP_SIZE.x, local_size_y = kGROUP_SIZE.y, local_size_z = kGROUP_SIZE.z) in;
+
+#if USE_SCHEDULER
+    shared uint local_data_index;
+    shared vec3 local_data[kLOCAL_DATA_LENGTH];
+#endif
+
 layout(binding = kOUT_IMAGE_BINDING, rgba32f) uniform image2D image;
 
 //layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
-
 layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
 {
     vec3 unit_vectors[kUNIT_VECTORS_NUMBER];
@@ -99,6 +105,7 @@ vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
 	return vec3(0);
 }
 
+
 void main()
 {
     uvec2 imageSize = uvec2(imageSize(image));
@@ -112,14 +119,38 @@ void main()
 
     vec3 color = vec3(0);
 
+#if USE_SCHEDULER
+    atomicExchange(local_data_index, 0u);
+
     for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
         vec2 offset = vec2(generate_real(rng), generate_real(rng)) * 2.f - 1.f;
-        vec2 _uv = (xy + offset) / imageSize;
+        vec2 uv = (xy + offset) / imageSize;
 
-        color += render(rng, _camera, _uv);
+        local_data[gl_LocalInvocationIndex * SAMPLING_NUMBER + s].xy = uv;
     }
 
-    color /= float(SAMPLING_NUMBER);
+    memoryBarrierShared();
+    barrier();
+
+    for (uint index = 0u; index < kLOCAL_DATA_LENGTH; index = atomicAdd(local_data_index, 1u)) {
+        vec2 uv = local_data[index].xy;
+        local_data[index] = render(rng, _camera, uv);
+    }
+
+    memoryBarrierShared();
+    barrier();
+
+    for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
+        color += local_data[gl_LocalInvocationIndex * SAMPLING_NUMBER + s];
+    }
+
+#else
+    for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
+        vec2 offset = vec2(generate_real(rng), generate_real(rng)) * 2.f - 1.f;
+        vec2 uv = (xy + offset) / imageSize;
+
+        color += render(rng, _camera, uv);
+    }
 
     // color = vec3(generate_real(rng));
 
@@ -128,6 +159,9 @@ void main()
     // color = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
 
     // color = unit_vectors[uint(generate_real(rng) * float(kUNIT_VECTORS_NUMBER - 1))];
+#endif
+
+    color /= float(SAMPLING_NUMBER);
 
     imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
 }
