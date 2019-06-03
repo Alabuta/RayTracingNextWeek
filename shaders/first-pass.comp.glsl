@@ -24,7 +24,7 @@ void main()
     random_engine rng = create_random_engine(gl_GlobalInvocationID.xy);
 
     for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
-        vec2 offset = vec2(generate_real(rng), generate_real(rng)) * 2.f - 1.f;
+        vec2 offset = generate_vec2(rng) * 2.f - 1.f;
         vec2 uv = (xy + offset) / imageSize;
 
         uint index = gl_LocalInvocationIndex * SAMPLING_NUMBER + s;

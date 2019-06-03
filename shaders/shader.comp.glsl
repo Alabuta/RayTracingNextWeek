@@ -146,7 +146,7 @@ void main()
 
 #else
     for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
-        vec2 offset = vec2(generate_real(rng), generate_real(rng)) * 2.f - 1.f;
+        vec2 offset = generate_vec2(rng) * 2.f - 1.f;
         vec2 uv = (xy + offset) / imageSize;
 
         color += render(rng, _camera, uv);

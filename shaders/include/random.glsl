@@ -41,6 +41,13 @@ float generate_real(inout random_engine rng)
     return generate(rng) * delim;
 }
 
+vec2 generate_vec2(inout random_engine rng)
+{
+    const float delim = 1.f / 4294967296.f;
+
+    return vec2(generate(rng), generate(rng)) * delim;
+}
+
 float gradient_noise(vec2 xy)
 {
     return fract(52.9829189f * fract(.06711056f * xy.x) + .00583715f * xy.y);
