@@ -3,24 +3,16 @@
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_GOOGLE_include_directive : require
 
-#define USE_SCHEDULER 0
-
 #include "constants.glsl"
 
 layout(local_size_x = kGROUP_SIZE.x, local_size_y = kGROUP_SIZE.y, local_size_z = kGROUP_SIZE.z) in;
 
 #if USE_SCHEDULER
-    shared uint local_data_index;
-    shared vec3 local_data[kLOCAL_DATA_LENGTH];
+    shared uint invocation_index;
+    shared uint local_data[kGROUP_FLAT_SIZE];
 #endif
 
-layout(binding = kOUT_IMAGE_BINDING, rgba32f) writeonly restrict uniform image2D image;
-
-//layout(binding = kUNIT_VECTORS_BUFFER_BINDING, rgba32f) uniform image2D unit_vectors;
-//layout(binding = kUNIT_VECTORS_BUFFER_BINDING, std430) readonly buffer UNIT_VECTORS
-//{
-//    vec3 unit_vectors[kUNIT_VECTORS_NUMBER];
-//};
+layout(binding = kOUT_IMAGE_BINDING, rgba32f) /* writeonly */ restrict uniform image2D image;
 
 #include "common.glsl"
 #include "math.glsl"
@@ -113,38 +105,70 @@ void main()
     if (any(greaterThanEqual(gl_GlobalInvocationID.xy, imageSize)))
         return;
 
-    vec2 xy = vec2(gl_GlobalInvocationID);
-
     random_engine rng = create_random_engine(gl_GlobalInvocationID.xy);
 
-    vec3 color = vec3(0);
-
 #if USE_SCHEDULER
-    atomicExchange(local_data_index, 0u);
+    local_data[gl_LocalInvocationIndex] = 0u;
 
-    for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
-        vec2 offset = vec2(generate_real(rng), generate_real(rng)) * 2.f - 1.f;
-        vec2 uv = (xy + offset) / imageSize;
+    imageStore(image, ivec2(gl_GlobalInvocationID), vec4(1.f));
 
-        local_data[gl_LocalInvocationIndex * SAMPLING_NUMBER + s].xy = uv;
-    }
+    atomicExchange(invocation_index, 0u);
 
-    memoryBarrierShared();
-    barrier();
-
-    for (uint index = 0u; index < kLOCAL_DATA_LENGTH; index = atomicAdd(local_data_index, 1u)) {
-        vec2 uv = local_data[index].xy;
-        local_data[index] = render(rng, _camera, uv);
-    }
+    uint i = 0u;
+    // uint k = atomicAdd(invocation_index, 1u);
 
     memoryBarrierShared();
     barrier();
 
-    for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
-        color += local_data[gl_LocalInvocationIndex * SAMPLING_NUMBER + s];
+    /* while (k < kLOCAL_DATA_LENGTH) {
+        uint i = k / SAMPLING_NUMBER;
+
+        uint y = i / kGROUP_SIZE.x;
+        uint x = i - y * kGROUP_SIZE.x;
+
+        ivec2 xy = ivec2(x, y) + ivec2(gl_WorkGroupID) * ivec2(kGROUP_SIZE);
+
+        vec2 offset = generate_vec2(rng) * 2.f - 1.f;
+        vec2 uv = (vec2(xy) + offset) / imageSize;
+
+        vec3 color = vec3(imageLoad(image, xy));
+
+        color += render(rng, _camera, uv);
+
+        imageStore(image, xy, vec4(color, float(SAMPLING_NUMBER)));
+
+        k = atomicAdd(invocation_index, 1u);
+    } */
+
+    while (i < kGROUP_FLAT_SIZE) {
+        uint y = i / kGROUP_SIZE.x;
+        uint x = i - y * kGROUP_SIZE.x;
+
+        ivec2 xy = ivec2(x, y) + ivec2(gl_WorkGroupID) * ivec2(kGROUP_SIZE);
+
+        uint j = atomicAdd(local_data[i], 1u);
+
+        while (j < SAMPLING_NUMBER) {
+            vec2 offset = generate_vec2(rng) * 2.f - 1.f;
+            vec2 uv = (vec2(xy) + offset) / imageSize;
+
+            vec3 color = vec3(imageLoad(image, xy));
+
+            color += render(rng, _camera, uv);
+
+            imageStore(image, xy, vec4(color, float(SAMPLING_NUMBER)));
+
+            j = atomicAdd(local_data[i], 1u);
+        }
+
+        i = atomicAdd(invocation_index, 1u);
     }
 
 #else
+    vec3 color = vec3(0);
+
+    vec2 xy = vec2(gl_GlobalInvocationID);
+
     for (uint s = 0u; s < SAMPLING_NUMBER; ++s) {
         vec2 offset = generate_vec2(rng) * 2.f - 1.f;
         vec2 uv = (xy + offset) / imageSize;
@@ -152,16 +176,8 @@ void main()
         color += render(rng, _camera, uv);
     }
 
-    // color = vec3(generate_real(rng));
-
-    // color = random_on_unit_sphere(rng);
-
-    // color = vec3(imageLoad(unit_vectors, ivec2(gl_GlobalInvocationID.xy)));
-
-    // color = unit_vectors[uint(generate_real(rng) * float(kUNIT_VECTORS_NUMBER - 1))];
-#endif
-
     color /= float(SAMPLING_NUMBER);
 
     imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.f));
+#endif
 }
