@@ -164,6 +164,41 @@ void main()
         i = atomicAdd(invocation_index, 1u);
     }
 
+#if 0
+    uint k = atomicAdd(invocation_index, 1u);
+
+    while (k < kLOCAL_DATA_LENGTH) {
+        uint i = k / SAMPLING_NUMBER;
+
+        uint y = i / kGROUP_SIZE.x;
+        uint x = i - y * kGROUP_SIZE.x;
+
+        ivec2 xy = ivec2(x, y) + ivec2(gl_WorkGroupID) * ivec2(kGROUP_SIZE);
+
+        vec2 offset = generate_vec2(rng) * 2.f - 1.f;
+        vec2 uv = (vec2(xy) + offset) / imageSize;
+
+        local_data[k] = render(rng, _camera, uv);
+
+        k = atomicAdd(invocation_index, 1u);
+    }
+
+    memoryBarrierShared();
+    barrier();
+
+    {
+        vec3 color = vec3(0);
+
+        uint end = (gl_LocalInvocationIndex + 1) * SAMPLING_NUMBER;
+
+        for (uint i = gl_LocalInvocationIndex * SAMPLING_NUMBER; i < end; ++i) {
+            color += local_data[i];
+        }
+
+        imageStore(image, ivec2(gl_GlobalInvocationID.xy), vec4(color, float(SAMPLING_NUMBER)));
+    }
+#endif
+
 #else
     vec3 color = vec3(0);
 
