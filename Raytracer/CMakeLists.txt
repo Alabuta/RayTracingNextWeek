@@ -34,7 +34,8 @@ set(SOURCE_FILES
     src/gfx/image.hxx
     src/gfx/render_pass.hxx
     src/gfx/shader.hxx
-    src/gfx/buffer.hxx
+    src/gfx/shader_storage.hxx
+    src/gfx/atomic_counter.hxx
     src/gfx/vertex_array.hxx
 
     src/loaders/spirv_loader.hxx
