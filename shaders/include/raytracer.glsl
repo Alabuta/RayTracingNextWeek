@@ -55,7 +55,7 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
 
 hit hit_world(const in uint spheres_number, const in ray _ray)
 {
-    const float kMAX = 10.0e9;
+    const float kMAX = 10.0e9f;
     const float kMIN = .008f;
 
     float min_time = kMAX;

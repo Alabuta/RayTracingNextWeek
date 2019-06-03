@@ -22,12 +22,10 @@ const uint kOUT_IMAGE_BINDING = 2u;
 const uint kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
 const uint kSPHERES_NUMBER = 6u;
-const uint kUNIT_VECTORS_NUMBER = 8192u;
+//const uint kUNIT_VECTORS_NUMBER = 8192u;
 
 const uvec3 kGROUP_SIZE = uvec3(8, 8, 1);
 const uint kGROUP_FLAT_SIZE = kGROUP_SIZE.x * kGROUP_SIZE.y * kGROUP_SIZE.z;
-
-//const uint kPARTS = 1;
 
 const uint kLOCAL_DATA_LENGTH = kGROUP_FLAT_SIZE * SAMPLING_NUMBER;
 
