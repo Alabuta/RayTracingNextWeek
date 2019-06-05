@@ -22,4 +22,9 @@ struct hit {
     bool valid;
 };
 
+struct aabb {
+    vec3 min;
+    vec3 max;
+};
+
 #endif    // PRIMITIVES_H

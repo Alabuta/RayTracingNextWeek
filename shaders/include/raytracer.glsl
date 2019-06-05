@@ -53,6 +53,26 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
     return hit(oc, oc, 0.f, 0u, 0u, false);
 }
 
+bool intersect(const in ray _ray, const in aabb _aabb, float t_min, float t_max)
+{
+    vec3 delimer = vec3(1.f) / _ray.direction;
+
+    vec3 t0 = (_aabb.min - _ray.origin) * delimer;
+    vec3 t1 = (_aabb.max - _ray.origin) * delimer;
+
+    vec3 swap = step(0.f, delimer);
+
+    vec3 temp = t0;
+
+    t0 = mix(t1, t0, swap);
+    t1 = mix(temp, t1, swap);
+
+    vec3 _min = max(t0, vec3(t_min));
+    vec3 _max = min(t1, vec3(t_max));
+
+    return !any(lessThanEqual(_max, _min));
+}
+
 hit hit_world(const in uint spheres_number, const in ray _ray)
 {
     const float kMAX = 10.0e9f;
