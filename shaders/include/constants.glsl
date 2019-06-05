@@ -2,8 +2,6 @@
 #define CONSTANTS_H
 
 
-#define USE_SCHEDULER 0
-
 const uint VERTEX_SEMANTIC_POSITION = 0u;
 
 const uint SAMPLING_NUMBER = 64u;
