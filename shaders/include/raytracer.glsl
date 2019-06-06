@@ -53,12 +53,12 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
     return hit(oc, oc, 0.f, 0u, 0u, false);
 }
 
-bool intersect(const in ray _ray, const in aabb _aabb, float t_min, float t_max)
+bool intersect(const in ray _ray, const in AABB bounding_box, float t_min, float t_max)
 {
     vec3 delimer = vec3(1.f) / _ray.direction;
 
-    vec3 t0 = (_aabb.min - _ray.origin) * delimer;
-    vec3 t1 = (_aabb.max - _ray.origin) * delimer;
+    vec3 t0 = (bounding_box.min - _ray.origin) * delimer;
+    vec3 t1 = (bounding_box.max - _ray.origin) * delimer;
 
     vec3 swap = step(0.f, delimer);
 
@@ -71,6 +71,19 @@ bool intersect(const in ray _ray, const in aabb _aabb, float t_min, float t_max)
     vec3 _max = min(t1, vec3(t_max));
 
     return !any(lessThanEqual(_max, _min));
+}
+
+int intersect(const in ray _ray, const in BVH_node node, float t_min, float t_max)
+{
+    if (!intersect(_ray, node.bounding_box, t_min, t_max))
+        return -1;
+
+    int intersect_left = intersect(_ray, BVH_nodes[node.left], t_min, t_max);
+    int intersect_right = intersect(_ray, BVH_nodes[node.right], t_min, t_max);
+
+    if (intersect_left != -1 && intersect_right != -1) {
+        if (intersect_left)
+    }
 }
 
 hit hit_world(const in uint spheres_number, const in ray _ray)

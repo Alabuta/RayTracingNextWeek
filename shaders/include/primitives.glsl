@@ -22,9 +22,20 @@ struct hit {
     bool valid;
 };
 
-struct aabb {
+struct AABB {
     vec3 min;
     vec3 max;
+};
+
+struct BVH_node {
+    int left, right;
+
+    AABB bounding_box;
+};
+
+struct node_hit {
+    int node;
+    float t;
 };
 
 #endif    // PRIMITIVES_H

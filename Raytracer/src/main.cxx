@@ -22,6 +22,7 @@
 
 auto constexpr kVERTEX_SEMANTIC_POSITION = 0u;
 
+auto constexpr kBVH_TREE_BINDING = 1u;
 auto constexpr kOUT_IMAGE_BINDING = 2u;
 auto constexpr kLAMBERTIAN_BUFFER_BINDING = 2u;
 auto constexpr kMETAL_BUFFER_BINDING = 3u;
@@ -29,7 +30,6 @@ auto constexpr kDIELECTRIC_BUFFER_BINDING = 4u;
 auto constexpr kPRIMITIVES_BINDING = 6u;
 auto constexpr kCAMERA_BINDING = 7u;
 
-auto constexpr kFRAME_NUMBER_UNIFORM_LOCATION = 1u;
 
 auto constexpr kDEBUG_SPHERICAL_FIBONACCI_LATTICE = false;
 auto constexpr kUNIT_VECTORS_NUMBER = 8'192u;
