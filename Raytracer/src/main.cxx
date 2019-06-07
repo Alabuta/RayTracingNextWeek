@@ -15,9 +15,10 @@
 #include "camera/camera.hxx"
 #include "camera/camera_controller.hxx"
 
-#include "raytracer/primitives.hxx"
+#include "raytracer/bvh.hxx"
 #include "raytracer/material.hxx"
 #include "raytracer/physics.hxx"
+#include "raytracer/primitives.hxx"
 
 
 auto constexpr kVERTEX_SEMANTIC_POSITION = 0u;
