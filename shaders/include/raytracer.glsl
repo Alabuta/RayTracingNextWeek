@@ -82,8 +82,10 @@ int intersect(const in ray _ray, const in BVH_node node, float t_min, float t_ma
     int intersect_right = intersect(_ray, BVH_nodes[node.right], t_min, t_max);
 
     if (intersect_left != -1 && intersect_right != -1) {
-        if (intersect_left)
+        // if (intersect_left)
     }
+
+    return -1;
 }
 
 hit hit_world(const in uint spheres_number, const in ray _ray)

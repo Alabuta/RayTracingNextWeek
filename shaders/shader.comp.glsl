@@ -17,12 +17,12 @@ layout(binding = kOUT_IMAGE_BINDING, rgba32f) /* writeonly */ restrict uniform i
 #include "common.glsl"
 #include "math.glsl"
 #include "random.glsl"
+#include "primitives.glsl"
 
 layout(binding = kBVH_TREE_BINDING, std430) readonly buffer BVH_TREE {
     BVH_node BVH_nodes[];
 };
 
-#include "primitives.glsl"
 
 layout(binding = kPRIMITIVES_BINDING, std430) readonly buffer WORLD {
 	sphere spheres[];
