@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inlcude", "inlcude", "{46E6
 		shaders\include\primitives.glsl = shaders\include\primitives.glsl
 		shaders\include\random.glsl = shaders\include\random.glsl
 		shaders\include\raytracer.glsl = shaders\include\raytracer.glsl
+		shaders\include\texture.glsl = shaders\include\texture.glsl
 	EndProjectSection
 EndProject
 Global

@@ -4,6 +4,7 @@
 #include "math.glsl"
 #include "random.glsl"
 #include "primitives.glsl"
+#include "texture.glsl"
 
 
 const uint LAMBERTIAN_TYPE = 0u;
@@ -30,6 +31,8 @@ struct surface_response {
     bool valid;
 };
 
+const checker_texture _texture = checker_texture(vec3(1.f), vec3(.2f, .3f, .1f));
+
 float schlick_reflection_probability(float refraction_index, float cosine_theta)
 {
     float reflection_coefficient = pow((1.f - refraction_index) / (1.f + refraction_index), 2.f);
@@ -44,7 +47,8 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
 
     // ray scattered_ray = ray(_hit.position, direction, _ray.time);
     ray scattered_ray = ray(_hit.position, direction);
-    vec3 attenuation = material.albedo;
+    //vec3 attenuation = material.albedo;
+    vec3 attenuation = sample_texture(_texture, _hit.position);
 
     return surface_response(scattered_ray, attenuation, true);
 }

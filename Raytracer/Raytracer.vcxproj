@@ -48,6 +48,7 @@
     <ClInclude Include="src\raytracer\material.hxx" />
     <ClInclude Include="src\raytracer\physics.hxx" />
     <ClInclude Include="src\raytracer\primitives.hxx" />
+    <ClInclude Include="src\raytracer\texture.hxx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.hxx.in" />
