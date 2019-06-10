@@ -75,6 +75,7 @@ bool intersect(const in ray _ray, const in AABB bounding_box, float t_min, float
 
 int intersect(const in ray _ray, const in BVH_node node, float t_min, float t_max)
 {
+#if 0
     if (!intersect(_ray, node.bounding_box, t_min, t_max))
         return -1;
 
@@ -84,6 +85,7 @@ int intersect(const in ray _ray, const in BVH_node node, float t_min, float t_ma
     if (intersect_left != -1 && intersect_right != -1) {
         // if (intersect_left)
     }
+#endif
 
     return -1;
 }

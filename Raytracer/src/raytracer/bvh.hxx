@@ -6,6 +6,14 @@
 #include "math/math.hxx"
 #include "raytracer/primitives.hxx"
 
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
 
 namespace BVH {
 struct AABB final {

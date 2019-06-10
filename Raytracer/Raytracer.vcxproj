@@ -45,6 +45,7 @@
     <ClInclude Include="src\math\math.hxx" />
     <ClInclude Include="src\platform\platform.hxx" />
     <ClInclude Include="src\platform\window.hxx" />
+    <ClInclude Include="src\raytracer\bvh.hxx" />
     <ClInclude Include="src\raytracer\material.hxx" />
     <ClInclude Include="src\raytracer\physics.hxx" />
     <ClInclude Include="src\raytracer\primitives.hxx" />
