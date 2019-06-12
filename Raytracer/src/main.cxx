@@ -30,6 +30,7 @@ auto constexpr kMETAL_BUFFER_BINDING = 3u;
 auto constexpr kDIELECTRIC_BUFFER_BINDING = 4u;
 auto constexpr kPRIMITIVES_BINDING = 6u;
 auto constexpr kCAMERA_BINDING = 7u;
+auto constexpr kPERLIN_NOISE_BINDING = 8u;
 
 
 auto constexpr kDEBUG_SPHERICAL_FIBONACCI_LATTICE = false;
@@ -37,6 +38,22 @@ auto constexpr kUNIT_VECTORS_NUMBER = 8'192u;
 auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 
 auto constexpr kGROUP_SIZE = glm::uvec2{8, 8};
+
+namespace math {
+struct perlin final {
+    std::uint32_t x[256];
+    std::uint32_t y[256];
+    std::uint32_t z[256];
+    float randoms[256];
+};
+}
+
+void create_perlin_noise()
+{
+    math::perlin perlin;
+
+    gfx::create_shader_storage_buffer<math::perlin>(kPERLIN_NOISE_BINDING, 1, &perlin);
+}
 
 
 namespace app {
@@ -312,6 +329,8 @@ int main()
             app_state.sphere_debug_vao = gfx::create_vertex_array<3, float>(kVERTEX_SEMANTIC_POSITION, buffer);
         }
     }
+
+    create_perlin_noise();
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
     glFinish();

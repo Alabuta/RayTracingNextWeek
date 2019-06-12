@@ -15,6 +15,7 @@ const uint kDIELECTRIC_BUFFER_BINDING = 4u;
 const uint kUNIT_VECTORS_BUFFER_BINDING = 5u;
 const uint kPRIMITIVES_BINDING = 6u;
 const uint kCAMERA_BINDING = 7u;
+const uint kPERLIN_NOISE_BINDING = 8u;
 
 const uint kOUT_IMAGE_BINDING = 2u;
 

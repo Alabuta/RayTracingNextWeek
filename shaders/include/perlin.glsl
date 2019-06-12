@@ -6,20 +6,24 @@
 
 
 struct perlin {
+    uint x[256];
+    uint y[256];
+    uint z[256];
     float randoms[256];
-    uvec3 perm;
 };
 
-perlin create_perlin(const in vec3 xyz)
+layout(binding = kPERLIN_NOISE_BINDING, std430) readonly buffer PERLIN
 {
-    vec3 uvw = fract(xyz);
+    perlin _perlin;
+};
+
+float perlin_noise(const in perlin _perlin)
+{
+    //vec3 uvw = fract(xyz);
 
     ivec3 ijk = ivec3(xyz * 4.f) & 255;
-}
 
-perlin perlin_noise(inout random_engine rng)
-{
-    ;
+    return _perlin.randoms[_perlin.x[ijk.x] ^ _perlin.y[ijk.y] ^ _perlin.z[ijk.z]];
 }
 
 #endif    // PERLIN_H
