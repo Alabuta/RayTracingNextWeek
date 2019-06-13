@@ -41,16 +41,41 @@ auto constexpr kGROUP_SIZE = glm::uvec2{8, 8};
 
 namespace math {
 struct perlin final {
-    std::uint32_t x[256];
+    /*std::uint32_t x[256];
     std::uint32_t y[256];
     std::uint32_t z[256];
-    float randoms[256];
+    float randoms[256];*/
+    std::array<std::uint32_t, 256> x;
+    std::array<std::uint32_t, 256> y;
+    std::array<std::uint32_t, 256> z;
+    std::array<float, 256> randoms;
 };
 }
 
 void create_perlin_noise()
 {
     math::perlin perlin;
+
+    std::iota(std::begin(perlin.x), std::end(perlin.x), 0u);
+    std::iota(std::begin(perlin.y), std::end(perlin.y), 0u);
+    std::iota(std::begin(perlin.z), std::end(perlin.z), 0u);
+
+    std::random_device random_device;
+    std::mt19937 generator{random_device()};
+
+    auto real_distribution = std::uniform_real_distribution{0.f, 1.f};
+
+    std::for_each(std::rbegin(perlin.x), std::rend(perlin.x), [&generator, &real_distribution, &x = perlin.x, i = 255u] () mutable
+    {
+        auto target = static_cast<std::uint32_t>(real_distribution(generator) * i);
+
+        std::swap(x[i], x[target]);
+    });
+
+    std::generate_n(perlin.randoms, 256, [&generator, &real_distribution]
+    {
+        return real_distribution(generator);
+    });
 
     gfx::create_shader_storage_buffer<math::perlin>(kPERLIN_NOISE_BINDING, 1, &perlin);
 }

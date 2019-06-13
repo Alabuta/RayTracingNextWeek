@@ -17,7 +17,7 @@ layout(binding = kPERLIN_NOISE_BINDING, std430) readonly buffer PERLIN
     perlin _perlin;
 };
 
-float perlin_noise(const in perlin _perlin)
+float perlin_noise(const in perlin _perlin, const in vec3 xyz)
 {
     //vec3 uvw = fract(xyz);
 
