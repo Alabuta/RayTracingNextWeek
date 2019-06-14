@@ -65,14 +65,37 @@ void create_perlin_noise()
 
     auto real_distribution = std::uniform_real_distribution{0.f, 1.f};
 
-    std::for_each(std::rbegin(perlin.x), std::rend(perlin.x), [&generator, &real_distribution, &x = perlin.x, i = 255u] () mutable
+    std::transform(std::rbegin(perlin.x), std::rend(perlin.x), std::rbegin(perlin.x),
+                   [&generator, &real_distribution, &perlin, i = 256u] (auto &&x) mutable
     {
-        auto target = static_cast<std::uint32_t>(real_distribution(generator) * i);
+        auto target = static_cast<std::uint32_t>(real_distribution(generator) * static_cast<float>(--i));
 
-        std::swap(x[i], x[target]);
+        std::swap(x, perlin.x[target]);
+
+        return x;
     });
 
-    std::generate_n(perlin.randoms, 256, [&generator, &real_distribution]
+    std::transform(std::rbegin(perlin.y), std::rend(perlin.y), std::rbegin(perlin.y),
+                   [&generator, &real_distribution, &perlin, i = 256u] (auto &&y) mutable
+    {
+        auto target = static_cast<std::uint32_t>(real_distribution(generator) * static_cast<float>(--i));
+
+        std::swap(y, perlin.y[target]);
+
+        return y;
+    });
+
+    std::transform(std::rbegin(perlin.z), std::rend(perlin.z), std::rbegin(perlin.z),
+                   [&generator, &real_distribution, &perlin, i = 256u] (auto &&z) mutable
+    {
+        auto target = static_cast<std::uint32_t>(real_distribution(generator) * static_cast<float>(--i));
+
+        std::swap(z, perlin.z[target]);
+
+        return z;
+    });
+
+    std::generate(std::begin(perlin.randoms), std::end(perlin.randoms), [&generator, &real_distribution]
     {
         return real_distribution(generator);
     });
