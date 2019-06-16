@@ -17,13 +17,32 @@ layout(binding = kPERLIN_NOISE_BINDING, std430) readonly buffer PERLIN
     perlin _perlin;
 };
 
-float perlin_noise(const in perlin _perlin, const in vec3 xyz)
+float trilinear_interpolation(const in mat2 c, const in mat2 d, const in vec3 uvw)
 {
-    //vec3 uvw = fract(xyz);
+    vec3 _uvw = vec3(1.f) - uvw;
+    vec3 a = dot(_uvw, vec3(1.f) - vec3(0.f, 0.f, 0.f));
+}
 
-    ivec3 ijk = ivec3(xyz * 4.f) & 255;
+float perlin_noise(/*const in perlin _perlin, */const in vec3 xyz)
+{
+    vec3 uvw = fract(xyz);
 
-    return _perlin.randoms[_perlin.x[ijk.x] ^ _perlin.y[ijk.y] ^ _perlin.z[ijk.z]];
+    ivec3 ijk = ivec3(floor(uvw));
+
+    mat2 c;
+    mat2 d;
+
+    c[0].x = _perlin.randoms[_perlin.x[(ijk.x + 0) & 255] ^ _perlin.y[(ijk.y + 0) & 255] ^ _perlin.z[(ijk.z + 0) & 255]];
+    c[0].y = _perlin.randoms[_perlin.x[(ijk.x + 1) & 255] ^ _perlin.y[(ijk.y + 0) & 255] ^ _perlin.z[(ijk.z + 0) & 255]];
+    c[1].x = _perlin.randoms[_perlin.x[(ijk.x + 0) & 255] ^ _perlin.y[(ijk.y + 1) & 255] ^ _perlin.z[(ijk.z + 0) & 255]];
+    c[1].y = _perlin.randoms[_perlin.x[(ijk.x + 1) & 255] ^ _perlin.y[(ijk.y + 1) & 255] ^ _perlin.z[(ijk.z + 0) & 255]];
+
+    d[0].x = _perlin.randoms[_perlin.x[(ijk.x + 0) & 255] ^ _perlin.y[(ijk.y + 0) & 255] ^ _perlin.z[(ijk.z + 1) & 255]];
+    d[0].y = _perlin.randoms[_perlin.x[(ijk.x + 1) & 255] ^ _perlin.y[(ijk.y + 0) & 255] ^ _perlin.z[(ijk.z + 1) & 255]];
+    d[1].x = _perlin.randoms[_perlin.x[(ijk.x + 0) & 255] ^ _perlin.y[(ijk.y + 1) & 255] ^ _perlin.z[(ijk.z + 1) & 255]];
+    d[1].y = _perlin.randoms[_perlin.x[(ijk.x + 1) & 255] ^ _perlin.y[(ijk.y + 1) & 255] ^ _perlin.z[(ijk.z + 1) & 255]];
+
+    return trilinear_interpolation(c, d, uvw);
 }
 
 #endif    // PERLIN_H
