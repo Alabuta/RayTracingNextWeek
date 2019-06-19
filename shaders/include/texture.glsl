@@ -14,6 +14,7 @@ struct checker_texture {
 
 struct noise_texture {
     vec3 color;
+    float scale;
 };
 
 vec3 sample_texture(const in constant_texture _texture, const in vec3 stp)
@@ -31,7 +32,7 @@ vec3 sample_texture(const in checker_texture _texture, const in vec3 stp)
 
 vec3 sample_texture(const in noise_texture _texture, const in vec3 stp)
 {
-    return _texture.color * perlin_noise(stp);
+    return _texture.color * perlin_noise(stp * _texture.scale);
 }
 
 

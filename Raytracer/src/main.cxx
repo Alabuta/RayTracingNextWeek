@@ -41,14 +41,10 @@ auto constexpr kGROUP_SIZE = glm::uvec2{8, 8};
 
 namespace math {
 struct perlin final {
-    /*std::uint32_t x[256];
-    std::uint32_t y[256];
-    std::uint32_t z[256];
-    float randoms[256];*/
     std::array<std::uint32_t, 256> x;
     std::array<std::uint32_t, 256> y;
     std::array<std::uint32_t, 256> z;
-    std::array<float, 256> randoms;
+    std::array<glm::vec3, 256> randoms;
 };
 }
 
@@ -95,10 +91,13 @@ void create_perlin_noise()
         return z;
     });
 
-    std::generate(std::begin(perlin.randoms), std::end(perlin.randoms), [&generator, &real_distribution]
-    {
-        return real_distribution(generator);
-    });
+    //std::generate(std::begin(perlin.randoms), std::end(perlin.randoms), [&generator, &real_distribution]
+    //{
+    //    //return real_distribution(generator);
+    //    return glm::normalize(math::random_on_unit_sphere(generator));
+    //});
+    auto unit_vectors = math::spherical_fibonacci_lattice(256);
+    std::move(std::begin(unit_vectors), std::end(unit_vectors), std::begin(perlin.randoms));
 
     gfx::create_shader_storage_buffer<math::perlin>(kPERLIN_NOISE_BINDING, 1, &perlin);
 }

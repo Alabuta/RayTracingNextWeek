@@ -32,7 +32,7 @@ struct surface_response {
 };
 
 //const checker_texture _texture = checker_texture(vec3(1.f), vec3(.2f, .3f, .1f));
-const noise_texture _texture = noise_texture(vec3(1.f));
+const noise_texture _texture = noise_texture(vec3(1.f), 16.f);
 
 float schlick_reflection_probability(float refraction_index, float cosine_theta)
 {
