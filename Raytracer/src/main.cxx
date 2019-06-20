@@ -5,6 +5,8 @@
 
 #include "input/input_manager.hxx"
 
+#include "loaders/image_loader.hxx"
+
 #include "gfx/framebuffer.hxx"
 #include "gfx/render_pass.hxx"
 #include "gfx/shader.hxx"

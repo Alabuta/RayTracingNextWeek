@@ -39,6 +39,7 @@
     <ClInclude Include="src\input\input_manager.hxx" />
     <ClInclude Include="src\input\keyboard.hxx" />
     <ClInclude Include="src\input\mouse.hxx" />
+    <ClInclude Include="src\loaders\image_loader.hxx" />
     <ClInclude Include="src\loaders\spirv_loader.hxx" />
     <ClInclude Include="src\main.hxx" />
     <ClInclude Include="src\math.hxx" />
