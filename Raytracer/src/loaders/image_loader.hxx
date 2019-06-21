@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef max
+#undef max
+#endif
+
 #include <cstddef>
 #include <limits>
 #include <vector>
@@ -32,7 +36,20 @@ std::optional<loader::image_data> load_image(std::string_view name)
 
     auto path = contents / name;
 
-    std::string str;// { std::begin(path), std::end(path) };
+    std::ifstream file{path.native(), std::ios::in | std::ios::binary};
+
+    if (file.bad() || file.fail())
+        return { };
+
+    auto const start_pos = file.tellg();
+    file.ignore(std::numeric_limits<std::streamsize>::max());
+
+    std::vector<stbi_uc> buffer(static_cast<std::size_t>(file.gcount()));
+
+    file.seekg(start_pos);
+
+    if (!buffer.empty())
+        file.read(reinterpret_cast<char *>(std::data(buffer)), static_cast<std::streamsize>(std::size(buffer)));
 
     loader::image_data image_data;
 
@@ -40,7 +57,7 @@ std::optional<loader::image_data> load_image(std::string_view name)
 
     std::int32_t components = -1;
 
-    auto data = stbi_load(str.c_str(), &width, &height, &components, 1);
+    auto data = stbi_load_from_memory(std::data(buffer), static_cast<std::int32_t>(std::size(buffer)), &width, &height, &components, 1);
 
     return image_data;
 }
