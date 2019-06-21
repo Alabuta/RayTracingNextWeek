@@ -44,6 +44,7 @@
     <ClInclude Include="src\main.hxx" />
     <ClInclude Include="src\math.hxx" />
     <ClInclude Include="src\math\math.hxx" />
+    <ClInclude Include="src\math\perlin.hxx" />
     <ClInclude Include="src\platform\platform.hxx" />
     <ClInclude Include="src\platform\window.hxx" />
     <ClInclude Include="src\raytracer\bvh.hxx" />

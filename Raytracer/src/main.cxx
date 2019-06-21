@@ -7,6 +7,8 @@
 
 #include "loaders/image_loader.hxx"
 
+#include "math/perlin.hxx"
+
 #include "gfx/framebuffer.hxx"
 #include "gfx/render_pass.hxx"
 #include "gfx/shader.hxx"
@@ -40,69 +42,6 @@ auto constexpr kUNIT_VECTORS_NUMBER = 8'192u;
 auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 
 auto constexpr kGROUP_SIZE = glm::uvec2{8, 8};
-
-namespace math {
-struct perlin final {
-    std::array<std::uint32_t, 256> x;
-    std::array<std::uint32_t, 256> y;
-    std::array<std::uint32_t, 256> z;
-    std::array<glm::vec3, 256> randoms;
-};
-}
-
-void create_perlin_noise()
-{
-    math::perlin perlin;
-
-    std::iota(std::begin(perlin.x), std::end(perlin.x), 0u);
-    std::iota(std::begin(perlin.y), std::end(perlin.y), 0u);
-    std::iota(std::begin(perlin.z), std::end(perlin.z), 0u);
-
-    std::random_device random_device;
-    std::mt19937 generator{random_device()};
-
-    auto real_distribution = std::uniform_real_distribution{0.f, 1.f};
-
-    std::transform(std::rbegin(perlin.x), std::rend(perlin.x), std::rbegin(perlin.x),
-                   [&generator, &real_distribution, &perlin, i = 256u] (auto &&x) mutable
-    {
-        auto target = static_cast<std::uint32_t>(real_distribution(generator) * static_cast<float>(--i));
-
-        std::swap(x, perlin.x[target]);
-
-        return x;
-    });
-
-    std::transform(std::rbegin(perlin.y), std::rend(perlin.y), std::rbegin(perlin.y),
-                   [&generator, &real_distribution, &perlin, i = 256u] (auto &&y) mutable
-    {
-        auto target = static_cast<std::uint32_t>(real_distribution(generator) * static_cast<float>(--i));
-
-        std::swap(y, perlin.y[target]);
-
-        return y;
-    });
-
-    std::transform(std::rbegin(perlin.z), std::rend(perlin.z), std::rbegin(perlin.z),
-                   [&generator, &real_distribution, &perlin, i = 256u] (auto &&z) mutable
-    {
-        auto target = static_cast<std::uint32_t>(real_distribution(generator) * static_cast<float>(--i));
-
-        std::swap(z, perlin.z[target]);
-
-        return z;
-    });
-
-    //std::generate(std::begin(perlin.randoms), std::end(perlin.randoms), [&generator, &real_distribution]
-    //{
-    //    //return real_distribution(generator);
-    //    return glm::normalize(math::random_on_unit_sphere(generator));
-    //});
-    auto unit_vectors = math::spherical_fibonacci_lattice(256);
-    std::move(std::begin(unit_vectors), std::end(unit_vectors), std::begin(perlin.randoms));
-
-    gfx::create_shader_storage_buffer<math::perlin>(kPERLIN_NOISE_BINDING, 1, &perlin);
-}
 
 
 namespace app {
@@ -379,7 +318,12 @@ int main()
         }
     }
 
-    create_perlin_noise();
+    {
+        auto perlin = math::create_perlin_noise();
+
+        gfx::create_shader_storage_buffer<math::perlin>(kPERLIN_NOISE_BINDING, 1, &perlin);
+    }
+
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
     glFinish();
