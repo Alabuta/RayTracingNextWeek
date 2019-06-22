@@ -37,6 +37,16 @@ struct node_hit {
     float t;
 };
 
+vec2 get_uv(const in sphere _sphere, const in vec3 p)
+{
+    float phi = atan(p.y, p.x);
+    float theta = asin(p.z);
+
+    vec2 uv = vec2(.5f - phi / kTAU, theta / kPI + .5f);
+    //vec2 uv = vec2(1.f - (phi + kPI) / kTAU, (theta + kPI * .5f) / kPI);
+
+    return uv;
+}
 
 const sphere null_sphere = sphere(vec3(0.f), 0.f, 0u, 0u);
 
