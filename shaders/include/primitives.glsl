@@ -16,8 +16,7 @@ struct hit {
 
     float time;
 
-    uint material_type;
-    uint material_index;
+    sphere primitive;
 
     bool valid;
 };
@@ -37,5 +36,9 @@ struct node_hit {
     int node;
     float t;
 };
+
+
+const sphere null_sphere = sphere(vec3(0.f), 0.f, 0u, 0u);
+
 
 #endif    // PRIMITIVES_H

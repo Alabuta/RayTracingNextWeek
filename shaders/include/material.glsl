@@ -31,8 +31,23 @@ struct surface_response {
     bool valid;
 };
 
-//const checker_texture _texture = checker_texture(vec3(1.f), vec3(.2f, .3f, .1f));
-const noise_texture _texture = noise_texture(vec3(1.f), 16.f);
+layout(binding = kLAMBERTIAN_BUFFER_BINDING, std430) readonly buffer LAMBERTIAN_MATERIALS
+{
+    lambertian lambertians[];
+};
+
+layout(binding = kMETAL_BUFFER_BINDING, std430) readonly buffer METAL_MATERIALS
+{
+    metal metals[];
+};
+
+layout(binding = kDIELECTRIC_BUFFER_BINDING, std430) readonly buffer DIELECTRIC_MATERIALS
+{
+    dielectric dielectrics[];
+};
+
+const checker_texture _texture = checker_texture(vec3(1.f), vec3(.2f, .3f, .1f));
+//const noise_texture _texture = noise_texture(vec3(1.f), 16.f);
 
 float schlick_reflection_probability(float refraction_index, float cosine_theta)
 {
@@ -101,6 +116,31 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
     else scattered_ray = ray(_hit.position, refracted);
 
     return surface_response(scattered_ray, attenuation, true);
+}
+
+surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray)
+{
+    surface_response response;
+
+    switch (_hit.primitive.material_type) {
+        case LAMBERTIAN_TYPE:
+            response = apply_material(rng, _hit, _ray, lambertians[_hit.primitive.material_index]);
+            break;
+
+        case METAL_TYPE:
+            response = apply_material(rng, _hit, _ray, metals[_hit.primitive.material_index]);
+            break;
+
+        case DIELECTRIC_TYPE:
+            response = apply_material(rng, _hit, _ray, dielectrics[_hit.primitive.material_index]);
+            break;
+
+        default:
+            response.valid = false;
+            break;
+    }
+
+    return response;
 }
 
 

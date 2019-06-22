@@ -39,21 +39,6 @@ layout(binding = kCAMERA_BINDING, std430) readonly buffer CAMERA
 #include "raytracer.glsl"
 #include "material.glsl"
 
-layout(binding = kLAMBERTIAN_BUFFER_BINDING, std430) readonly buffer LAMBERTIAN_MATERIALS
-{
-    lambertian lambertians[];
-};
-
-layout(binding = kMETAL_BUFFER_BINDING, std430) readonly buffer METAL_MATERIALS
-{
-    metal metals[];
-};
-
-layout(binding = kDIELECTRIC_BUFFER_BINDING, std430) readonly buffer DIELECTRIC_MATERIALS
-{
-    dielectric dielectrics[];
-};
-
 
 vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
 {
@@ -66,25 +51,7 @@ vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
 		hit closest_hit = hit_world(kSPHERES_NUMBER, scattered_ray);
 
     	if (closest_hit.valid) {
-            surface_response response;
-
-            switch (closest_hit.material_type) {
-                case LAMBERTIAN_TYPE:
-                    response = apply_material(rng, closest_hit, scattered_ray, lambertians[closest_hit.material_index]);
-                    break;
-
-                case METAL_TYPE:
-                    response = apply_material(rng, closest_hit, scattered_ray, metals[closest_hit.material_index]);
-                    break;
-
-                case DIELECTRIC_TYPE:
-                    response = apply_material(rng, closest_hit, scattered_ray, dielectrics[closest_hit.material_index]);
-                    break;
-
-                default:
-                    response.valid = false;
-                    break;
-            }
+            surface_response response = apply_material(rng, closest_hit, scattered_ray);
 
             if (response.valid) {
                 scattered_ray = response._ray;
