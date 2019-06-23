@@ -324,11 +324,8 @@ int main()
         gfx::create_shader_storage_buffer<math::perlin>(kPERLIN_NOISE_BINDING, 1, &perlin);
     }
 
-    if (auto image_data = loader::load_image("earth-sphere.jpg"sv); image_data) {
-        auto &&[width, height, internal_format, bytes] = *image_data;
-
-        auto image = gfx::create_image2D(width, height, GL_RGBA8);
-    }
+    auto texture_image = loader::load_image("earth-sphere.jpg"sv);
+    glBindTextureUnit(12, texture_image.handle);
 
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
     glFinish();

@@ -19,17 +19,11 @@ using namespace std::string_view_literals;
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "gfx/image.hxx"
+
 
 namespace loader {
-struct image_data {
-    std::int32_t width{0}, height{0};
-
-    GLenum internal_format;
-
-    std::vector<std::byte> bytes;
-};
-
-std::optional<loader::image_data> load_image(std::string_view name)
+gfx::image2D load_image(std::string_view name)
 {
     fs::path contents{"images"sv};
 
@@ -53,25 +47,17 @@ std::optional<loader::image_data> load_image(std::string_view name)
     if (!buffer.empty())
         file.read(reinterpret_cast<char *>(std::data(buffer)), static_cast<std::streamsize>(std::size(buffer)));
 
-    loader::image_data image_data;
+    std::int32_t width{0}, height{0};
+    std::int32_t components{-1};
 
-    auto &&[width, height, internal_format, bytes] = image_data;
+    auto data = stbi_load_from_memory(std::data(buffer), static_cast<std::int32_t>(std::size(buffer)), &width, &height, &components, 0);
 
-    std::int32_t components = -1;
+    auto image = gfx::create_image2D(width, height, GL_RGB8);
 
-    auto data = stbi_load_from_memory(std::data(buffer), static_cast<std::int32_t>(std::size(buffer)), &width, &height, &components, 1);
-
-    auto const buffer_size_in_bytes = width * height * components;// (components == 3 ? 4 : components);
-
-    bytes.resize(buffer_size_in_bytes);
-
-    std::transform(data, data + buffer_size_in_bytes, std::begin(bytes), [] (auto byte)
-    {
-        return static_cast<std::byte>(byte);
-    });
+    glTextureSubImage2D(image.handle, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
 
     stbi_image_free(data);
 
-    return image_data;
+    return image;
 }
 }
