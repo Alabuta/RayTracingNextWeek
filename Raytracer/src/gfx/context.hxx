@@ -52,7 +52,7 @@ struct context final {
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_DEPTH_CLAMP);
-        //glDepthFunc(GL_GREATER);
+        glDepthFunc(GL_LESS);
 
         glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
     }

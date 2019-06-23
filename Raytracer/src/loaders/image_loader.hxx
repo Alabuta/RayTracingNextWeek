@@ -50,6 +50,8 @@ gfx::image2D load_image(std::string_view name)
     std::int32_t width{0}, height{0};
     std::int32_t components{-1};
 
+    stbi_set_flip_vertically_on_load(true);
+
     auto data = stbi_load_from_memory(std::data(buffer), static_cast<std::int32_t>(std::size(buffer)), &width, &height, &components, 0);
 
     auto image = gfx::create_image2D(width, height, GL_RGB8);
