@@ -51,6 +51,29 @@ hit intersect(const in ray _ray, const in sphere _sphere, float time_min, float 
     return hit(oc, oc, 0.f, null_sphere, false);
 }
 
+hit intersect(const in ray _ray, const in disk _disk, float time_min, float time_max)
+{
+    float denom = dot(normalize(_ray.direction), _disk.normal);
+
+    if (denom < 1e-6f)
+        return hit(_ray.origin, _ray.origin, 0.f, null_sphere, false);
+
+    vec3 d = _disk.center - _ray.origin;
+
+    float t = dot(d, _disk.normal) / denom;
+
+    if (t >= 0.f) {
+        vec3 p = point_at(_ray, t);
+        vec3 v = p - _disk.center;
+
+        float d2 = dot(v, v);
+
+        return hit(p, _disk.normal, 0.f, null_sphere, sqrt(d2) <= _disk.radius);
+    }
+
+    return hit(_ray.origin, _ray.origin, 0.f, null_sphere, false);
+}
+
 bool intersect(const in ray _ray, const in AABB bounding_box, float t_min, float t_max)
 {
     vec3 delimer = vec3(1.f) / _ray.direction;

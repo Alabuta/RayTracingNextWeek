@@ -26,6 +26,11 @@ struct dielectric {
     float refraction_index;
 };
 
+struct diffuse_light {
+    vec3 color;
+    float distance;
+};
+
 struct surface_response {
     ray _ray;
     vec3 attenuation;
@@ -69,7 +74,6 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
 
     vec2 uv = get_uv(_hit.primitive, normalize(_hit.position - _hit.primitive.center));
     vec3 attenuation = texture(texture_image, uv).rgb;
-    //vec3 attenuation = vec3(uv, .0f);
 
     return surface_response(scattered_ray, attenuation, true);
 }

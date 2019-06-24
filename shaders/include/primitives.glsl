@@ -10,6 +10,12 @@ struct sphere {
     uint material_index;
 };
 
+struct disk {
+    vec3 center;
+    float radius;
+    vec3 normal;
+};
+
 struct hit {
     vec3 position;
     vec3 normal;
