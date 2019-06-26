@@ -32,6 +32,7 @@ auto constexpr kOUT_IMAGE_BINDING = 2u;
 auto constexpr kLAMBERTIAN_BUFFER_BINDING = 2u;
 auto constexpr kMETAL_BUFFER_BINDING = 3u;
 auto constexpr kDIELECTRIC_BUFFER_BINDING = 4u;
+auto constexpr kEMISSIVE_BUFFER_BINDING = 5u;
 auto constexpr kPRIMITIVES_BINDING = 6u;
 auto constexpr kCAMERA_BINDING = 7u;
 auto constexpr kPERLIN_NOISE_BINDING = 8u;
@@ -244,12 +245,22 @@ int main()
 
             gfx::create_shader_storage_buffer<material::dielectric>(kDIELECTRIC_BUFFER_BINDING, length, std::data(dielectric));
         }
+
+        {
+            std::vector<material::emissive> emissive;
+
+            emissive.push_back({glm::vec3{1}, 4.f});
+
+            auto length = static_cast<std::uint32_t>(std::size(emissive));
+
+            gfx::create_shader_storage_buffer<material::emissive>(kEMISSIVE_BUFFER_BINDING, length, std::data(emissive));
+        }
     }
 
     {
         auto &&spheres = app_state.spheres;
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, 1, 0}, 1, 0, 0});
+        spheres.emplace_back(primitives::sphere{glm::vec3{0, 1, 0}, 1, 3, 0});
         spheres.emplace_back(primitives::sphere{glm::vec3{0, -1000, 0}, 1000, 0, 1});
 
         spheres.emplace_back(primitives::sphere{glm::vec3{+2.1, 1, 0}, 1, 1, 0});

@@ -11,6 +11,7 @@ layout(binding = 12) uniform sampler2D texture_image;
 const uint LAMBERTIAN_TYPE = 0u;
 const uint METAL_TYPE = 1u;
 const uint DIELECTRIC_TYPE = 2u;
+const uint EMISSIVE_TYPE = 3u;
 
 struct lambertian {
     vec3 albedo;
@@ -26,7 +27,7 @@ struct dielectric {
     float refraction_index;
 };
 
-struct diffuse_light {
+struct emissive {
     vec3 color;
     float distance;
 };
@@ -52,6 +53,11 @@ layout(binding = kDIELECTRIC_BUFFER_BINDING, std430) readonly buffer DIELECTRIC_
     dielectric dielectrics[];
 };
 
+layout(binding = kEMISSIVE_BUFFER_BINDING, std430) readonly buffer EMISSIVE_BUFFER_BINDING
+{
+    emissive emissives[];
+};
+
 const checker_texture _texture = checker_texture(vec3(1.f), vec3(.2f, .3f, .1f));
 //const noise_texture _texture = noise_texture(vec3(1.f), 16.f);
 
@@ -70,10 +76,10 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
     // ray scattered_ray = ray(_hit.position, direction, _ray.time);
     ray scattered_ray = ray(_hit.position, direction);
     //vec3 attenuation = material.albedo;
-    //vec3 attenuation = sample_texture(_texture, _hit.position);
+    vec3 attenuation = sample_texture(_texture, _hit.position);
 
-    vec2 uv = get_uv(_hit.primitive, normalize(_hit.position - _hit.primitive.center));
-    vec3 attenuation = texture(texture_image, uv).rgb;
+    /*vec2 uv = get_uv(_hit.primitive, normalize(_hit.position - _hit.primitive.center));
+    vec3 attenuation = texture(texture_image, uv).rgb;*/
 
     return surface_response(scattered_ray, attenuation, true);
 }
@@ -127,6 +133,11 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
     return surface_response(scattered_ray, attenuation, true);
 }
 
+surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray, const in emissive material)
+{
+    return surface_response(ray(vec3(0), vec3(0)), material.color, true);
+}
+
 surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray)
 {
     surface_response response;
@@ -142,6 +153,10 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
 
         case DIELECTRIC_TYPE:
             response = apply_material(rng, _hit, _ray, dielectrics[_hit.primitive.material_index]);
+            break;
+
+        case EMISSIVE_TYPE:
+            response = apply_material(rng, _hit, _ray, emissives[_hit.primitive.material_index]);
             break;
 
         default:

@@ -19,4 +19,9 @@ struct dielectric final {
     glm::vec3 albedo{1};
     float refraction_index{1};
 };
+
+struct emissive final {
+    glm::vec3 color{1};
+    float distance{1};
+};
 }
