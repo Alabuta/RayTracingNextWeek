@@ -18,16 +18,18 @@ find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(GLEW 2.1 REQUIRED)
+# find_package(STBImage REQUIRED)
 
 if(NOT WIN32)
     find_package(X11 REQUIRED)
 endif()
 
-include_directories(SYSTEM include)
+include_directories(SYSTEM include "/usr/include/stb")
 include_directories(src)
 
 set(SOURCE_FILES
     src/math/math.hxx					            src/math/math.cxx
+    src/math/perlin.hxx
 
     src/gfx/context.hxx
     src/gfx/framebuffer.hxx
@@ -38,6 +40,7 @@ set(SOURCE_FILES
     src/gfx/atomic_counter.hxx
     src/gfx/vertex_array.hxx
 
+    src/loaders/image_loader.hxx
     src/loaders/spirv_loader.hxx
 
     src/camera/camera.hxx                           src/camera/camera.cxx
