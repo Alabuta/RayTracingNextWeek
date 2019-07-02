@@ -135,7 +135,19 @@ surface_response apply_material(inout random_engine rng, const in hit _hit, cons
 
 surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray, const in emissive material)
 {
-    return surface_response(ray(vec3(0), vec3(0)), material.color, true);
+    //return surface_response(ray(vec3(0), vec3(0)), material.color, true);
+    vec3 random_direction = random_on_unit_sphere(rng);
+    vec3 direction = _hit.normal + random_direction;
+
+    // ray scattered_ray = ray(_hit.position, direction, _ray.time);
+    ray scattered_ray = ray(_hit.position, direction);
+    //vec3 attenuation = material.albedo;
+    vec3 attenuation = sample_texture(_texture, _hit.position);
+
+    /*vec2 uv = get_uv(_hit.primitive, normalize(_hit.position - _hit.primitive.center));
+    vec3 attenuation = texture(texture_image, uv).rgb;*/
+
+    return surface_response(scattered_ray, attenuation, true);
 }
 
 surface_response apply_material(inout random_engine rng, const in hit _hit, const in ray _ray)

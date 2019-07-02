@@ -57,13 +57,7 @@ vec3 render(inout random_engine rng, const in camera _camera, const in vec2 uv)
                 scattered_ray = response._ray;
                 energy_absorption = response.attenuation;
 
-                if (scattered_ray.direction == vec3(0)) {
-                    attenuation += energy_absorption;
-                }
-
-                else {
-                    attenuation *= energy_absorption;
-                }
+                attenuation *= energy_absorption;
             }
 
             else return vec3(0);
