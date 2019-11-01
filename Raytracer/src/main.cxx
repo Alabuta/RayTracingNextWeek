@@ -1,4 +1,5 @@
 #include <boost/program_options.hpp>
+
 #include "main.hxx"
 
 #include "gfx/context.hxx"
@@ -196,7 +197,7 @@ int main(int argc, char *argv[])
 
     auto const groups_number = glm::uvec2{glm::ceil(glm::vec2{width, height} / glm::vec2{kGROUP_SIZE})};
 
-    std::cout << groups_number.x << 'x' << groups_number.y << '\n';
+    std::cout << fmt::format("groups number: {}x{}\n"s, groups_number.x, groups_number.y);
 
     platform::window window{"Raytracer"sv, width, height};
 

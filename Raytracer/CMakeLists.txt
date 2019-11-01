@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
+﻿cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
 
 if(NOT DEFINED PROJECT_VERSION)
     set(PROJECT_VERSION 1.0.0)
@@ -18,6 +18,7 @@ find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(GLEW 2.1 REQUIRED)
+find_package(fmt 5.3 CONFIG REQUIRED)
 find_package(Boost 1.69 COMPONENTS program_options REQUIRED)
 # find_package(STBImage REQUIRED)
 
@@ -152,6 +153,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
     GLEW::GLEW
 
+	fmt::fmt
     Boost::program_options
 
     OpenGL::GL
