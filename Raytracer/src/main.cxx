@@ -1,3 +1,4 @@
+#include <boost/program_options.hpp>
 #include "main.hxx"
 
 #include "gfx/context.hxx"
@@ -145,7 +146,7 @@ void blit_framebuffer(app::state const &app_state)
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
 #ifdef _DEBUG
     #ifdef _MSC_VER
@@ -156,12 +157,41 @@ int main()
     #endif
 #endif
 
+    app::state app_state;
+    app_state.window_size = std::array{800, 600};
+
+    try {
+        namespace po = boost::program_options;
+
+        po::options_description desc("Allowed options");
+
+        desc.add_options()
+            ("help", "produce help message")
+            ("size", po::value<std::vector<int>>()->multitoken(), "window size");
+
+        po::variables_map vm;
+        po::store(po::parse_command_line(argc, argv, desc), vm);
+        po::notify(vm);
+
+        if (vm.count("help")) {
+            std::cout << desc << std::endl;
+            return 1;
+        }
+
+        if (vm.count("size")) {
+            auto window_size = vm["size"].as<std::vector<int>>();
+
+            std::copy_n(std::begin(window_size), std::size(app_state.window_size), std::begin(app_state.window_size));
+        }
+
+    } catch (...) {
+        std::cerr << "Error: unexpected exception at program options parsing.";
+        return 1;
+    }
+
     if (auto result = glfwInit(); result != GLFW_TRUE)
         throw std::runtime_error("failed to init GLFW"s);
 
-    app::state app_state;
-
-    app_state.window_size = std::array{800, 600};
     auto [width, height] = app_state.window_size;
 
     auto const groups_number = glm::uvec2{glm::ceil(glm::vec2{width, height} / glm::vec2{kGROUP_SIZE})};
