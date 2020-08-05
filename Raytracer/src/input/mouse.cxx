@@ -17,6 +17,9 @@ namespace {
 namespace input {
 void mouse::connect(std::shared_ptr<mouse::handler> slot)
 {
+    using boost::placeholders::_1;
+    using boost::placeholders::_2;
+
     on_move_.connect(decltype(on_move_)::slot_type{
         &handler::on_move, slot.get(), _1, _2
     }.track_foreign(slot));

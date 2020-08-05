@@ -49,6 +49,9 @@ window::~window()
 
 void window::connect_handler(std::shared_ptr<platform::event_handler> handler)
 {
+    using boost::placeholders::_1;
+    using boost::placeholders::_2;
+
     resize_callback_.connect(decltype(resize_callback_)::slot_type{
         &event_handler::on_resize, handler.get(), _1, _2
     }.track_foreign(handler));
@@ -56,6 +59,8 @@ void window::connect_handler(std::shared_ptr<platform::event_handler> handler)
 
 void window::connect_handler(std::shared_ptr<platform::input_handler> handler)
 {
+    using boost::placeholders::_1;
+
     input_update_callback_.connect(decltype(input_update_callback_)::slot_type{
         &input_handler::on_update, handler.get(), _1
     }.track_foreign(handler));

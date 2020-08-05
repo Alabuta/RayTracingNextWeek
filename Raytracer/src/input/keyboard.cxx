@@ -15,6 +15,8 @@ keyboard::keyboard()
 
 void keyboard::connect(std::shared_ptr<keyboard::handler> slot)
 {
+    using boost::placeholders::_1;
+
     state_on_press_.connect(decltype(state_on_press_)::slot_type{
         &handler::state_on_press, slot.get(), _1
     }.track_foreign(slot));
