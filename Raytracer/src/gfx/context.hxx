@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-using namespace std::string_literals;
 
 //#define GL_GLEXT_PROTOTYPES 0
 
@@ -36,6 +35,8 @@ struct context final {
 
     context(platform::window const &window) : handle{window.handle()}
     {
+        using namespace std::string_literals;
+
         glfwMakeContextCurrent(handle);
         glfwSwapInterval(0);
 

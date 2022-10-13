@@ -47,12 +47,12 @@ namespace platform {
     struct event_handler {
         virtual ~event_handler() = default;
 
-        virtual void on_resize([[maybe_unused]] std::int32_t width, [[maybe_unused]] std::int32_t height) { };
+        virtual void on_resize([[maybe_unused]] std::int32_t width, [[maybe_unused]] std::int32_t height) { }
     };
 
     struct input_handler {
         virtual ~input_handler() = default;
 
-        virtual void on_update([[maybe_unused]] platform::input::raw_data &raw_data) { };
+        virtual void on_update([[maybe_unused]] platform::input::raw_data &raw_data) { }
     };
 }

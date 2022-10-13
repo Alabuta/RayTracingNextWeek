@@ -22,6 +22,5 @@ void camera::keyboard_handler::on_press_key(input::keyboard::handler::key key)
 
 void camera::keyboard_handler::on_release_key(input::keyboard::handler::key)
 {
-    ;
 }
 }

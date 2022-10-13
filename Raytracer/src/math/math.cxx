@@ -25,7 +25,7 @@ glm::vec3 random_on_unit_sphere(std::mt19937 &generator)
 
     return glm::normalize(vector);
 #else
-    static auto random_distribution = std::uniform_real_distribution{0.f, 1.f};
+    static auto random_distribution = std::uniform_real_distribution<float>{0.f, 1.f};
 
     auto phi = random_distribution(generator) * glm::pi<float>() * 2.f;
     auto cos_theta = random_distribution(generator) * 2.f - 1.f;

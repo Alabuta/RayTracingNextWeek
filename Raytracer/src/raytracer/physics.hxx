@@ -52,8 +52,6 @@ private:
         auto velocity = data.velocity + kGRAVITY * delta_time;
 
         sphere.center += (data.velocity + velocity) * .5f * delta_time;
-
-        velocity = std::move(velocity);
     }
 };
 }

@@ -6,40 +6,36 @@
 #include "math/math.hxx"
 #include "raytracer/primitives.hxx"
 
-#ifdef min
-#undef min
-#endif
 
-#ifdef max
-#undef max
-#endif
-
-
-namespace BVH {
-struct AABB final {
-    alignas(sizeof(glm::vec4)) glm::vec3 min;
-    alignas(sizeof(glm::vec4)) glm::vec3 max;
-};
-
-std::optional<BVH::AABB> create_aabb(primitives::sphere const &sphere)
+namespace BVH
 {
-    auto min = sphere.center - sphere.radius;
-    auto max = sphere.center + sphere.radius;
+    struct AABB final {
+        alignas(sizeof(glm::vec4)) glm::vec3 min;
+        alignas(sizeof(glm::vec4)) glm::vec3 max;
+    };
 
-    return BVH::AABB{min, max};
-}
+    [[maybe_unused]]
+    static std::optional<BVH::AABB> create_aabb(primitives::sphere const &sphere)
+    {
+        auto min = sphere.center - sphere.radius;
+        auto max = sphere.center + sphere.radius;
 
-BVH::AABB aabbs_union(BVH::AABB const &lhs, BVH::AABB const &rhs)
-{
-    auto min = glm::min(lhs.min, rhs.min);
-    auto max = glm::max(lhs.max, rhs.max);
+        return BVH::AABB{ min, max };
+    }
 
-    return BVH::AABB{min, max};
-}
+    [[maybe_unused]]
+    static BVH::AABB aabbs_union(BVH::AABB const &lhs, BVH::AABB const &rhs)
+    {
 
-struct node final {
-    std::int32_t left, right;
+        auto min = (glm::min)(lhs.min, rhs.min);
+        auto max = (glm::max)(lhs.max, rhs.max);
 
-    BVH::AABB bounding_box;
-};
+        return BVH::AABB{ min, max };
+    }
+
+    struct node final {
+        std::int32_t left, right;
+
+        BVH::AABB bounding_box;
+    };
 }

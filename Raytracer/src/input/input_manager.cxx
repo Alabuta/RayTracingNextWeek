@@ -13,13 +13,13 @@ namespace input {
 void input_manager::on_update(platform::input::raw_data &raw_data)
 {
     std::visit(overloaded{
-        [this] (platform::input::mouse_data::raw_data &raw_data)
+        [this] (platform::input::mouse_data::raw_data &data)
         {
-            mouse_.update(raw_data);
+            mouse_.update(data);
         },
-        [this] (platform::input::keyboard_data::raw_data &raw_data)
+        [this] (platform::input::keyboard_data::raw_data &data)
         {
-            keyboard_.update(raw_data);
+            keyboard_.update(data);
         },
         [] (auto &&) { }
     }, raw_data);

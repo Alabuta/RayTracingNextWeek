@@ -12,10 +12,7 @@
 #endif
 
 #include <string>
-using namespace std::string_literals;
-
 #include <string_view>
-using namespace std::string_view_literals;
 
 #include <fmt/format.h>
 
@@ -41,15 +38,17 @@ struct measure {
 };
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     #ifdef _MSC_VER
-        #define _CRTDBG_MAP_ALLOC
-        #include <crtdbg.h>
+        /*#define _CRTDBG_MAP_ALLOC
+        #include <crtdbg.h>*/
     #else
         #include <csignal>
 
         void posix_signal_handler(int signum)
         {
+            using namespace std::string_literals;
+
             auto currentThread = std::this_thread::get_id();
 
             auto name = "unknown"s;

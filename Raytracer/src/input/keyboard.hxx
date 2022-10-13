@@ -29,7 +29,7 @@ public:
 
             keys_state(std::set<key> &state) noexcept : state_{state} { }
 
-            bool operator() (handler::key key) const { return state_.count(key) != 0; };
+            bool operator() (handler::key key) const { return state_.count(key) != 0; }
 
         private:
 

@@ -3,14 +3,6 @@
 #include <random>
 #include <vector>
 
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
 #define GLM_FORCE_CXX17
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS

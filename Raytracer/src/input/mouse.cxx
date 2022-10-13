@@ -58,7 +58,7 @@ void mouse::update(platform::input::mouse_data::raw_data &data)
                     auto const pressed = buttons.value[i];
                     auto const depressed = buttons.value[++i];
 
-                    buttons_[i / 2] = (buttons_[i / 2] | pressed) & ~depressed;
+                    buttons_[i / 2] = (buttons_[i / 2] | static_cast<int>(pressed)) & static_cast<int>(~depressed);
                 }
 
                 if ((buttons.value & kPRESSED_MASK).any())

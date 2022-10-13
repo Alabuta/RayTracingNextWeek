@@ -29,6 +29,7 @@
 
 auto constexpr kVERTEX_SEMANTIC_POSITION = 0u;
 
+[[maybe_unused]]
 auto constexpr kBVH_TREE_BINDING = 1u;
 auto constexpr kOUT_IMAGE_BINDING = 2u;
 auto constexpr kLAMBERTIAN_BUFFER_BINDING = 2u;
@@ -44,131 +45,143 @@ auto constexpr kDEBUG_SPHERICAL_FIBONACCI_LATTICE = false;
 auto constexpr kUNIT_VECTORS_NUMBER = 8'192u;
 auto constexpr kUNIT_VECTORS_BUFFER_BINDING = 5u;
 
-auto constexpr kGROUP_SIZE = glm::uvec2{8, 8};
+auto constexpr kGROUP_SIZE = glm::uvec2{ 8, 8 };
 
 
-namespace app {
-struct state final {
-    std::array<std::int32_t, 2> window_size{0, 0};
+namespace app
+{
+    struct state final {
+        std::array<std::int32_t, 2> window_size{ 0, 0 };
 
-    scene::camera_system camera_system;
-    std::shared_ptr<scene::camera> camera;
+        scene::camera_system camera_system;
+        std::shared_ptr<scene::camera> camera;
 
-    std::unique_ptr<camera::orbit_controller> camera_controller;
+        std::unique_ptr<camera::orbit_controller> camera_controller;
 
-    gfx::shader_storage_buffer<scene::camera::gpu_data> camera_buffer;
+        gfx::shader_storage_buffer<scene::camera::gpu_data> camera_buffer;
 
-    gfx::render_pass render_pass;
+        gfx::render_pass render_pass;
 
-    gfx::program compute_program;
-    gfx::program blit_program;
+        gfx::program compute_program;
+        gfx::program blit_program;
 
-    gfx::program sphere_debug_program;
-    gfx::vertex_array<3, float> sphere_debug_vao;
+        gfx::program sphere_debug_program;
+        gfx::vertex_array<3, float> sphere_debug_vao;
 
-    gfx::shader_storage_buffer<primitives::sphere> spheres_buffer;
-    std::vector<primitives::sphere> spheres;
+        gfx::shader_storage_buffer<primitives::sphere> spheres_buffer;
+        std::vector<primitives::sphere> spheres;
 
-    // std::unique_ptr<physics::system> physics_system;
-};
+        // std::unique_ptr<physics::system> physics_system;
+    };
 
-class window_event_handler final : public platform::event_handler {
-public:
+    class window_event_handler final : public platform::event_handler {
+    public:
 
-    window_event_handler(app::state &app_state) noexcept : app_state{app_state} { }
+        window_event_handler(app::state &app_state) noexcept : app_state{ app_state }
+        {
+        }
 
-    void on_resize(std::int32_t width, std::int32_t height) override
+        void on_resize(std::int32_t width, std::int32_t height) override
+        {
+            if (width * height == 0)
+                return;
+
+            app_state.window_size = std::array{ width, height };
+
+            app_state.camera
+                     ->aspect = static_cast<float>(width) / static_cast<float>(height);
+        }
+
+    private:
+
+        app::state &app_state;
+    };
+
+    static void update(app::state &app_state, [[maybe_unused]] float delta_time)
     {
-        if (width * height == 0)
-            return;
+        app_state.camera_controller
+                 ->update();
+        app_state.camera_system
+                 .update();
 
-        app_state.window_size = std::array{width, height};
+        gfx::update_shader_storage_buffer(app_state.camera_buffer, &app_state.camera
+                                                                             ->data);
 
-        app_state.camera->aspect = static_cast<float>(width) / static_cast<float>(height);
+        // app_state.physics_system->update(delta_time);
+        // gfx::update_shader_storage_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
     }
 
-private:
+    static void render(app::state const &app_state, glm::uvec2 groups_number)
+    {
+        glUseProgram(app_state.compute_program
+                              .handle);
 
-    app::state &app_state;
-};
+        glDispatchCompute(groups_number.x, groups_number.y, 1);
 
-void update(app::state &app_state, [[maybe_unused]] float delta_time)
-{
-    app_state.camera_controller->update();
-    app_state.camera_system.update();
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    }
 
-    gfx::update_shader_storage_buffer(app_state.camera_buffer, &app_state.camera->data);
+    [[maybe_unused]]
+    static void render_spherical_fibonacci_lattice(app::state const &app_state)
+    {
+        glUseProgram(app_state.sphere_debug_program
+                              .handle);
 
-    // app_state.physics_system->update(delta_time);
-    // gfx::update_shader_storage_buffer(app_state.spheres_buffer, std::data(app_state.spheres));
-}
+        auto [width, height] = app_state.window_size;
 
-void render(app::state const &app_state, glm::uvec2 groups_number)
-{
-    glUseProgram(app_state.compute_program.handle);
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDispatchCompute(groups_number.x, groups_number.y, 1);
+        glBindVertexArray(app_state.sphere_debug_vao
+                                   .handle);
+        glDrawArrays(GL_POINTS, 0, kUNIT_VECTORS_NUMBER);
+    }
 
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-}
+    static void blit_framebuffer(app::state const &app_state)
+    {
+        glUseProgram(app_state.blit_program
+                              .handle);
 
-void render_spherical_fibonacci_lattice(app::state const &app_state)
-{
-    glUseProgram(app_state.sphere_debug_program.handle);
+        auto &&[vao, framebuffer] = app_state.render_pass;
 
-    auto [width, height] = app_state.window_size;
+        auto [app_width, app_height] = app_state.window_size;
+        auto [fbo_width, fbo_height] = framebuffer.size;
 
-    glViewport(0, 0, width, height);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.handle);
 
-    glBindVertexArray(app_state.sphere_debug_vao.handle);
-    glDrawArrays(GL_POINTS, 0, kUNIT_VECTORS_NUMBER);
-}
+        glViewport(0, 0, fbo_width, fbo_height);
 
-void blit_framebuffer(app::state const &app_state)
-{
-    glUseProgram(app_state.blit_program.handle);
+        glBindVertexArray(vao);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    auto &&[vao, framebuffer] = app_state.render_pass;
-
-    auto [app_width, app_height] = app_state.window_size;
-    auto [fbo_width, fbo_height] = framebuffer.size;
-
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.handle);
-
-    glViewport(0, 0, fbo_width, fbo_height);
-
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    glBlitNamedFramebuffer(framebuffer.handle, 0, 0, 0, fbo_width, fbo_height,
-                           0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-}
+        glBlitNamedFramebuffer(framebuffer.handle, 0, 0, 0, fbo_width, fbo_height, 0, 0, app_width, app_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    }
 }
 
 
 int main(int argc, char *argv[])
 {
+    using namespace std::string_literals;
+    using namespace std::string_view_literals;
+
 #ifdef _DEBUG
-    #ifdef _MSC_VER
-        _CrtSetDbgFlag(_CRTDBG_DELAY_FREE_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    #else
-        std::signal(SIGSEGV, posix_signal_handler);
-        std::signal(SIGTRAP, posix_signal_handler);
-    #endif
+#ifdef _MSC_VER
+    _CrtSetDbgFlag(_CRTDBG_DELAY_FREE_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#else
+    std::signal(SIGSEGV, posix_signal_handler);
+    std::signal(SIGTRAP, posix_signal_handler);
+#endif
 #endif
 
     app::state app_state;
-    app_state.window_size = std::array{800, 600};
+    app_state.window_size = std::array{ 800, 600 };
 
     try {
         namespace po = boost::program_options;
 
         po::options_description desc("Allowed options");
 
-        desc.add_options()
-            ("help", "produce help message")
-            ("size", po::value<std::vector<int>>()->multitoken(), "window size");
+        desc.add_options()("help", "produce help message")("size", po::value<std::vector<int>>()->multitoken(), "window size");
 
         po::variables_map vm;
         po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -185,7 +198,8 @@ int main(int argc, char *argv[])
             std::copy_n(std::begin(window_size), std::size(app_state.window_size), std::begin(app_state.window_size));
         }
 
-    } catch (...) {
+    }
+    catch (...) {
         std::cerr << "Error: unexpected exception at program options parsing.";
         return 1;
     }
@@ -195,11 +209,11 @@ int main(int argc, char *argv[])
 
     auto [width, height] = app_state.window_size;
 
-    auto const groups_number = glm::uvec2{glm::ceil(glm::vec2{width, height} / glm::vec2{kGROUP_SIZE})};
+    auto const groups_number = glm::uvec2{ glm::ceil(glm::vec2{ width, height } / glm::vec2{ kGROUP_SIZE }) };
 
-    std::cout << fmt::format("groups number: {}x{}\n"s, groups_number.x, groups_number.y);
+    std::cout << fmt::format("groups number: {}x{}\n", groups_number.x, groups_number.y);
 
-    platform::window window{"Raytracer"sv, width, height};
+    platform::window window{ "Raytracer"sv, width, height };
 
     auto app_window_event_handler = std::make_shared<app::window_event_handler>(app_state);
     window.connect_handler(app_window_event_handler);
@@ -207,7 +221,7 @@ int main(int argc, char *argv[])
     auto input_manager = std::make_shared<input::input_manager>();
     window.connect_handler(input_manager);
 
-    gfx::context context{window};
+    gfx::context context{ window };
 
     auto image = gfx::create_image2D(width, height, GL_RGBA32F);
 
@@ -223,34 +237,37 @@ int main(int argc, char *argv[])
 
     {
         auto compute_shader_stage = gfx::create_shader_stage<gfx::shader::compute>("shader.comp.spv"sv, "main"sv);
-        app_state.compute_program = gfx::create_program(std::vector{compute_shader_stage});
+        app_state.compute_program = gfx::create_program(std::vector{ compute_shader_stage });
     }
 
     {
         auto vertex_stage = gfx::create_shader_stage<gfx::shader::vertex>("shader.vert.spv"sv, "main"sv);
         auto fragment_stage = gfx::create_shader_stage<gfx::shader::fragment>("shader.frag.spv"sv, "main"sv);
 
-        app_state.blit_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
+        app_state.blit_program = gfx::create_program(std::vector{ vertex_stage, fragment_stage });
     }
 
     {
         auto aspect = static_cast<float>(width) / static_cast<float>(height);
-        app_state.camera = app_state.camera_system.create_camera(42.f, aspect);
+        app_state.camera = app_state.camera_system
+                                    .create_camera(42.f, aspect);
 
         app_state.camera_controller = std::make_unique<camera::orbit_controller>(app_state.camera, *input_manager);
-        app_state.camera_controller->look_at(glm::vec3{6.4, 1.6, 2.7}, glm::vec3{0, 1, 0});
+        app_state.camera_controller
+                 ->look_at(glm::vec3{ 6.4, 1.6, 2.7 }, glm::vec3{ 0, 1, 0 });
 
         app_state.camera_buffer = gfx::create_shader_storage_buffer<scene::camera::gpu_data>(kCAMERA_BINDING, 1);
 
-        gfx::update_shader_storage_buffer(app_state.camera_buffer, &app_state.camera->data);
+        gfx::update_shader_storage_buffer(app_state.camera_buffer, &app_state.camera
+                                                                             ->data);
     }
 
     {
         {
             std::vector<material::lambertian> lambertian;
 
-            lambertian.push_back({glm::vec3{.2, .4, .5}});
-            lambertian.push_back({glm::vec3{.6, .8, .8}});
+            lambertian.push_back({ glm::vec3{ .2, .4, .5 }});
+            lambertian.push_back({ glm::vec3{ .6, .8, .8 }});
 
             auto length = static_cast<std::uint32_t>(std::size(lambertian));
 
@@ -260,7 +277,7 @@ int main(int argc, char *argv[])
         {
             std::vector<material::metal> metal;
 
-            metal.push_back({glm::vec3{.8, .6, .2}, 0});
+            metal.push_back({ glm::vec3{ .8, .6, .2 }, 0 });
 
             auto length = static_cast<std::uint32_t>(std::size(metal));
 
@@ -270,7 +287,7 @@ int main(int argc, char *argv[])
         {
             std::vector<material::dielectric> dielectric;
 
-            dielectric.push_back({glm::vec3{1}, 1.5f});
+            dielectric.push_back({ glm::vec3{ 1 }, 1.5f });
 
             auto length = static_cast<std::uint32_t>(std::size(dielectric));
 
@@ -280,7 +297,7 @@ int main(int argc, char *argv[])
         {
             std::vector<material::emissive> emissive;
 
-            emissive.push_back({glm::vec3{1}, 4.f});
+            emissive.push_back({ glm::vec3{ 1 }, 4.f });
 
             auto length = static_cast<std::uint32_t>(std::size(emissive));
 
@@ -291,15 +308,15 @@ int main(int argc, char *argv[])
     {
         auto &&spheres = app_state.spheres;
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, 1, 0}, 1, 3, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, -1000, 0}, 1000, 0, 1});
+        spheres.emplace_back(primitives::sphere{ glm::vec3{ 0, 1, 0 }, 1, 3, 0 });
+        spheres.emplace_back(primitives::sphere{ glm::vec3{ 0, -1000, 0 }, 1000, 0, 1 });
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{+2.1, 1, 0}, 1, 1, 0});
+        spheres.emplace_back(primitives::sphere{ glm::vec3{ +2.1, 1, 0 }, 1, 1, 0 });
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1, 1, 0}, 1, 2, 0});
-        spheres.emplace_back(primitives::sphere{glm::vec3{-2.1, 1, 0}, -.98f, 2, 0});
+        spheres.emplace_back(primitives::sphere{ glm::vec3{ -2.1, 1, 0 }, 1, 2, 0 });
+        spheres.emplace_back(primitives::sphere{ glm::vec3{ -2.1, 1, 0 }, -.98f, 2, 0 });
 
-        spheres.emplace_back(primitives::sphere{glm::vec3{0, 1, 2}, 0.2f, 2, 0});
+        spheres.emplace_back(primitives::sphere{ glm::vec3{ 0, 1, 2 }, 0.2f, 2, 0 });
 
         auto length = static_cast<std::uint32_t>(std::size(spheres));
 
@@ -309,19 +326,19 @@ int main(int argc, char *argv[])
 
     // app_state.physics_system = std::make_unique<physics::system>(app_state.spheres);
 
-    if constexpr (false) {
+    if constexpr (/* DISABLES CODE */(false)) {
         auto unit_vectors_image = gfx::create_image2D(width, height, GL_RGBA32F);
 
         std::vector<glm::vec4> unit_vectors(static_cast<std::size_t>(width) * static_cast<std::size_t>(height));
 
         std::random_device random_device;
-        std::mt19937 generator{random_device()};
+        std::mt19937 generator{ random_device() };
 
-    #ifdef _MSC_VER
+#ifdef _MSC_VER
         std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
-    #else
-        std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
-    #endif
+#else
+                std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
+#endif
         {
             return glm::vec4(glm::normalize(math::random_on_unit_sphere(generator)), 1);
         });
@@ -330,7 +347,7 @@ int main(int argc, char *argv[])
         glBindImageTexture(kUNIT_VECTORS_BUFFER_BINDING, unit_vectors_image.handle, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
     }
 
-    if constexpr (false) {
+    if constexpr (/* DISABLES CODE */(false)) {
 #if 1
         auto unit_vectors = math::spherical_fibonacci_lattice(kUNIT_VECTORS_NUMBER);
 #else
@@ -339,11 +356,11 @@ int main(int argc, char *argv[])
         std::random_device random_device;
         std::mt19937 generator{random_device()};
 
-    #ifdef _MSC_VER
+#ifdef _MSC_VER
         std::generate(std::execution::par_unseq, std::begin(unit_vectors), std::end(unit_vectors), [&generator]
-    #else
+#else
         std::generate(std::begin(unit_vectors), std::end(unit_vectors), [&generator]
-    #endif
+#endif
         {
             return glm::normalize(math::random_on_unit_sphere(generator));
         });
@@ -355,7 +372,7 @@ int main(int argc, char *argv[])
             auto vertex_stage = gfx::create_shader_stage<gfx::shader::vertex>("debug-sphere.vert.spv"sv, "main"sv);
             auto fragment_stage = gfx::create_shader_stage<gfx::shader::fragment>("debug-sphere.frag.spv"sv, "main"sv);
 
-            app_state.sphere_debug_program = gfx::create_program(std::vector{vertex_stage, fragment_stage});
+            app_state.sphere_debug_program = gfx::create_program(std::vector{ vertex_stage, fragment_stage });
             app_state.sphere_debug_vao = gfx::create_vertex_array<3, float>(kVERTEX_SEMANTIC_POSITION, buffer);
         }
     }
@@ -377,37 +394,37 @@ int main(int argc, char *argv[])
 
     auto last_time = std::chrono::high_resolution_clock::now();
 
-    window.update([&] (auto &&window)
-    {
-        auto start = std::chrono::high_resolution_clock::now();
+    window.update([&](auto &&wnd)
+                  {
+                      auto start = std::chrono::high_resolution_clock::now();
 
-        auto delta_time = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(start - last_time).count()) * 1e-6f;
+                      auto delta_time = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(start - last_time).count()) * 1e-6f;
 
-        last_time = start;
+                      last_time = start;
 
-        glfwPollEvents();
+                      glfwPollEvents();
 
-        app::update(app_state, delta_time);
+                      app::update(app_state, delta_time);
 
-        if constexpr (kDEBUG_SPHERICAL_FIBONACCI_LATTICE) {
-            app::render_spherical_fibonacci_lattice(app_state);
-        }
+                      if constexpr (kDEBUG_SPHERICAL_FIBONACCI_LATTICE) {
+                          app::render_spherical_fibonacci_lattice(app_state);
+                      }
 
-        else {
-            app::render(app_state, groups_number);
+                      else {
+                          app::render(app_state, groups_number);
 
-            glFinish();
+                          glFinish();
 
-            app::blit_framebuffer(app_state);
-        }
+                          app::blit_framebuffer(app_state);
+                      }
 
-        glfwSwapBuffers(window.handle());
+                      glfwSwapBuffers(wnd.handle());
 
-        if (auto result = glGetError(); result != GL_NO_ERROR)
-            throw std::runtime_error("OpenGL error: "s + std::to_string(result));
+                      if (auto result = glGetError(); result != GL_NO_ERROR)
+                          throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-        glfwSetWindowTitle(window.handle(), ("Raytracer "s + std::to_string(delta_time * 1e+3f)).c_str());
-    });
+                      glfwSetWindowTitle(wnd.handle(), ("Raytracer "s + std::to_string(delta_time * 1e+3f)).c_str());
+                  });
 
     glfwTerminate();
 }
