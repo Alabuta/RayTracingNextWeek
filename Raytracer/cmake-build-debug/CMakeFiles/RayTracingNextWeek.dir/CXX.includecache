@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/loaders/spirv_loader.hxx
+cstddef
+-
+vector
+-
+string_view
+-
+
+C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/Raytracer/src/loaders/spirv_loader.cxx
+cstddef
+-
+limits
+-
+vector
+-
+fstream
+-
+filesystem
+-
+string_view
+-
+loaders/spirv_loader.hxx
+C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/Raytracer/src/loaders/loaders/spirv_loader.hxx
+

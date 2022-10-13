@@ -21,7 +21,7 @@ private:
     input::mouse mouse_;
     input::keyboard keyboard_;
 
-    void on_update(platform::input::raw_data &raw_data) override;
+    void on_update(platform::input::raw_data &data) override;
 
 };
 }
