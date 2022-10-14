@@ -15,9 +15,11 @@ for root, dirs, files in os.walk(shaders_path):
     for file in files:
         if file.endswith(shader_extensions):
             in_path = os.path.join(root, file)
-            out_path = in_path.replace('.glsl', '.spv')
+            out_path = os.path.join(root, 'bin', file)
+            out_path = out_path.replace('.glsl', '.spv')
+
+            dirpath = os.path.dirname(out_path)
+            if not os.path.exists(dirpath):
+                os.makedirs(dirpath)
 
             call([compiler_path, '-G', '-I' + shaders_include_path, in_path, '-o', out_path])
-
-# if not os.path.exists(out_path):
-#    open(out_path, 'x').close()

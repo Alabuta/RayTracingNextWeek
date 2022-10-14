@@ -20,7 +20,7 @@ namespace loader
 {
     std::vector<std::byte> load_spirv(std::string_view name)
     {
-        fs::path contents{ "shaders"sv };
+        fs::path contents{ "shaders/bin"sv };
 
         if (!fs::exists(fs::current_path() / contents))
             contents = fs::current_path() / "../"sv / contents;
