@@ -105,13 +105,16 @@ set_target_properties(${EXECUTABLE_TARGET_NAME} PROPERTIES
 )
 
 if(${USE_ASAN})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g3")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -g3")
+
+    set(EXTRA_COMPILER_OPTIONS ${EXTRA_COMPILER_OPTIONS}
+        -fsanitize=address -g3
+    )
+
     set(EXTRA_LIBS ${EXTRA_LIBS}
         clang_rt.asan_dynamic-x86_64
         clang_rt.asan_dynamic_runtime_thunk-x86_64
-    )
-
-    set(EXTRA_COMPILER_OPTIONS ${EXTRA_COMPILER_OPTIONS}
-        -fsanitize=address
     )
 
     set(EXTRA_LINK_OPTIONS ${EXTRA_LINK_OPTIONS}
@@ -229,6 +232,8 @@ target_link_libraries(${EXECUTABLE_TARGET_NAME}
 
 target_link_options(${EXECUTABLE_TARGET_NAME}
     PRIVATE
+        ${EXTRA_LINK_OPTIONS}
+
         "$<$<BOOL:${CXX_FLAGS_STYLE_GNU}>:"
             LINKER:-z,defs;                         # Detect and reject underlinking
             LINKER:-z,now;                          # Disable lazy binding

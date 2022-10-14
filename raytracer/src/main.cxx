@@ -164,6 +164,10 @@ int main(int argc, char *argv[])
     using namespace std::string_literals;
     using namespace std::string_view_literals;
 
+    /*char sentence[] = "This is a sentence.";
+    char mem[19];
+    strcpy_s(mem, sentence);*/
+
 #ifdef _DEBUG
 #ifdef _MSC_VER
     _CrtSetDbgFlag(_CRTDBG_DELAY_FREE_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -213,7 +217,7 @@ int main(int argc, char *argv[])
 
     std::cout << fmt::format("groups number: {}x{}\n", groups_number.x, groups_number.y);
 
-    platform::window window{ "Raytracer"sv, width, height };
+    platform::window window{ "raytracer"sv, width, height };
 
     auto app_window_event_handler = std::make_shared<app::window_event_handler>(app_state);
     window.connect_handler(app_window_event_handler);
@@ -423,7 +427,7 @@ int main(int argc, char *argv[])
                       if (auto result = glGetError(); result != GL_NO_ERROR)
                           throw std::runtime_error("OpenGL error: "s + std::to_string(result));
 
-                      glfwSetWindowTitle(wnd.handle(), ("Raytracer "s + std::to_string(delta_time * 1e+3f)).c_str());
+                      glfwSetWindowTitle(wnd.handle(), ("raytracer "s + std::to_string(delta_time * 1e+3f)).c_str());
                   });
 
     glfwTerminate();

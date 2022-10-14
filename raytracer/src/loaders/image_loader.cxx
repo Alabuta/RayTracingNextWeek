@@ -29,7 +29,7 @@ namespace loader
 
         auto path = contents / name;
 
-        std::ifstream file{ path.native(), std::ios::in | std::ios::binary };
+        std::ifstream file{ path.c_str(), std::ios::in | std::ios::binary };
 
         if (file.bad() || file.fail())
             return { };
