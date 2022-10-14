@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="RayTracingNextWeek"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="clang"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\vcpkg\;CMake Files\..\..\..\vcpkg\scripts\;CMake Files\..\..\..\vcpkg\scripts\buildsystems\;CMake Files\..\..\..\vcpkg\installed\;CMake Files\..\..\..\vcpkg\installed\x64-windows\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glm\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glfw3\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glew\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\fmt\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\boost\;CMake Files\raytracer\;CMake Files\raytracer\include\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="RayTracingNextWeek">
+				<Option output="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug/RayTracingNextWeek.d.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add option="-DGLFW_DLL"/>
+					<Add option="-DFMT_HEADER_ONLY=1"/>
+					<Add directory="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/./raytracer/src"/>
+					<Add directory="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/OpenGL::GL"/>
+					<Add directory="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/include"/>
+					<Add directory="/usr/include/stb"/>
+					<Add directory="C:/Users/auqol/vcpkg/installed/x64-windows/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 RayTracingNextWeek"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="RayTracingNextWeek/fast">
+				<Option output="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug/RayTracingNextWeek.d.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add option="-DGLFW_DLL"/>
+					<Add option="-DFMT_HEADER_ONLY=1"/>
+					<Add directory="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/./raytracer/src"/>
+					<Add directory="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/OpenGL::GL"/>
+					<Add directory="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/include"/>
+					<Add directory="/usr/include/stb"/>
+					<Add directory="C:/Users/auqol/vcpkg/installed/x64-windows/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 RayTracingNextWeek/fast"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\auqol\Documents\GitHub\RayTracingNextWeek\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/camera.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/camera.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/camera_controller.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/camera_controller.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/input_handlers/keyboard_handler.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/input_handlers/keyboard_handler.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/input_handlers/mouse_handler.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/camera/input_handlers/mouse_handler.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/atomic_counter.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/context.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/framebuffer.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/image.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/render_pass.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/shader.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/shader_storage.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/gfx/vertex_array.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/input/input_manager.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/input/input_manager.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/input/keyboard.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/input/keyboard.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/input/mouse.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/input/mouse.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/loaders/image_loader.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/loaders/image_loader.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/loaders/spirv_loader.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/loaders/spirv_loader.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/main.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/main.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/math/math.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/math/math.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/math/perlin.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/math/perlin.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/platform/platform.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/platform/window.cxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/platform/window.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/raytracer/bvh.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/raytracer/material.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/raytracer/physics.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/raytracer/primitives.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/src/raytracer/texture.hxx">
+			<Option target="RayTracingNextWeek"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/scripts/buildsystems/vcpkg.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\scripts\buildsystems\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glm/glm-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glm\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glfw3/glfw3Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glfw3\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glfw3/glfw3ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glfw3\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glfw3/glfw3Targets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glfw3\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glfw3/glfw3Targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glfw3\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glfw3/glfw3Targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glfw3\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glew/CopyImportedTargetProperties.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glew\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glew/glew-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glew\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glew/glew-targets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glew\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glew/glew-targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glew\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glew/glew-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glew\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/glew/vcpkg-cmake-wrapper.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\glew\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/fmt/fmt-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/fmt/fmt-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/fmt/fmt-targets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/fmt/fmt-targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/fmt/fmt-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/../../../vcpkg/installed/x64-windows/share/boost/vcpkg-cmake-wrapper.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\boost\"/>
+		</Unit>
+		<Unit filename="C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/raytracer/include/config.hxx.in">
+			<Option virtualFolder="CMake Files\raytracer\include\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

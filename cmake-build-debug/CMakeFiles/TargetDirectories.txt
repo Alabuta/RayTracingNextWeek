@@ -1,0 +1,3 @@
+C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug/CMakeFiles/RayTracingNextWeek.dir
+C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/auqol/Documents/GitHub/RayTracingNextWeek/cmake-build-debug/CMakeFiles/rebuild_cache.dir
