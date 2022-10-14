@@ -60,6 +60,8 @@ namespace gfx
         shader_stage.module_name = module_name;
         shader_stage.entry_point = entry_point;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
         switch (T::semantic) {
             case gfx::shader::STAGE::VERTEX:
                 shader_stage.handle = glCreateShader(GL_VERTEX_SHADER);
@@ -76,6 +78,7 @@ namespace gfx
             default:
                 throw std::runtime_error("unsupported shader stage"s);
         }
+#pragma GCC diagnostic pop
 
         glObjectLabel(GL_SHADER, shader_stage.handle, -1, "[shader stage object]");
 

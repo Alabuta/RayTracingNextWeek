@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
+﻿cmake_minimum_required (VERSION 3.15 FATAL_ERROR)
 
 project(raytracer VERSION 1.0.0 LANGUAGES CXX)
 
@@ -90,15 +90,9 @@ if(NOT WIN32)
         stdc++fs
         # pthread
     )
-
-    set(EXTRA_LIBS_LINK_OPTIONS ${EXTRA_LIBS_LINK_OPTIONS}
-        -Wl,-no-undefined
-        -Wl,-no-allow-shlib-undefined
-        -Wl,-unresolved-symbols=report-all
-    )
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(${EXECUTABLE_TARGET_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}
 
     CXX_STANDARD 20
@@ -110,19 +104,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     DEBUG_POSTFIX .d
 )
 
-#[[target_compile_options(${PROJECT_NAME}
-    PRIVATE
-        ## GCC/Clang Flags
-        $<$<BOOL:${CXX_FLAGS_STYLE_GNU}>:"-someflag">
-
-        ## MSVC flags
-        $<$<BOOL:${CXX_FLAGS_STYLE_MSVC}>:"/someflag">
-
-        ## CLANG-CL flags
-        $<$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>:"-someflag">
-)]]
-
-if (${USE_ASAN})
+if(${USE_ASAN})
     set(EXTRA_LIBS ${EXTRA_LIBS}
         clang_rt.asan_dynamic-x86_64
         clang_rt.asan_dynamic_runtime_thunk-x86_64
@@ -139,29 +121,36 @@ if (${USE_ASAN})
     set(EXTRA_LINK_DIRS ${EXTRA_LINK_DIRS}
         "C:/Program Files/LLVM/lib/clang/15.0.2/lib/windows"
     )
-endif ()
+endif()
 
+target_compile_options(${EXECUTABLE_TARGET_NAME}
+    PRIVATE
+        ${EXTRA_COMPILER_OPTIONS}
 
-if (($<BOOL:${CXX_FLAGS_STYLE_GNU}> OR $<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>))
-    target_link_options(${EXECUTABLE_TARGET_NAME}
-        PRIVATE
-            ${EXTRA_LINK_OPTIONS}
+        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>>:"
+            -Wpedantic
+            -Wall
+            -Wextra
+            -Werror
 
-            # LINKER: -pie
-            # LINKER: -z,defs                             # Detect and reject underlinking
-            # LINKER: -z,now                              # Disable lazy binding
-            # LINKER: -z,relro                            # Read-only segments after relocation
-            # LINKER: -no-undefined                       # Report unresolved symbol references from regular object files
-            # LINKER: -no-allow-shlib-undefined           # Disallows undefined symbols in shared libraries
-            LINKER: -unresolved-symbols=report-all
-    )
-endif ()
+            -Wold-style-cast
+            -Wnon-virtual-dtor
+            -Wcast-align
+            -Wunused
+            -Woverloaded-virtual
+            -Wconversion
+            -Wsign-conversion
+            -Wnull-dereference
+            -Wdouble-promotion
+            -Wformat=2
+            -Wduplicated-cond
+            -Wduplicated-branches
+            -Wlogical-op
+            -Wuseless-cast
+            -Wmisleading-indentation
+        ">"
 
-if(${CXX_FLAGS_STYLE_GNU})
-    target_compile_options (${EXECUTABLE_TARGET_NAME}
-        PRIVATE
-            ${EXTRA_COMPILER_OPTIONS}
-
+        "$<$<BOOL:${CXX_FLAGS_STYLE_GNU}>:"
             -fconcepts
 
             -fasynchronous-unwind-tables                # Increased reliability of backtraces
@@ -170,71 +159,22 @@ if(${CXX_FLAGS_STYLE_GNU})
             # -fpie
 
             -pipe
+        ">"
 
-            -Wpedantic
-            -Wall
-            -Wextra
-            -Werror
-            -Wold-style-cast
-            -Wnon-virtual-dtor
-            -Wcast-align
-            -Wunused
-            -Woverloaded-virtual
-            -Wconversion
-            -Wsign-conversion
-            -Wmisleading-indentation
-            -Wnull-dereference
-            -Wdouble-promotion
-            -Wformat=2
-            -Wduplicated-cond
-            -Wduplicated-branches
-            -Wlogical-op
-            -Wuseless-cast
-
-            -Wno-unknown-pragmas
-
-            -g
-        )
-endif()
-
-if((CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND ${CXX_FLAGS_STYLE_CLANGCL}))
-    target_compile_options (${EXECUTABLE_TARGET_NAME}
-        PRIVATE
-            ${EXTRA_COMPILER_OPTIONS}
-
-            -Wpedantic
-            -Wall
+        "$<$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>:"
             /EHa
+
             -Wno-c++98-compat
             -Wno-c++98-compat-pedantic
-            -Wno-covered-switch-default
-            -Wno-undef
-            -Wno-switch-enum
-            -Wextra
-            -Werror
-            -Wold-style-cast
-            -Wnon-virtual-dtor
-            -Wcast-align
-            -Wunused
-            -Wconversion
-            -Woverloaded-virtual
-            -Wsign-conversion
-            -Wnull-dereference
-            -Wdouble-promotion
-            -Wno-shadow-field-in-constructor
-            -Wformat=2
-            # -Wlifetime
 
             -Wno-unknown-pragmas
             -Wno-unknown-warning-option
 
+            -Wno-shadow-field-in-constructor
             -Wno-nonportable-system-include-path
-    )
-endif()
+        ">"
 
-if(${CXX_FLAGS_STYLE_MSVC})
-    target_compile_options (${EXECUTABLE_TARGET_NAME}
-        PRIVATE
+        "$<$<BOOL:${CXX_FLAGS_STYLE_MSVC}>:"
             "/std:c++latest"
 
             # /W4
@@ -258,10 +198,10 @@ if(${CXX_FLAGS_STYLE_MSVC})
             /w14905 # wide string literal cast to 'LPSTR'
             /w14906 # string literal cast to 'LPWSTR'
             /w14928 # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
-        )
-endif()
+        ">"
+)
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${EXECUTABLE_TARGET_NAME}
     PRIVATE
         OpenGL::GL
 )
@@ -271,9 +211,8 @@ target_link_directories (${EXECUTABLE_TARGET_NAME}
         ${EXTRA_LINK_DIRS}
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_TARGET_NAME}
     PRIVATE
-        ${EXTRA_LIBS_LINK_OPTIONS}
         ${EXTRA_LIBS}
 
         glfw
@@ -286,4 +225,20 @@ target_link_libraries(${PROJECT_NAME}
         Boost::program_options
 
         OpenGL::GL
+)
+
+target_link_options(${EXECUTABLE_TARGET_NAME}
+    PRIVATE
+        "$<$<BOOL:${CXX_FLAGS_STYLE_GNU}>:"
+            LINKER:-z,defs;                         # Detect and reject underlinking
+            LINKER:-z,now;                          # Disable lazy binding
+            LINKER:-z,relro                         # Read-only segments after relocation
+        ">"
+
+        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>>:"
+            LINKER:-pie;
+            LINKER:-no-undefined;                   # Report unresolved symbol references from regular object files
+            LINKER:-no-allow-shlib-undefined;       # Disallows undefined symbols in shared libraries
+            LINKER:-unresolved-symbols=report-all
+        ">"
 )
