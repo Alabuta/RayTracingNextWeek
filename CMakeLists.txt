@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
 
-project(RayTracingNextWeek VERSION 1.0.0 LANGUAGES CXX)
+project(raytracer VERSION 1.0.0 LANGUAGES CXX)
 
 configure_file(
     "raytracer/include/config.hxx.in"
