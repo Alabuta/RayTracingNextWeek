@@ -173,9 +173,14 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-    /*char sentence[] = "This is a sentence.";
-    char mem[19];
-    strcpy_s(mem, sentence);*/
+    if constexpr (/* DISABLES CODE */(false)) {
+        char sentence[] = "This is a sentence.";
+        char mem[16];
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        strcpy(mem, sentence);
+#pragma GCC diagnostic pop
+    }
 
     app::state app_state;
     app_state.window_size = std::array{ 800, 600 };
