@@ -164,10 +164,6 @@ int main(int argc, char *argv[])
     using namespace std::string_literals;
     using namespace std::string_view_literals;
 
-    /*char sentence[] = "This is a sentence.";
-    char mem[19];
-    strcpy_s(mem, sentence);*/
-
 #ifdef _DEBUG
 #ifdef _MSC_VER
     _CrtSetDbgFlag(_CRTDBG_DELAY_FREE_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -176,6 +172,10 @@ int main(int argc, char *argv[])
     std::signal(SIGTRAP, posix_signal_handler);
 #endif
 #endif
+
+    /*char sentence[] = "This is a sentence.";
+    char mem[19];
+    strcpy_s(mem, sentence);*/
 
     app::state app_state;
     app_state.window_size = std::array{ 800, 600 };

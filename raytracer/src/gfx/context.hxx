@@ -4,8 +4,8 @@
 
 //#define GL_GLEXT_PROTOTYPES 0
 
-#include <GL/glew.h>
-#include <GL/glcorearb.h>
+#include <gl/glew.h>
+#include <gl/glcorearb.h>
 
 //#ifdef _MSC_VER
 //    #define WGL_WGLEXT_PROTOTYPES 0

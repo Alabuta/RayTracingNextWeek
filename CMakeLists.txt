@@ -1,6 +1,6 @@
-﻿cmake_minimum_required (VERSION 3.15 FATAL_ERROR)
+﻿cmake_minimum_required (VERSION 3.25 FATAL_ERROR)
 
-project(raytracer VERSION 1.0.0 LANGUAGES CXX)
+project(RayTracingNextWeek VERSION 1.0.0 LANGUAGES CXX)
 
 configure_file(
     "raytracer/include/config.hxx.in"
@@ -41,11 +41,18 @@ if(NOT WIN32)
     find_package(X11 REQUIRED)
 endif()
 
-set(EXECUTABLE_TARGET_NAME ${PROJECT_NAME})
+set(EXECUTABLE_TARGET_NAME raytracer)
 add_executable(${EXECUTABLE_TARGET_NAME})
 
-include_directories(SYSTEM raytracer/include "/usr/include/stb")
-include_directories(./raytracer/src)
+target_include_directories(${EXECUTABLE_TARGET_NAME}
+    SYSTEM PRIVATE
+        OpenGL::GL
+        ./raytracer/include
+
+    PRIVATE
+        ${Boost_INCLUDE_DIR}
+        ./raytracer/src
+    )
 
 target_sources(${EXECUTABLE_TARGET_NAME}
     PRIVATE
@@ -96,7 +103,7 @@ set_target_properties(${EXECUTABLE_TARGET_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}
 
     CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED NO
+    CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
 
     POSITION_INDEPENDENT_CODE ON
@@ -151,6 +158,11 @@ target_compile_options(${EXECUTABLE_TARGET_NAME}
             -Wlogical-op
             -Wuseless-cast
             -Wmisleading-indentation
+
+            -Wno-c++98-compat
+            -Wno-c++98-compat-pedantic
+
+            -Wno-pre-c++17-compat
         ">"
 
         "$<$<BOOL:${CXX_FLAGS_STYLE_GNU}>:"
@@ -166,15 +178,12 @@ target_compile_options(${EXECUTABLE_TARGET_NAME}
 
         "$<$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>:"
             /EHa
-
-            -Wno-c++98-compat
-            -Wno-c++98-compat-pedantic
+            # -fcxx-exceptions
 
             -Wno-unknown-pragmas
             -Wno-unknown-warning-option
 
             -Wno-shadow-field-in-constructor
-            -Wno-nonportable-system-include-path
         ">"
 
         "$<$<BOOL:${CXX_FLAGS_STYLE_MSVC}>:"
@@ -204,12 +213,7 @@ target_compile_options(${EXECUTABLE_TARGET_NAME}
         ">"
 )
 
-target_include_directories(${EXECUTABLE_TARGET_NAME}
-    PRIVATE
-        OpenGL::GL
-)
-
-target_link_directories (${EXECUTABLE_TARGET_NAME}
+target_link_directories(${EXECUTABLE_TARGET_NAME}
     PRIVATE
         ${EXTRA_LINK_DIRS}
 )
@@ -234,8 +238,9 @@ target_link_options(${EXECUTABLE_TARGET_NAME}
     PRIVATE
         ${EXTRA_LINK_OPTIONS}
 
-        "$<$<BOOL:${CXX_FLAGS_STYLE_GNU}>:"
-            LINKER:-z,defs;                         # Detect and reject underlinking
+        "$<$<IN_LIST:${CMAKE_SYSTEM_NAME}," Linux";"Darwin">:"
+            # LINKER:SHELL:-z defs
+            LINKER:-z,defs;                         # Detect and reject underlinking LINKER:SHELL:-z defs
             LINKER:-z,now;                          # Disable lazy binding
             LINKER:-z,relro                         # Read-only segments after relocation
         ">"
