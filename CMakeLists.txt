@@ -3,8 +3,8 @@
 project(RayTracingNextWeek VERSION 1.0.0 LANGUAGES CXX)
 
 configure_file(
-    "raytracer/include/config.hxx.in"
-    "raytracer/include/config.hxx"
+    "${PROJECT_SOURCE_DIR}/raytracer/include/config.hxx.in"
+    "${PROJECT_SOURCE_DIR}/raytracer/include/config.hxx"
 )
 
 set(USE_ASAN OFF)
