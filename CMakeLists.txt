@@ -89,13 +89,6 @@ target_sources(${EXECUTABLE_TARGET_NAME}
         ./raytracer/src/main.hxx                                        ./raytracer/src/main.cxx
 )
 
-if(NOT WIN32)
-    set(EXTRA_LIBS ${EXTRA_LIBS}
-        stdc++fs
-        # pthread
-    )
-endif()
-
 set_target_properties(${EXECUTABLE_TARGET_NAME}
     PROPERTIES
         VERSION ${PROJECT_VERSION}
@@ -197,7 +190,10 @@ target_link_directories(${EXECUTABLE_TARGET_NAME}
 
 target_link_libraries(${EXECUTABLE_TARGET_NAME}
     PRIVATE
-        ${EXTRA_LIBS}
+        "$<$<IN_LIST:${CMAKE_SYSTEM_NAME}," Linux";"Darwin">:"
+            stdc++fs
+            # pthread
+        ">"
 
         fmt::fmt-header-only
         glfw
