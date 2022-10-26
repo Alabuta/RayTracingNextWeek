@@ -7,35 +7,31 @@ configure_file(
     "${PROJECT_SOURCE_DIR}/raytracer/include/config.hxx"
 )
 
+set(CMAKE_LINK_LIBRARY_USING_load_archive TRUE)
+set(CMAKE_C_LINK_LIBRARY_USING_load_archive_SUPPORTED TRUE)
+set(CMAKE_CXX_LINK_LIBRARY_USING_load_archive_SUPPORTED TRUE)
+
 set(USE_ASAN OFF)
 
-# Get compiler info
-set(CXX_FLAGS_STYLE_GNU OFF)
-set(CXX_FLAGS_STYLE_MSVC OFF)
-set(CXX_FLAGS_STYLE_CLANGCL OFF)
+set(GLFW_LIBRARY_TYPE "SHARED" CACHE STRING "" FORCE)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(CXX_FLAGS_STYLE_GNU ON)
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    if("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-        set(CXX_FLAGS_STYLE_CLANGCL ON)
-    else()
-        set(CXX_FLAGS_STYLE_GNU ON)
-    endif()
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    set(CXX_FLAGS_STYLE_MSVC ON)
-else()
-    message(FATAL_ERROR "Unsupported compiler!")
-endif()
+include("cmake/InitSanitizers.cmake")
+include("cmake/SetCompilerFlagsStyle.cmake")
 
 find_package(OpenGL REQUIRED)
-
-find_package(glm REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW 2.1 REQUIRED)
-find_package(fmt 5.3 CONFIG REQUIRED)
 find_package(Boost 1.68 COMPONENTS program_options REQUIRED)
-# find_package(STBImage REQUIRED)
+
+set(SUBMODULES
+    fmt
+    glfw
+    glm
+)
+
+foreach(SUBMODULE ${SUBMODULES})
+    message(STATUS "Including submodule ${SUBMODULE}")
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${SUBMODULE} EXCLUDE_FROM_ALL SYSTEM)
+endforeach()
 
 if(NOT WIN32)
     find_package(X11 REQUIRED)
@@ -47,10 +43,11 @@ add_executable(${EXECUTABLE_TARGET_NAME})
 target_include_directories(${EXECUTABLE_TARGET_NAME}
     SYSTEM PRIVATE
         OpenGL::GL
+        ${Boost_INCLUDE_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/external
         ./raytracer/include
 
     PRIVATE
-        ${Boost_INCLUDE_DIR}
         ./raytracer/src
     )
 
@@ -99,39 +96,18 @@ if(NOT WIN32)
     )
 endif()
 
-set_target_properties(${EXECUTABLE_TARGET_NAME} PROPERTIES
-    VERSION ${PROJECT_VERSION}
+set_target_properties(${EXECUTABLE_TARGET_NAME}
+    PROPERTIES
+        VERSION ${PROJECT_VERSION}
 
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
+        CXX_STANDARD 23
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF
 
-    POSITION_INDEPENDENT_CODE ON
+        POSITION_INDEPENDENT_CODE ON
 
-    DEBUG_POSTFIX .d
+        DEBUG_POSTFIX .d
 )
-
-if(${USE_ASAN})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g3")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -g3")
-
-    set(EXTRA_COMPILER_OPTIONS ${EXTRA_COMPILER_OPTIONS}
-        -fsanitize=address -g3
-    )
-
-    set(EXTRA_LIBS ${EXTRA_LIBS}
-        clang_rt.asan_dynamic-x86_64
-        clang_rt.asan_dynamic_runtime_thunk-x86_64
-    )
-
-    set(EXTRA_LINK_OPTIONS ${EXTRA_LINK_OPTIONS}
-        /wholearchive:clang_rt.asan_dynamic_runtime_thunk-x86_64.lib
-    )
-
-    set(EXTRA_LINK_DIRS ${EXTRA_LINK_DIRS}
-        "C:/Program Files/LLVM/lib/clang/15.0.2/lib/windows"
-    )
-endif()
 
 target_compile_options(${EXECUTABLE_TARGET_NAME}
     PRIVATE
@@ -142,6 +118,7 @@ target_compile_options(${EXECUTABLE_TARGET_NAME}
             -Wall
             -Wextra
             -Werror
+            -Wconversion
 
             -Wold-style-cast
             -Wnon-virtual-dtor
@@ -222,12 +199,10 @@ target_link_libraries(${EXECUTABLE_TARGET_NAME}
     PRIVATE
         ${EXTRA_LIBS}
 
-        glfw
-        glm::glm
-        GLEW::GLEW
-
         fmt::fmt-header-only
-        #fmt::fmt
+        glfw
+        GLEW::GLEW
+        glm::glm
 
         Boost::program_options
 
