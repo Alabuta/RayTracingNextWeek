@@ -1,4 +1,8 @@
-#include <boost/program_options.hpp>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+    #include <boost/program_options.hpp>
+#pragma GCC diagnostic pop
+
 
 #include "main.hxx"
 
