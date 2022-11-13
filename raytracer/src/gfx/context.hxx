@@ -4,8 +4,13 @@
 
 //#define GL_GLEXT_PROTOTYPES 0
 
-#include <GL/glew.h>
-#include <GL/glcorearb.h>
+#if defined(__GCC__) || defined(__GNU__)
+    #include <GL/glew.h>
+    #include <GL/glcorearb.h>
+#elif defined(_MSC_VER)
+    #include <gl/glew.h>
+    #include <gl/glcorearb.h>
+#endif
 
 //#ifdef _MSC_VER
 //    #define WGL_WGLEXT_PROTOTYPES 0
@@ -16,7 +21,7 @@
 //    #include <GL/glxext.h>
 //#endif
 
-#ifdef _MSC_VER
+/*#ifdef _MSC_VER
     #pragma comment(lib, "OpenGL32.lib")
     #ifdef _DEBUG
         #pragma comment(lib, "glew32d.lib")
@@ -24,7 +29,7 @@
         #pragma comment(lib, "glew32.lib")
     #endif
     #pragma comment(lib, "glfw3dll.lib")
-#endif
+#endif*/
 
 #include "platform/window.hxx"
 
