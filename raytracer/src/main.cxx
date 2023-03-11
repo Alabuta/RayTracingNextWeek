@@ -25,9 +25,7 @@
 #include "camera/camera.hxx"
 #include "camera/camera_controller.hxx"
 
-#include "raytracer/bvh.hxx"
 #include "raytracer/material.hxx"
-#include "raytracer/physics.hxx"
 #include "raytracer/primitives.hxx"
 
 
@@ -81,7 +79,7 @@ namespace app
     class window_event_handler final : public platform::event_handler {
     public:
 
-        window_event_handler(app::state &app_state) noexcept : app_state{ app_state }
+        explicit window_event_handler(app::state &app_state) noexcept : app_state{ app_state }
         {
         }
 
