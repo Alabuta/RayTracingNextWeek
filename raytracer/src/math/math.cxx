@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 
 #include "math/math.hxx"
 

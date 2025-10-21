@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #ifdef _MSC_VER
     #include <execution>
 #endif

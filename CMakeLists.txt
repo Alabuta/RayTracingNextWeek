@@ -1,4 +1,5 @@
-﻿cmake_minimum_required (VERSION 3.25 FATAL_ERROR)
+﻿cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
+include(FetchContent)
 
 project(RayTracingNextWeek VERSION 1.0.0 LANGUAGES CXX)
 
@@ -7,35 +8,51 @@ configure_file(
     "${PROJECT_SOURCE_DIR}/raytracer/include/config.hxx"
 )
 
-set(CMAKE_LINK_LIBRARY_USING_load_archive TRUE)
-set(CMAKE_C_LINK_LIBRARY_USING_load_archive_SUPPORTED TRUE)
-set(CMAKE_CXX_LINK_LIBRARY_USING_load_archive_SUPPORTED TRUE)
+message(CMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}")
+message(CMAKE_SYSTEM_NAME="${CMAKE_SYSTEM_NAME}")
 
-set(USE_ASAN OFF)
-
-set(GLFW_LIBRARY_TYPE "SHARED" CACHE STRING "" FORCE)
-
-include("cmake/InitSanitizers.cmake")
-include("cmake/SetCompilerFlagsStyle.cmake")
+if(WIN32 AND MINGW)
+    set(CXX_FLAGS_STYLE_MINGW_WINDOWS TRUE)
+endif()
 
 find_package(OpenGL REQUIRED)
-find_package(GLEW 2.1 REQUIRED)
-find_package(Boost 1.68 COMPONENTS program_options REQUIRED)
-
-set(SUBMODULES
-    fmt
-    glfw
-    glm
-)
-
-foreach(SUBMODULE ${SUBMODULES})
-    message(STATUS "Including submodule ${SUBMODULE}")
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${SUBMODULE} EXCLUDE_FROM_ALL SYSTEM)
-endforeach()
+find_package(Boost CONFIG REQUIRED COMPONENTS program_options)
+find_package(GLEW 2.2 REQUIRED)
 
 if(NOT WIN32)
     find_package(X11 REQUIRED)
 endif()
+
+
+# === GLM === (header-only)
+FetchContent_Declare(
+        glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG 1.0.2
+        SYSTEM
+)
+
+# === GLFW ===
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+        glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG 3.4
+        SYSTEM
+)
+
+FetchContent_Declare(
+        stb
+        GIT_REPOSITORY https://github.com/nothings/stb.git
+        GIT_TAG master
+        SYSTEM
+)
+
+FetchContent_MakeAvailable(glm glfw stb)
+
 
 set(EXECUTABLE_TARGET_NAME raytracer)
 add_executable(${EXECUTABLE_TARGET_NAME})
@@ -43,13 +60,13 @@ add_executable(${EXECUTABLE_TARGET_NAME})
 target_include_directories(${EXECUTABLE_TARGET_NAME}
     SYSTEM PRIVATE
         OpenGL::GL
+        ${stb_SOURCE_DIR}
         ${Boost_INCLUDE_DIR}
-        ${CMAKE_CURRENT_LIST_DIR}/external
-        ./raytracer/include
 
     PRIVATE
+        ./raytracer/include
         ./raytracer/src
-    )
+)
 
 target_sources(${EXECUTABLE_TARGET_NAME}
     PRIVATE
@@ -104,9 +121,8 @@ set_target_properties(${EXECUTABLE_TARGET_NAME}
 
 target_compile_options(${EXECUTABLE_TARGET_NAME}
     PRIVATE
-        ${EXTRA_COMPILER_OPTIONS}
 
-        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>>:"
+        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>,$<BOOL:${CXX_FLAGS_STYLE_MINGW_WINDOWS}>>:"
             -Wpedantic
             -Wall
             -Wextra
@@ -135,7 +151,7 @@ target_compile_options(${EXECUTABLE_TARGET_NAME}
             -Wno-pre-c++17-compat
         ">"
 
-        "$<$<BOOL:${CXX_FLAGS_STYLE_GNU}>:"
+        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_MINGW_WINDOWS}>>:"
             -fconcepts
 
             -fasynchronous-unwind-tables                # Increased reliability of backtraces
@@ -183,32 +199,25 @@ target_compile_options(${EXECUTABLE_TARGET_NAME}
         ">"
 )
 
-target_link_directories(${EXECUTABLE_TARGET_NAME}
-    PRIVATE
-        ${EXTRA_LINK_DIRS}
-)
-
 target_link_libraries(${EXECUTABLE_TARGET_NAME}
-    PRIVATE
-        "$<$<IN_LIST:${CMAKE_SYSTEM_NAME}," Linux";"Darwin">:"
+        PRIVATE
+
+        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>,$<BOOL:${CXX_FLAGS_STYLE_MINGW_WINDOWS}>>:"
             stdc++fs
+            stdc++exp
             # pthread
         ">"
 
-        fmt::fmt-header-only
+        OpenGL::GL
+        Boost::program_options
+
         glfw
         GLEW::GLEW
         glm::glm
-
-        Boost::program_options
-
-        OpenGL::GL
 )
 
 target_link_options(${EXECUTABLE_TARGET_NAME}
     PRIVATE
-        ${EXTRA_LINK_OPTIONS}
-
         "$<$<IN_LIST:${CMAKE_SYSTEM_NAME}," Linux";"Darwin">:"
             # LINKER:SHELL:-z defs
             LINKER:-z,defs;                         # Detect and reject underlinking LINKER:SHELL:-z defs
@@ -216,7 +225,7 @@ target_link_options(${EXECUTABLE_TARGET_NAME}
             LINKER:-z,relro                         # Read-only segments after relocation
         ">"
 
-        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>>:"
+        "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>,$<BOOL:${CXX_FLAGS_STYLE_MINGW_WINDOWS}>>:"
             LINKER:-pie;
             LINKER:-no-undefined;                   # Report unresolved symbol references from regular object files
             LINKER:-no-allow-shlib-undefined;       # Disallows undefined symbols in shared libraries

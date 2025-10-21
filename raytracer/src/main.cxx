@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
 
     auto const groups_number = glm::uvec2{ glm::ceil(glm::vec2{ width, height } / glm::vec2{ kGROUP_SIZE }) };
 
-    std::cout << fmt::format("groups number: {}x{}\n", groups_number.x, groups_number.y);
+    std::print("groups number: {}x{}\n", groups_number.x, groups_number.y);
 
     platform::window window{ "raytracer"sv, width, height };
 

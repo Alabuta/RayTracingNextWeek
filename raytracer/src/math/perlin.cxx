@@ -1,4 +1,5 @@
 #include <array>
+#include <algorithm>
 
 #include "math/math.hxx"
 #include "math/perlin.hxx"

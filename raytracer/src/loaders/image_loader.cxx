@@ -11,7 +11,7 @@ using namespace std::string_view_literals;
 namespace fs = std::filesystem;
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+#include <stb_image.h>
 
 #include "gfx/image.hxx"
 #include "loaders/image_loader.hxx"
