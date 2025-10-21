@@ -16,7 +16,6 @@ if(WIN32 AND MINGW)
 endif()
 
 find_package(OpenGL REQUIRED)
-find_package(Boost CONFIG REQUIRED COMPONENTS program_options)
 find_package(GLEW 2.2 REQUIRED)
 
 if(NOT WIN32)
@@ -51,7 +50,14 @@ FetchContent_Declare(
         SYSTEM
 )
 
-FetchContent_MakeAvailable(glm glfw stb)
+FetchContent_Declare(
+        cxxopts
+        GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
+        GIT_TAG v3.3.1
+        SYSTEM
+)
+
+FetchContent_MakeAvailable(glm glfw stb cxxopts)
 
 
 set(EXECUTABLE_TARGET_NAME raytracer)
@@ -60,8 +66,8 @@ add_executable(${EXECUTABLE_TARGET_NAME})
 target_include_directories(${EXECUTABLE_TARGET_NAME}
     SYSTEM PRIVATE
         OpenGL::GL
-        ${stb_SOURCE_DIR}
         ${Boost_INCLUDE_DIR}
+        ${stb_SOURCE_DIR}
 
     PRIVATE
         ./raytracer/include
@@ -200,7 +206,7 @@ target_compile_options(${EXECUTABLE_TARGET_NAME}
 )
 
 target_link_libraries(${EXECUTABLE_TARGET_NAME}
-        PRIVATE
+    PRIVATE
 
         "$<$<OR:$<BOOL:${CXX_FLAGS_STYLE_GNU}>,$<BOOL:${CXX_FLAGS_STYLE_CLANGCL}>,$<BOOL:${CXX_FLAGS_STYLE_MINGW_WINDOWS}>>:"
             stdc++fs
@@ -209,11 +215,12 @@ target_link_libraries(${EXECUTABLE_TARGET_NAME}
         ">"
 
         OpenGL::GL
-        Boost::program_options
 
+        glm::glm
         glfw
         GLEW::GLEW
-        glm::glm
+
+        cxxopts::cxxopts
 )
 
 target_link_options(${EXECUTABLE_TARGET_NAME}

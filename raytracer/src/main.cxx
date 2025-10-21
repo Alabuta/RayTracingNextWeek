@@ -1,8 +1,4 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnull-dereference"
-    #include <boost/program_options.hpp>
-#pragma GCC diagnostic pop
-
+#include <cxxopts.hpp>
 
 #include "main.hxx"
 
@@ -175,43 +171,33 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-    if constexpr (/* DISABLES CODE */(false)) {
-        char sentence[] = "This is a sentence.";
-        char mem[16];
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        strcpy(mem, sentence);
-#pragma GCC diagnostic pop
-    }
-
     app::state app_state;
     app_state.window_size = std::array{ 800, 600 };
 
     try {
-        namespace po = boost::program_options;
+        cxxopts::Options options("raytracer", "Allowed options");
 
-        po::options_description desc("Allowed options");
+        options.add_options()
+            ("h,help", "Produce help message")
+            ("s,size", "Window frame size", cxxopts::value<std::vector<std::int32_t>>());
 
-        desc.add_options()("help", "produce help message")("size", po::value<std::vector<int>>()->multitoken(), "window size");
+        auto result = options.parse(argc, argv);
 
-        po::variables_map vm;
-        po::store(po::parse_command_line(argc, argv, desc), vm);
-        po::notify(vm);
-
-        if (vm.count("help")) {
-            std::cout << desc << std::endl;
-            return 1;
+        if (result.contains("help"))
+        {
+            std::cout << options.help() << std::endl;
+            return 0;
         }
 
-        if (vm.count("size")) {
-            auto window_size = vm["size"].as<std::vector<int>>();
+        if (result.contains("size")) {
+            auto window_size = result["size"].as<std::vector<int>>();
 
             std::copy_n(std::begin(window_size), std::size(app_state.window_size), std::begin(app_state.window_size));
         }
 
     }
-    catch (...) {
-        std::cerr << "Error: unexpected exception at program options parsing.";
+    catch (const std::runtime_error& e) {
+        std::cerr << "Error: unexpected exception at program options parsing. Format error: " << e.what() << '\n';
         return 1;
     }
 

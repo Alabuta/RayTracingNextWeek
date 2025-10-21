@@ -2,6 +2,8 @@
     #include <execution>
 #endif
 
+#include "math/math.hxx"
+
 #include "camera/input_handlers/mouse_handler.hxx"
 #include "camera/input_handlers/keyboard_handler.hxx"
 #include "camera/camera.hxx"

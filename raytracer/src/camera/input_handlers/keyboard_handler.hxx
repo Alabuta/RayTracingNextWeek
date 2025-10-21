@@ -1,10 +1,6 @@
 #pragma once
 
-#define GLM_FORCE_CXX17
-#include <glm/glm.hpp>
-
 #include "input/input_manager.hxx"
-#include "input/mouse.hxx"
 
 #include "camera/camera_controller.hxx"
 

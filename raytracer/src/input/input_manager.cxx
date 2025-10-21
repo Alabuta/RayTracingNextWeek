@@ -1,5 +1,3 @@
-#include <boost/functional/hash_fwd.hpp>
-
 #include "platform/platform.hxx"
 #include "input/input_manager.hxx"
 

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <variant>
-#include <tuple>
-
 #include "platform/platform.hxx"
 #include "input/mouse.hxx"
 #include "input/keyboard.hxx"

@@ -4,7 +4,7 @@
 
 //#define GL_GLEXT_PROTOTYPES 0
 
-#if defined(__GCC__) || defined(__GNU__)
+#if defined(__GCC__) || defined(__GNU__) || defined(__MINGW32__)
     #include <GL/glew.h>
     #include <GL/glcorearb.h>
 #elif defined(_MSC_VER)

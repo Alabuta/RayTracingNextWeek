@@ -1,21 +1,15 @@
 #pragma once
 
 #include <iostream>
-#include <sstream>
 #include <array>
-#include <vector>
 #include <chrono>
-#include <memory>
-
-#ifdef _MSC_VER
-    #include <execution>
-#endif
-
 #include <string>
 #include <string_view>
 #include <print>
 
-#include "config.hxx"
+#ifdef _MSC_VER
+    #include <execution>
+#endif
 
 #include "math/math.hxx"
 

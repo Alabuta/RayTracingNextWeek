@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/gtc/constants.hpp>
-
 #include "math/math.hxx"
 #include "input/input_manager.hxx"
 #include "camera/camera.hxx"
